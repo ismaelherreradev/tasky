@@ -80,7 +80,7 @@ export default function SignUpPage() {
                         </Button>
                       </Clerk.Connection>
                     </div>
-                    <p className="text-muted-foreground before:bg-border after:bg-border flex items-center gap-x-3 text-sm before:h-px before:flex-1 after:h-px after:flex-1">
+                    <p className="flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
                       or
                     </p>
                     <Clerk.Field name="emailAddress" className="space-y-2">
@@ -140,7 +140,7 @@ export default function SignUpPage() {
                       <Clerk.Input type="text" required asChild>
                         <Input />
                       </Clerk.Input>
-                      <Clerk.FieldError className="text-destructive block text-sm" />
+                      <Clerk.FieldError className="block text-sm text-destructive" />
                     </Clerk.Field>
                   </CardContent>
                   <CardFooter>
@@ -188,9 +188,9 @@ export default function SignUpPage() {
                                   <div
                                     data-status={status}
                                     className={cn(
-                                      "border-input relative flex size-10 items-center justify-center border-y border-r text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+                                      "relative flex size-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
                                       {
-                                        "ring-ring ring-offset-background z-10 ring-2":
+                                        "z-10 ring-2 ring-ring ring-offset-background":
                                           status === "cursor" ||
                                           status === "selected",
                                       },
@@ -199,7 +199,7 @@ export default function SignUpPage() {
                                     {value}
                                     {status === "cursor" && (
                                       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                                        <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
+                                        <div className="h-4 w-px animate-caret-blink bg-foreground duration-1000" />
                                       </div>
                                     )}
                                   </div>
@@ -207,7 +207,7 @@ export default function SignUpPage() {
                               }}
                             />
                           </div>
-                          <Clerk.FieldError className="text-destructive-foreground block text-center text-sm" />
+                          <Clerk.FieldError className="block text-center text-sm text-destructive-foreground" />
                         </Clerk.Field>
                         <SignUp.Action
                           asChild

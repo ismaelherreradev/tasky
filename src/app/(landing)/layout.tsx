@@ -4,7 +4,7 @@ export default function LandingLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-svh">
+    <div>
       <Navbar />
       <main className="container pt-28">{children}</main>
     </div>

@@ -1,9 +1,12 @@
 import "~/styles/globals.css";
 
+import { dark, experimental__simple } from "@clerk/themes";
 import { type Metadata } from "next";
 import { ThemeProvider } from "~/components/theme-provider";
 import { recursive } from "~/fonts";
 
+import { ClerkProvider } from "@clerk/nextjs";
+import { env } from "~/env";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
@@ -16,21 +19,28 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${recursive.variable}`}
-      suppressHydrationWarning
+    <ClerkProvider
+      appearance={{
+        baseTheme: [dark, experimental__simple],
+      }}
+      publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
-      <body className="min-h-svh">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+      <html
+        lang="en"
+        className={`${recursive.variable}`}
+        suppressHydrationWarning
+      >
+        <body className="overflow-x-hidden">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
