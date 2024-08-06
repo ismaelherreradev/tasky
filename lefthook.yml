@@ -8,7 +8,7 @@ pre-commit:
   parallel: true
   commands:
     check-js:
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,yml,yaml}"
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx}"
       run: "bun eslint --fix {staged_files}"
   scripts:
     "commitlint.sh":
