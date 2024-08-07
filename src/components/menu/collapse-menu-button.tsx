@@ -51,7 +51,6 @@ export function CollapseMenuButton({
   const [isCollapsed, setIsCollapsed] = useState(
     submenus?.some((submenu) => submenu.active),
   );
-
   function renderCollapsibleContent() {
     return (
       <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">

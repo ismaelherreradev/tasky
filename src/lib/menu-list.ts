@@ -28,7 +28,7 @@ export type Group = {
 };
 
 const baseMenus: Menu[] = [
-  { href: "/dashboard", label: "Dashboard", active: false, icon: LayoutGrid },
+  { href: "/dashboard", label: "Workspaces", active: false, icon: LayoutGrid },
 ];
 
 const contentMenus: Menu[] = [

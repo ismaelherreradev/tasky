@@ -1,22 +1,3 @@
-// import { auth } from "@clerk/nextjs/server";
-// import { redirect } from "next/navigation";
-
-// import { Paths } from "~/config/site";
-
-// export default async function OrganizationIdPage() {
-//   const { orgId } = auth();
-
-//   if (!orgId) {
-//     redirect(Paths.SelectOrg);
-//   }
-
-//   return (
-//     <div>
-//       <h1>hi</h1>
-//     </div>
-//   );
-// }
-
 import Link from "next/link";
 
 import {
@@ -31,7 +12,7 @@ import { ContentLayout } from "../../_components/content-layout";
 
 export default function OrganizationIdPage() {
   return (
-    <ContentLayout title="Dashboard">
+    <ContentLayout title="Workspaces">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

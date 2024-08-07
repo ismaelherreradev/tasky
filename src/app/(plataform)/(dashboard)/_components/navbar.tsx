@@ -1,7 +1,7 @@
 import { ThemeToggle } from "~/components/theme-toggle";
-import { SheetMenu } from "./sheet-menu";
 
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
+import { SheetMenu } from "~/components/menu/sheet-menu";
 
 type NavbarProps = {
   title: string;

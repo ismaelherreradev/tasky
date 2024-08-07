@@ -8,7 +8,7 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "~/components/ui/sheet";
-import { Menu } from "./menu";
+import { Menu } from ".";
 
 export function SheetMenu() {
   return (

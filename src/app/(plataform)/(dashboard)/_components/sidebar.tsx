@@ -1,10 +1,10 @@
 import { PanelsTopLeft } from "lucide-react";
 import Link from "next/link";
 import { useStore } from "zustand";
+import { Menu } from "~/components/menu";
 import { Button } from "~/components/ui/button";
 import useSidebarToggle from "~/hooks/use-sidebar-toggle";
 import { cn } from "~/lib/utils";
-import { Menu } from "./menu";
 import { SidebarToggle } from "./sidebar-toggle";
 
 type BrandProps = {
