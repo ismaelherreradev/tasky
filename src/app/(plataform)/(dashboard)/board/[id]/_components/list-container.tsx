@@ -28,7 +28,6 @@ export function ListContainer({ boardId }: ListContainerProps) {
 
   const [orderedList, setOrderedList] = useState<ListWithCards[]>(list);
 
-  const utils = api.useUtils();
   const updateListOrder = api.list.updateListOrder.useMutation({
     onSuccess: async () => {
       toast.success("List reordered");
@@ -36,7 +35,7 @@ export function ListContainer({ boardId }: ListContainerProps) {
   });
 
   const updateCardOrder = api.card.updateCardOrder.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       toast.success("List reordered");
     },
   });
