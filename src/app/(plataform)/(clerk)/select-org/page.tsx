@@ -1,11 +1,11 @@
 import { OrganizationList } from "@clerk/nextjs";
 
-export default function OrganizationListPage() {
+export default async function OrganizationListPage() {
   return (
     <OrganizationList
       hidePersonal
-      afterCreateOrganizationUrl="/organization"
-      afterSelectOrganizationUrl="/organization"
+      afterCreateOrganizationUrl="/organization/:id"
+      afterSelectOrganizationUrl="/organization/:id"
     />
   );
 }

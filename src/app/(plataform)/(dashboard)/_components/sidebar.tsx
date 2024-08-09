@@ -31,7 +31,7 @@ function Brand({ isOpen }: BrandProps) {
               : "hidden -translate-x-96 opacity-0",
           )}
         >
-          Brand
+          Tasky
         </h1>
       </Link>
     </Button>

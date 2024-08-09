@@ -12,9 +12,9 @@ export function OrgControl() {
     if (!setActive) return;
 
     void setActive({
-      organization: params.organizationId as string,
+      organization: params.id as string,
     });
-  }, [setActive, params.organizationId]);
+  }, [setActive, params.id]);
 
   return null;
 }

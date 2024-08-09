@@ -22,6 +22,27 @@
       "when": 1722884541001,
       "tag": "0002_complete_prowler",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1723076731850,
+      "tag": "0003_talented_thunderball",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1723088247002,
+      "tag": "0004_famous_spiral",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1723142308165,
+      "tag": "0005_normal_elektra",
+      "breakpoints": true
     }
   ]
 }

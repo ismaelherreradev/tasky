@@ -6,11 +6,11 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
+import type { getAuth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { db } from "~/server/db";
-import type { getAuth } from "@clerk/nextjs/server";
 
 type AuthObject = ReturnType<typeof getAuth>;
 /**
@@ -131,3 +131,8 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(isAuthed);
+
+export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
+export type ProtectedTRPCContext = TRPCContext & {
+  auth: NonNullable<TRPCContext["auth"]>;
+};

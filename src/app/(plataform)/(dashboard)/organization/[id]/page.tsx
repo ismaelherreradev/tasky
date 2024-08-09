@@ -1,32 +1,45 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+// import {
+//   Breadcrumb,
+//   BreadcrumbItem,
+//   BreadcrumbList,
+//   BreadcrumbPage,
+//   BreadcrumbSeparator,
+// } from "~/components/ui/breadcrumb";
+import { api, HydrateClient } from "~/trpc/server";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "~/components/ui/breadcrumb";
 import { ContentLayout } from "../../_components/content-layout";
+import { BoardList } from "./_components/board-list";
 
 export default function OrganizationIdPage() {
+  const { orgSlug, orgId } = auth();
+
+  if (!orgId) {
+    return redirect("/select-org");
+  }
+
+  const orgName = orgSlug ?? "Workspace";
+
+  void api.board.getBoards.prefetch({ orgId });
   return (
-    <ContentLayout title="Workspaces">
+    <HydrateClient>
+      <ContentLayout title={orgName}>
+        {/*
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
-            </BreadcrumbLink>
+            <BreadcrumbPage>Workspace</BreadcrumbPage>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            <BreadcrumbPage>{orgName}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
-      <h1>hi</h1>
-    </ContentLayout>
+      </Breadcrumb>{" "}
+      */}
+        <BoardList orgId={orgId} />
+      </ContentLayout>
+    </HydrateClient>
   );
 }

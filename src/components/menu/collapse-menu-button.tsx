@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, Dot, type LucideIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -25,13 +26,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import type { Submenu } from "~/hooks/use-menu-list";
 import { cn } from "~/lib/utils";
-
-export type Submenu = {
-  href: string;
-  label: string;
-  active: boolean;
-};
 
 export type CollapseMenuButtonProps = {
   icon: LucideIcon;
@@ -51,10 +47,11 @@ export function CollapseMenuButton({
   const [isCollapsed, setIsCollapsed] = useState(
     submenus?.some((submenu) => submenu.active),
   );
+
   function renderCollapsibleContent() {
     return (
       <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
-        {submenus?.map(({ href, label, active }, index) => (
+        {submenus?.map(({ href, label, active, icon: SubmenuIcon }, index) => (
           <Button
             key={index}
             variant={active ? "secondary" : "ghost"}
@@ -63,7 +60,18 @@ export function CollapseMenuButton({
           >
             <Link href={href}>
               <span className="ml-2 mr-4">
-                <Dot size={18} />
+                {SubmenuIcon ? (
+                  <Image
+                    src={SubmenuIcon as string}
+                    className="rounded-[4px]"
+                    width={18}
+                    height={18}
+                    alt={label}
+                    priority
+                  />
+                ) : (
+                  <Dot size={18} />
+                )}
               </span>
               <p
                 className={cn(
@@ -162,9 +170,23 @@ export function CollapseMenuButton({
           {label}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {submenus?.map(({ href, label }, index) => (
+        {submenus?.map(({ href, label, icon: SubmenuIcon }, index) => (
           <DropdownMenuItem key={index} asChild>
             <Link className="cursor-pointer" href={href}>
+              <span className="mr-2">
+                {SubmenuIcon ? (
+                  <Image
+                    src={SubmenuIcon as string}
+                    className="rounded-[4px]"
+                    width={18}
+                    height={18}
+                    alt={label}
+                    priority
+                  />
+                ) : (
+                  <Dot size={18} />
+                )}
+              </span>
               <p className="max-w-[180px] truncate">{label}</p>
             </Link>
           </DropdownMenuItem>

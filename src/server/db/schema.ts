@@ -21,14 +21,9 @@ export const createTable = sqliteTableCreator((name) => `tasky-v2_${name}`);
 
 // Define the Board table
 export const boards = createTable("board", {
-  id: text("id").primaryKey().default(`uuid()`),
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   orgId: text("orgId").notNull(),
   title: text("title").notNull(),
-  imageId: text("imageId").notNull(),
-  imageThumbUrl: text("image_thumb_url").notNull(),
-  imageFullUrl: text("image_full_url").notNull(),
-  imageUserName: text("image_user_name").notNull(),
-  imageLinkHTML: text("image_link_html").notNull(),
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
@@ -37,14 +32,17 @@ export const boards = createTable("board", {
   ),
 });
 
+export type BoardSelect = typeof boards.$inferSelect;
+export type BoardInser = typeof boards.$inferInsert;
+
 // Define the List table
 export const lists = createTable(
   "list",
   {
-    id: text("id").primaryKey().default(`uuid()`),
+    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     order: integer("order").notNull(),
-    boardId: text("board_id").notNull(),
+    boardId: integer("board_id").notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
@@ -59,15 +57,18 @@ export const lists = createTable(
   },
 );
 
+export type ListSelect = typeof lists.$inferSelect;
+export type ListInser = typeof lists.$inferInsert;
+
 // Define the Card table
 export const cards = createTable(
   "card",
   {
-    id: text("id").primaryKey().default(`uuid()`),
+    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     order: integer("order").notNull(),
     description: text("description"),
-    listId: text("list_id").notNull(),
+    listId: integer("list_id").notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
@@ -82,9 +83,12 @@ export const cards = createTable(
   },
 );
 
+export type CardSelect = typeof cards.$inferSelect;
+export type CardInser = typeof cards.$inferInsert;
+
 // Define the AuditLog table
 export const auditLogs = createTable("audit_log", {
-  id: text("id").primaryKey().default(`uuid()`),
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   orgId: text("org_id").notNull(),
   action: text("action").notNull(),
   entityId: text("entity_id").notNull(),
@@ -103,7 +107,7 @@ export const auditLogs = createTable("audit_log", {
 
 // Define the OrgLimit table
 export const orgLimits = createTable("org_limit", {
-  id: text("id").primaryKey().default(`uuid()`),
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   orgId: text("org_id").unique().notNull(),
   count: integer("count").default(0),
   createdAt: int("created_at", { mode: "timestamp" })

@@ -1,13 +1,14 @@
 import "~/styles/globals.css";
 
-import { dark, experimental__simple } from "@clerk/themes";
 import { type Metadata } from "next";
-import { ThemeProvider } from "~/components/theme-provider";
-import { recursive } from "~/fonts";
-
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark, experimental__simple } from "@clerk/themes";
 import { env } from "~/env";
+import { recursive } from "~/fonts";
 import { TRPCReactProvider } from "~/trpc/react";
+
+import { Toaster } from "~/components/ui/sonner";
+import { ThemeProvider } from "~/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -15,9 +16,7 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider
       appearance={{
@@ -25,11 +24,7 @@ export default function RootLayout({
       }}
       publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
-      <html
-        lang="en"
-        className={`${recursive.variable}`}
-        suppressHydrationWarning
-      >
+      <html lang="en" className={`${recursive.variable}`} suppressHydrationWarning>
         <body className="overflow-x-hidden">
           <ThemeProvider
             attribute="class"
@@ -39,6 +34,7 @@ export default function RootLayout({
           >
             <TRPCReactProvider>{children}</TRPCReactProvider>
           </ThemeProvider>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

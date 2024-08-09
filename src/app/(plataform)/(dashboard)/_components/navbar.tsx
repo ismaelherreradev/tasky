@@ -1,7 +1,9 @@
 import { ThemeToggle } from "~/components/theme-toggle";
 
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
+import { Suspense } from "react";
 import { SheetMenu } from "~/components/menu/sheet-menu";
+import { Skeleton } from "~/components/ui/skeleton";
 
 type NavbarProps = {
   title: string;
@@ -16,13 +18,20 @@ export function Navbar({ title }: NavbarProps) {
           <h1 className="font-bold">{title}</h1>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <OrganizationSwitcher
-            hidePersonal
-            afterCreateOrganizationUrl="/organization/:id"
-            afterLeaveOrganizationUrl="/select-org"
-            afterSelectOrganizationUrl="/organization/:id"
-          />
-          <UserButton />
+          <Suspense fallback={<Skeleton className="h-12 w-12 rounded-full" />}>
+            <SignedIn>
+              <UserButton
+                appearance={{
+                  elements: {
+                    providerIcon: {
+                      height: "32px",
+                      width: "32px",
+                    },
+                  },
+                }}
+              />
+            </SignedIn>
+          </Suspense>
           <ThemeToggle />
         </div>
       </div>
