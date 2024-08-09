@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import type { CardSelect, ListSelect } from "~/server/db/schema";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
