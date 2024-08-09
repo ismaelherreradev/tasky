@@ -1,15 +1,17 @@
+import { useMemo } from "react";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import {
   Bookmark,
   LayoutGrid,
   LayoutPanelLeft,
-  type LucideIcon,
   Settings,
   SquarePen,
   Tag,
   Users,
+  type LucideIcon,
 } from "lucide-react";
-import { useMemo } from "react";
+
+import { useBoards } from "~/hooks/use-boards";
 
 // Define types for menu items
 export type Submenu = {
@@ -179,14 +181,35 @@ function generateSkeletonMenu(): Group[] {
 }
 
 /**
+ * Updates the base menus with workspace submenus and sets the active state based on the current pathname.
+ *
+ * @param {Menu[]} baseMenus - The initial base menus.
+ * @param {Submenu[]} workspaceSubmenus - The submenus for workspaces.
+ * @param {string} pathname - The current pathname.
+ * @returns {Menu[]} - The updated base menus.
+ */
+function updatedBaseMenus(
+  baseMenus: Menu[],
+  workspaceSubmenus: Submenu[],
+  pathname: string,
+): Menu[] {
+  const updatedBaseMenus = addSubmenusToMenu(
+    baseMenus,
+    (menu) => menu.href === "/organization",
+    workspaceSubmenus,
+  );
+
+  return setMenuActiveState(updatedBaseMenus, pathname);
+}
+
+/**
  * Hook to generate the menu list based on the current pathname and user memberships.
  *
  * @param {string} pathname - The current pathname.
  * @returns {Group[]} - The array of menu groups.
  */
 export function useMenuList(pathname: string): Group[] {
-  const { organization: activeOrganization, isLoaded: isLoadedOrg } =
-    useOrganization();
+  const { organization: activeOrganization, isLoaded: isLoadedOrg } = useOrganization();
 
   const { userMemberships, isLoaded: isLoadedOrgList } = useOrganizationList({
     userMemberships: {
@@ -194,35 +217,35 @@ export function useMenuList(pathname: string): Group[] {
     },
   });
 
+  const { data: boards } = useBoards(activeOrganization?.id);
+
   return useMemo(() => {
     // Return empty array if data is not loaded
-    if (!isLoadedOrg || !isLoadedOrgList) {
+    if (!isLoadedOrg || !isLoadedOrgList || !boards) {
       return generateSkeletonMenu();
     }
 
     const workspaceSubmenus = generateWorkspaceSubmenus(
       userMemberships,
-      activeOrganization ? activeOrganization.id : "",
+      activeOrganization ? activeOrganization.id : null,
     );
 
-    const updatedBaseMenus = addSubmenusToMenu(
-      baseMenus,
-      (menu) => menu.href === "/organization",
-      workspaceSubmenus,
-    );
+    const baseMenusWithActiveState = updatedBaseMenus(baseMenus, workspaceSubmenus, pathname);
 
-    const baseMenusWithActiveState = setMenuActiveState(
-      updatedBaseMenus,
-      pathname,
-    );
-    const contentMenusWithActiveState = setMenuActiveState(
+    const boardSubmenus = boards.map((board) => ({
+      href: `/board/${board.id}`,
+      label: board.title,
+      active: pathname.includes(`/board/${board.id}`),
+    }));
+
+    const updatedContentMenus = addSubmenusToMenu(
       contentMenus,
-      pathname,
+      (menu) => menu.href === "/board",
+      boardSubmenus,
     );
-    const settingsMenusWithActiveState = setMenuActiveState(
-      settingsMenus,
-      pathname,
-    );
+
+    const contentMenusWithActiveState = setMenuActiveState(updatedContentMenus, pathname);
+    const settingsMenusWithActiveState = setMenuActiveState(settingsMenus, pathname);
 
     return [
       {
@@ -238,11 +261,5 @@ export function useMenuList(pathname: string): Group[] {
         menus: settingsMenusWithActiveState,
       },
     ];
-  }, [
-    activeOrganization,
-    isLoadedOrg,
-    isLoadedOrgList,
-    pathname,
-    userMemberships,
-  ]);
+  }, [activeOrganization, isLoadedOrg, isLoadedOrgList, pathname, userMemberships, boards]);
 }

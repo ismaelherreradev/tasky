@@ -1,54 +1,47 @@
-import { Ellipsis, Link } from "lucide-react";
 import { memo } from "react";
-import { Button } from "~/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
-import type { Group, Menu } from "~/hooks/use-menu-list";
+import { useOrganization } from "@clerk/nextjs";
+import { api } from "~/trpc/react";
+import { Ellipsis, Link } from "lucide-react";
+
 import { cn } from "~/lib/utils";
+import type { Group, Menu } from "~/hooks/use-menu-list";
+import { Button } from "~/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
+
 import { CollapseMenuButton } from "./collapse-menu-button";
 
-export const MenuItem = memo(
-  ({ menu, isOpen }: { menu: Menu; isOpen: boolean | undefined }) => {
-    return (
-      <div className="w-full">
-        <TooltipProvider disableHoverableContent>
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild>
-              <Button
-                variant={menu.active ? "secondary" : "ghost"}
-                className="mb-1 h-10 w-full justify-start"
-                asChild
-              >
-                <Link href={menu.href}>
-                  <span className={cn(isOpen === false ? "" : "mr-4")}>
-                    <menu.icon size={18} />
-                  </span>
-                  <p
-                    className={cn(
-                      "max-w-[200px] truncate",
-                      isOpen === false
-                        ? "-translate-x-96 opacity-0"
-                        : "translate-x-0 opacity-100",
-                    )}
-                  >
-                    {menu.label}
-                  </p>
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            {isOpen === false && (
-              <TooltipContent side="right">{menu.label}</TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    );
-  },
-);
+export const MenuItem = memo(({ menu, isOpen }: { menu: Menu; isOpen: boolean | undefined }) => {
+  return (
+    <div className="w-full">
+      <TooltipProvider disableHoverableContent>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant={menu.active ? "secondary" : "ghost"}
+              className="mb-1 h-10 w-full justify-start"
+              asChild
+            >
+              <Link href={menu.href}>
+                <span className={cn(isOpen === false ? "" : "mr-4")}>
+                  <menu.icon size={18} />
+                </span>
+                <p
+                  className={cn(
+                    "max-w-[200px] truncate",
+                    isOpen === false ? "-translate-x-96 opacity-0" : "translate-x-0 opacity-100",
+                  )}
+                >
+                  {menu.label}
+                </p>
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          {isOpen === false && <TooltipContent side="right">{menu.label}</TooltipContent>}
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  );
+});
 MenuItem.displayName = "MenuItem";
 
 export const MenuGroup = memo(
