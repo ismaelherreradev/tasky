@@ -1,16 +1,16 @@
 import { TRPCError } from "@trpc/server";
 import type { ProtectedTRPCContext } from "~/server/api/trpc";
-import { boards, cards } from "~/server/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { boards, cards, lists } from "~/server/db/schema";
+import { and, desc, eq, exists } from "drizzle-orm";
 
 import type * as Schema from "./card.schema";
 
-type List<T> = {
+type Card<T> = {
   ctx: ProtectedTRPCContext;
   input: T;
 };
 
-export async function createCard({ input, ctx }: List<Schema.TCreateCard>) {
+export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
   const { title, listId } = input;
   const { orgId } = ctx.auth;
 
@@ -55,4 +55,39 @@ export async function createCard({ input, ctx }: List<Schema.TCreateCard>) {
     .returning();
 
   return card ?? null;
+}
+
+export async function updateCardOrder({ input, ctx }: Card<Schema.TUpdateCardOrder>) {
+  const { items } = input;
+  const { orgId } = ctx.auth;
+
+  if (!orgId) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "OrgId not found" });
+  }
+
+  if (!items) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Items not found" });
+  }
+
+  const updates = items.map((card) =>
+    ctx.db
+      .update(cards)
+      .set({ order: card.order, listId: card.listId })
+      .where(
+        and(
+          eq(cards.id, card.id),
+          exists(
+            ctx.db
+              .select()
+              .from(lists)
+              .innerJoin(boards, eq(lists.boardId, boards.id))
+              .where(and(eq(boards.orgId, orgId), eq(lists.id, card.listId))),
+          ),
+        ),
+      ),
+  );
+
+  await ctx.db.transaction(async (tx) => {
+    await Promise.all(updates.map((update) => tx.run(update)));
+  });
 }

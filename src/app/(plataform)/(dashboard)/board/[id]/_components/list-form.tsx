@@ -22,7 +22,6 @@ export function ListForm() {
   const utils = api.useUtils();
   const { mutate, error, isPending } = api.list.createList.useMutation({
     onSuccess: async (data) => {
-      await utils.card.invalidate();
       await utils.list.invalidate();
 
       toast.success(`List "${data?.title}" created!`);

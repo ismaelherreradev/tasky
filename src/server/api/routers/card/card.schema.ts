@@ -8,3 +8,16 @@ export const ZCreateCard = z.object({
 });
 
 export type TCreateCard = z.infer<typeof ZCreateCard>;
+
+export const ZUpdateCardOrder = z.object({
+  items: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      order: z.number(),
+      listId: z.number(),
+    }),
+  ),
+});
+
+export type TUpdateCardOrder = z.infer<typeof ZUpdateCardOrder>;

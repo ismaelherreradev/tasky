@@ -1,16 +1,16 @@
 import { z } from "zod";
 
-// export const ZUpdateList = z.object({
-//   items: z.array(
-//     z.object({
-//       id: z.number(),
-//       order: z.number(),
-//     }),
-//   ),
-//   orgId: z.string(),
-// });
+export const ZUpdateListOrder = z.object({
+  items: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      order: z.number(),
+    }),
+  ),
+});
 
-// export type TUpdateList = z.infer<typeof ZUpdateList>;
+export type TUpdateListOrder = z.infer<typeof ZUpdateListOrder>;
 
 export const ZCreateList = z.object({
   title: z

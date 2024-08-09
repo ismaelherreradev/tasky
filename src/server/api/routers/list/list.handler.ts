@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import type { ProtectedTRPCContext } from "~/server/api/trpc";
-import { boards, cards, lists } from "~/server/db/schema";
-import { asc, desc, eq } from "drizzle-orm";
+import { boards, cards, ListInser, lists, type ListSelect } from "~/server/db/schema";
+import { and, asc, desc, eq, exists } from "drizzle-orm";
 
 import type * as Schema from "./list.schema";
 
@@ -10,39 +10,41 @@ type List<T> = {
   input: T;
 };
 
-// export async function updateList({
-//     ctx, input,
-// }: BoardProp<SchemaTypes.TUpdateList>) {
-//     const { items, orgId } = input;
+export async function updateListOrder({ ctx, input }: List<Schema.TUpdateListOrder>) {
+  const { items } = input;
+  const { orgId } = ctx.auth;
 
-//     let listsResult;
+  if (!orgId) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "OrgId not found" });
+  }
 
-//     try {
-//         const transaction = items.map((listItem) => ctx.db
-//             .update(lists)
-//             .set({
-//                 order: listItem.order,
-//             })
-//             .where(
-//                 eq(lists.id, listItem.id) &&
-//                 eq(lists.boardId, listItem.boardId) && // Assuming listItem has boardId
-//                 eq(boards.orgId, orgId)
-//             )
-//         );
+  if (!items) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Items not found" });
+  }
 
-//         listsResult = await ctx.db.transaction(transaction);
-//     } catch (error) {
-//         return {
-//             error: "Failed to reorder.",
-//         };
-//     }
+  const updates = items.map((list) =>
+    ctx.db
+      .update(lists)
+      .set({ order: list.order })
+      .where(
+        and(
+          eq(lists.id, list.id),
+          exists(
+            ctx.db
+              .select()
+              .from(boards)
+              .where(and(eq(boards.id, lists.boardId), eq(boards.orgId, orgId))),
+          ),
+        ),
+      ),
+  );
 
-//     return listsResult;
-// }
-
-// if (!secondaryEmail) {
-//   throw new TRPCError({ code: "BAD_REQUEST", message: "Email not found" });
-// }
+  await ctx.db.transaction(async (tx) => {
+    for (const update of updates) {
+      await tx.run(update);
+    }
+  });
+}
 
 export async function createList({ input, ctx }: List<Schema.TCreateList>) {
   const { title, boardId } = input;

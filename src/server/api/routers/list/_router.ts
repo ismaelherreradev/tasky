@@ -10,4 +10,7 @@ export const listRouter = createTRPCRouter({
   getlistsWithCards: protectedProcedure
     .input(schema.ZGetlistsWithCards)
     .query(handler.getlistsWithCards),
+  updateListOrder: protectedProcedure
+    .input(schema.ZUpdateListOrder)
+    .mutation(({ ctx, input }) => handler.updateListOrder({ ctx, input })),
 });

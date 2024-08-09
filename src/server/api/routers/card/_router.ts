@@ -7,4 +7,7 @@ export const cardRouter = createTRPCRouter({
   createCard: protectedProcedure
     .input(schema.ZCreateCard)
     .mutation(({ ctx, input }) => handler.createCard({ ctx, input })),
+  updateCardOrder: protectedProcedure
+    .input(schema.ZUpdateCardOrder)
+    .mutation(({ ctx, input }) => handler.updateCardOrder({ ctx, input })),
 });
