@@ -16,8 +16,10 @@ type ListOptionsProps = {
 export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
   const closeRef = useRef<ElementRef<"button">>(null);
 
+  const utils = api.useUtils();
   const deleteList = api.list.deleteList.useMutation({
     onSuccess: async (data) => {
+      await utils.list.invalidate();
       toast.success(`List "${data?.title}" deleted`);
       closeRef.current?.click();
     },
@@ -25,6 +27,7 @@ export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
 
   const copyList = api.list.copyList.useMutation({
     onSuccess: async (data) => {
+      await utils.list.invalidate();
       toast.success(`List "${data?.title}" copied`);
       closeRef.current?.click();
     },

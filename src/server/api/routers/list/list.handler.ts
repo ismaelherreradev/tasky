@@ -1,9 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import type { ProtectedTRPCContext } from "~/server/api/trpc";
-import { boards, cards, lists } from "~/server/db/schema";
+import { boards, cards, lists, type Action, type EntityType } from "~/server/db/schema";
 import { and, asc, desc, eq, exists } from "drizzle-orm";
 
-import { validateOrgId } from "../../utils";
+import { createAuditLog, validateOrgId } from "../../utils";
 import type * as Schema from "./list.schema";
 
 type List<T> = {
@@ -28,7 +28,7 @@ export async function updateListOrder({ ctx, input }: List<Schema.TUpdateListOrd
   const { items } = input;
   const orgId = await validateOrgId(ctx);
 
-  if (!items) {
+  if (!items || !orgId) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "Items not found" });
   }
 
@@ -79,6 +79,16 @@ export async function createList({ input, ctx }: List<Schema.TCreateList>) {
       order: newOrder,
     })
     .returning();
+
+  if (list) {
+    await createAuditLog({
+      orgId,
+      action: "CREATE" as Action,
+      entityId: list.id,
+      entityType: "LIST" as EntityType,
+      entityTitle: list.title,
+    });
+  }
 
   return list ?? null;
 }
@@ -173,6 +183,16 @@ export async function copyList({ ctx, input }: List<Schema.TCopyList>) {
     .where(eq(lists.id, newList.id))
     .leftJoin(cards, eq(cards.listId, lists.id));
 
+  if (list?.list) {
+    await createAuditLog({
+      orgId,
+      action: "CREATE" as Action,
+      entityId: list.list.id,
+      entityType: "LIST" as EntityType,
+      entityTitle: list.list.title,
+    });
+  }
+
   return list?.list ?? null;
 }
 
@@ -196,6 +216,16 @@ export async function deleteList({ ctx, input }: List<Schema.TDeleteList>) {
       ),
     )
     .returning();
+
+  if (list) {
+    await createAuditLog({
+      orgId,
+      action: "DELETE" as Action,
+      entityId: list.id,
+      entityType: "LIST" as EntityType,
+      entityTitle: list.title,
+    });
+  }
 
   return list ?? null;
 }
@@ -223,6 +253,42 @@ export async function updateList({ ctx, input }: List<Schema.TUpdateList>) {
       ),
     )
     .returning();
+
+  if (list) {
+    await createAuditLog({
+      orgId,
+      action: "UPDATE" as Action,
+      entityId: list.id,
+      entityType: "LIST" as EntityType,
+      entityTitle: list.title,
+    });
+  }
+
+  return list ?? null;
+}
+
+export async function getListById({ ctx, input }: List<Schema.TGetListById>) {
+  const { id } = input;
+  const orgId = await validateOrgId(ctx);
+
+  const list = await ctx.db.query.lists.findFirst({
+    where: eq(lists.id, id),
+  });
+
+  if (!list) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "List not found" });
+  }
+
+  return list ?? null;
+}
+
+export async function getListsByBoardId({ ctx, input }: List<Schema.TGetListsByBoardId>) {
+  const { boardId } = input;
+  const orgId = await validateOrgId(ctx);
+
+  const list = await ctx.db.query.lists.findMany({
+    where: eq(lists.boardId, boardId),
+  });
 
   return list ?? null;
 }

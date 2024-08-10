@@ -1,10 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import type { ProtectedTRPCContext } from "~/server/api/trpc";
-import { boards, cards, lists } from "~/server/db/schema";
-import { and, desc, eq, exists } from "drizzle-orm";
+import { type Action, boards, cards, type EntityType, lists, type CardSelect } from "~/server/db/schema";
+import { and, desc, eq, exists, type InferSelectModel } from "drizzle-orm";
 
-import { validateOrgId } from "../../utils";
+import { createAuditLog, validateOrgId } from "../../utils";
 import type * as Schema from "./card.schema";
+
+export type ListSelect = Omit<InferSelectModel<typeof lists>, "order">;
+export type CardWithList = CardSelect & { list: ListSelect };
 
 type Card<T> = {
   ctx: ProtectedTRPCContext;
@@ -16,7 +19,7 @@ async function validateListAccess(
   listId: number,
   orgId: string,
 ): Promise<void> {
-  const list = await ctx.db.query.lists.findFirst({
+  const listExists = await ctx.db.query.lists.findFirst({
     where: (lists, { eq, and, exists }) =>
       and(
         eq(lists.id, listId),
@@ -28,16 +31,12 @@ async function validateListAccess(
         ),
       ),
   });
-  if (!list) {
+  if (!listExists) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "List not found" });
   }
 }
 
-export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
-  const { title, listId } = input;
-  const orgId = await validateOrgId(ctx);
-  await validateListAccess(ctx, listId, orgId);
-
+async function getLastCardOrder(ctx: ProtectedTRPCContext, listId: number): Promise<number> {
   const lastCard = await ctx.db.query.cards.findFirst({
     where: eq(cards.listId, listId),
     orderBy: [desc(cards.createdAt)],
@@ -45,19 +44,45 @@ export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
       order: true,
     },
   });
+  return lastCard ? lastCard.order + 1 : 1;
+}
 
-  const newOrder = lastCard ? lastCard.order + 1 : 1;
-
+async function createCardInDb(
+  ctx: ProtectedTRPCContext,
+  title: string,
+  listId: number,
+  order: number,
+): Promise<CardSelect | null> {
   const [card] = await ctx.db
     .insert(cards)
     .values({
       title,
       listId,
-      order: newOrder,
+      order,
     })
     .returning();
-
   return card ?? null;
+}
+
+export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
+  const { title, listId } = input;
+  const orgId = await validateOrgId(ctx);
+  await validateListAccess(ctx, listId, orgId);
+
+  const newOrder = await getLastCardOrder(ctx, listId);
+  const card = await createCardInDb(ctx, title, listId, newOrder);
+
+  if (card) {
+    await createAuditLog({
+      orgId,
+      action: "CREATE" as Action,
+      entityId: card.id,
+      entityType: "CARD" as EntityType,
+      entityTitle: card.title,
+    });
+  }
+
+  return card;
 }
 
 export async function updateCardOrder({ input, ctx }: Card<Schema.TUpdateCardOrder>) {
@@ -89,4 +114,200 @@ export async function updateCardOrder({ input, ctx }: Card<Schema.TUpdateCardOrd
   await ctx.db.transaction(async (tx) => {
     await Promise.all(updates.map((update) => tx.run(update)));
   });
+}
+
+export async function getCardById({ input, ctx }: Card<Schema.TGetCardById>) {
+  const { id } = input;
+  const orgId = await validateOrgId(ctx);
+
+  const card = await ctx.db
+    .select({
+      id: cards.id,
+      title: cards.title,
+      order: cards.order,
+      description: cards.description,
+      listId: cards.listId,
+      createdAt: cards.createdAt,
+      updatedAt: cards.updatedAt,
+      listTitle: lists.title,
+      listCreatedAt: lists.createdAt,
+      listUpdatedAt: lists.updatedAt,
+      boardId: boards.id,
+    })
+    .from(cards)
+    .innerJoin(lists, eq(cards.listId, lists.id))
+    .innerJoin(boards, eq(lists.boardId, boards.id))
+    .where(and(eq(cards.id, id), eq(boards.orgId, orgId)))
+    .get();
+
+  if (!card) {
+    return null;
+  }
+
+  const cardWithList: CardWithList = {
+    id: card.id,
+    title: card.title,
+    order: card.order,
+    description: card.description,
+    listId: card.listId,
+    createdAt: card.createdAt,
+    updatedAt: card.updatedAt,
+    list: {
+      id: card.listId,
+      title: card.listTitle,
+      boardId: card.boardId,
+      createdAt: card.listCreatedAt,
+      updatedAt: card.listUpdatedAt,
+    },
+  };
+
+  return cardWithList;
+}
+
+export async function updateCard({ input, ctx }: Card<Schema.TUpdateCard>) {
+  const { id, ...updateData } = input;
+  const orgId = await validateOrgId(ctx);
+
+  const [card] = await ctx.db
+    .update(cards)
+    .set(updateData)
+    .where(
+      and(
+        eq(cards.id, id),
+        exists(
+          ctx.db
+            .select()
+            .from(lists)
+            .innerJoin(boards, eq(lists.boardId, boards.id))
+            .where(and(eq(boards.orgId, orgId), eq(lists.id, cards.listId))),
+        ),
+      ),
+    )
+    .returning();
+
+  if (card) {
+    await createAuditLog({
+      orgId,
+      action: "UPDATE" as Action,
+      entityId: card.id,
+      entityType: "CARD" as EntityType,
+      entityTitle: card.title,
+    });
+  }
+
+  return card ?? null;
+}
+
+async function getLastListOrder(ctx: ProtectedTRPCContext, boardId: number): Promise<number> {
+  const lastList = await ctx.db.query.lists.findFirst({
+    where: eq(lists.boardId, boardId),
+    orderBy: [desc(lists.createdAt)],
+    columns: {
+      order: true,
+    },
+  });
+  return lastList ? lastList.order + 1 : 1;
+}
+
+async function copyCardToDb(
+  ctx: ProtectedTRPCContext,
+  card: CardSelect,
+  listId: number,
+  order: number,
+): Promise<CardSelect | null> {
+  const [newCard] = await ctx.db
+    .insert(cards)
+    .values({
+      title: card.title,
+      description: card.description,
+      listId,
+      order,
+    })
+    .returning();
+  return newCard ?? null;
+}
+
+export async function copyCard({ input, ctx }: Card<Schema.TCopyCard>) {
+  const { id, boardId } = input;
+  const orgId = await validateOrgId(ctx);
+
+  const card = await ctx.db.query.cards.findFirst({
+    where: (cards, { eq, and, exists }) =>
+      and(
+        eq(cards.id, id),
+        exists(
+          ctx.db
+            .select()
+            .from(lists)
+            .innerJoin(boards, eq(lists.boardId, boards.id))
+            .where(and(eq(boards.id, boardId), eq(boards.orgId, orgId))),
+        ),
+      ),
+  });
+
+  if (!card) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "Card not found" });
+  }
+
+  const newOrder = await getLastListOrder(ctx, boardId);
+  const newCard = await copyCardToDb(ctx, card, card.listId, newOrder);
+
+  if (newCard) {
+    await createAuditLog({
+      orgId,
+      action: "CREATE" as Action,
+      entityId: newCard.id,
+      entityType: "CARD" as EntityType,
+      entityTitle: newCard.title,
+    });
+  }
+
+  return newCard;
+}
+
+export async function deleteCard({ input, ctx }: Card<Schema.TDeleteCard>) {
+  const { id, boardId } = input;
+  const orgId = await validateOrgId(ctx);
+
+  const card = await ctx.db.query.cards.findFirst({
+    where: (cards, { eq, and, exists }) =>
+      and(
+        eq(cards.id, id),
+        exists(
+          ctx.db
+            .select()
+            .from(lists)
+            .innerJoin(boards, eq(lists.boardId, boards.id))
+            .where(and(eq(boards.id, boardId), eq(boards.orgId, orgId))),
+        ),
+      ),
+  });
+
+  if (!card) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "Card not found" });
+  }
+
+  await ctx.db.delete(cards).where(eq(cards.id, id));
+
+  await createAuditLog({
+    orgId,
+    action: "DELETE" as Action,
+    entityId: card.id,
+    entityType: "CARD" as EntityType,
+    entityTitle: card.title,
+  });
+
+  return { id, title: card.title };
+}
+
+export async function getCardsByListId({ input, ctx }: Card<Schema.TGetCardsByListId>) {
+  const { listId } = input;
+  const orgId = await validateOrgId(ctx);
+
+  // Fetch the cards by list ID
+  const cardList = await ctx.db.query.cards.findMany({
+    where: eq(cards.listId, listId),
+  });
+
+  return cardList;
 }

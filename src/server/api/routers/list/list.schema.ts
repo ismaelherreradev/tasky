@@ -8,7 +8,7 @@ const boardIdSchema = z.number().int().positive();
 const listItemSchema = z.object({
   id: listIdSchema,
   title: z.string().min(3, { message: "Title must be at least 3 characters long." }),
-  order: z.number().int().nonnegative(),
+  order: z.number().int().nonnegative({ message: "Order must be a non-negative integer." }),
 });
 
 export const ZUpdateListOrder = z.object({
@@ -54,6 +54,23 @@ export const ZUpdateList = z.object({
     .max(255, { message: "Title must be at most 255 characters long." }),
   listId: listIdSchema,
   boardId: boardIdSchema,
+  order: z
+    .number()
+    .int()
+    .nonnegative({ message: "Order must be a non-negative integer." })
+    .optional(),
 });
 
 export type TUpdateList = z.infer<typeof ZUpdateList>;
+
+export const ZGetListById = z.object({
+  id: z.number().int().positive(),
+});
+
+export type TGetListById = z.infer<typeof ZGetListById>;
+
+export const ZGetListsByBoardId = z.object({
+  boardId: z.number().int().positive(),
+});
+
+export type TGetListsByBoardId = z.infer<typeof ZGetListsByBoardId>;

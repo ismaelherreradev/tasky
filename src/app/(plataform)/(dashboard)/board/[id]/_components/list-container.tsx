@@ -24,15 +24,17 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 }
 
 export function ListContainer({ boardId }: ListContainerProps) {
-  const [list] = api.list.getlistsWithCards.useSuspenseQuery({ boardId: boardId });
+  const [list, { isLoading, isError }] = api.list.getlistsWithCards.useSuspenseQuery({
+    boardId: boardId,
+  });
+  const [orderedList, setOrderedList] = useState<ListWithCards[]>([]);
 
   useEffect(() => {
     if (list) {
-      setOrderedList(list);
+      setOrderedList(list as ListWithCards[]);
     }
   }, [list]);
 
-  const [orderedList, setOrderedList] = useState<ListWithCards[]>(list);
   const updateListOrder = api.list.updateListOrder.useMutation({
     onSuccess: async () => {
       toast.success("List reordered");
@@ -41,7 +43,7 @@ export function ListContainer({ boardId }: ListContainerProps) {
 
   const updateCardOrder = api.card.updateCardOrder.useMutation({
     onSuccess: async () => {
-      toast.success("List reordered");
+      toast.success("Card reordered");
     },
   });
 
@@ -64,6 +66,8 @@ export function ListContainer({ boardId }: ListContainerProps) {
         }));
 
         setOrderedList(items);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         updateListOrder.mutate({ items });
       }
 
@@ -95,6 +99,8 @@ export function ListContainer({ boardId }: ListContainerProps) {
 
           setOrderedList(newOrderedList);
           updateCardOrder.mutate({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             items: reorderedCards,
           });
         } else {
@@ -112,6 +118,8 @@ export function ListContainer({ boardId }: ListContainerProps) {
 
           setOrderedList(newOrderedList);
           updateCardOrder.mutate({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             items: destList.cards,
           });
         }
@@ -123,6 +131,9 @@ export function ListContainer({ boardId }: ListContainerProps) {
   const memoizedListItems = useMemo(() => {
     return orderedList.map((list, index) => <ListItem key={list.id} index={index} data={list} />);
   }, [orderedList]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error loading lists</div>;
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>

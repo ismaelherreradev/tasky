@@ -2,13 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { relations, sql } from "drizzle-orm";
-import {
-  index,
-  int,
-  integer,
-  sqliteTableCreator,
-  text,
-} from "drizzle-orm/sqlite-core";
+import { index, int, integer, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -19,6 +13,24 @@ import {
 
 export const createTable = sqliteTableCreator((name) => `tasky-v2_${name}`);
 
+// Define enums
+export const actionEnum = {
+  CREATE: "CREATE",
+  UPDATE: "UPDATE",
+  DELETE: "DELETE",
+} as const;
+
+export type Action = (typeof actionEnum)[keyof typeof actionEnum];
+
+export const entityTypeEnum = {
+  BOARD: "BOARD",
+  LIST: "LIST",
+  CARD: "CARD",
+} as const;
+
+// Define types based on enums
+export type EntityType = (typeof actionEnum)[keyof typeof actionEnum];
+
 // Define the Board table
 export const boards = createTable("board", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -27,9 +39,7 @@ export const boards = createTable("board", {
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date(),
-  ),
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
 });
 
 export type BoardSelect = typeof boards.$inferSelect;
@@ -46,9 +56,7 @@ export const lists = createTable(
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
-    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-      () => new Date(),
-    ),
+    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
   },
   (t) => {
     return {
@@ -72,9 +80,7 @@ export const cards = createTable(
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
-    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-      () => new Date(),
-    ),
+    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
   },
   (t) => {
     return {
@@ -90,9 +96,9 @@ export type CardInser = typeof cards.$inferInsert;
 export const auditLogs = createTable("audit_log", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   orgId: text("org_id").notNull(),
-  action: text("action").notNull(),
-  entityId: text("entity_id").notNull(),
-  entityType: text("entity_type").notNull(),
+  action: text("action").$type<Action>().notNull(),
+  entityId: integer("entity_id").notNull(),
+  entityType: text("entity_type").$type<EntityType>().notNull(),
   entityTitle: text("entity_title").notNull(),
   userId: text("user_id").notNull(),
   userImage: text("user_image").notNull(),
@@ -100,10 +106,11 @@ export const auditLogs = createTable("audit_log", {
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date(),
-  ),
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
 });
+
+export type AuditLogsSelect = typeof auditLogs.$inferSelect;
+export type AuditLogsInser = typeof auditLogs.$inferInsert;
 
 // Define the OrgLimit table
 export const orgLimits = createTable("org_limit", {
@@ -113,9 +120,7 @@ export const orgLimits = createTable("org_limit", {
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date(),
-  ),
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
 });
 
 // Define relationships

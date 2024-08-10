@@ -26,3 +26,16 @@ export const ZGetBoardById = z.object({
 });
 
 export type TGetBoardById = z.infer<typeof ZGetBoardById>;
+
+export const ZDeleteBoard = z.object({
+  boardId: idSchema,
+});
+
+export type TDeleteBoard = z.infer<typeof ZDeleteBoard>;
+
+export const ZUpdateBoard = z.object({
+  title: z.string().min(3, { message: "Title must be at least 3 characters long." }),
+  boardId: idSchema,
+});
+
+export type TUpdateBoard = z.infer<typeof ZUpdateBoard>;

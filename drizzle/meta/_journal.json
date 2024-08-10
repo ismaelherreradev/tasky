@@ -43,6 +43,27 @@
       "when": 1723142308165,
       "tag": "0005_normal_elektra",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1723287548247,
+      "tag": "0006_careful_thundra",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1723287839550,
+      "tag": "0007_talented_sentinel",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1723288007192,
+      "tag": "0008_tricky_omega_flight",
+      "breakpoints": true
     }
   ]
 }

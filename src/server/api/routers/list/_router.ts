@@ -14,4 +14,8 @@ export const listRouter = createTRPCRouter({
   copyList: protectedProcedure.input(schema.ZCopyList).mutation(handler.copyList),
   deleteList: protectedProcedure.input(schema.ZDeleteList).mutation(handler.deleteList),
   updateList: protectedProcedure.input(schema.ZUpdateList).mutation(handler.updateList),
+  getListById: protectedProcedure.input(schema.ZGetListById).query(handler.getListById),
+  getListsByBoardId: protectedProcedure
+    .input(schema.ZGetListsByBoardId)
+    .query(handler.getListsByBoardId),
 });

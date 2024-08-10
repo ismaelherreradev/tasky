@@ -25,7 +25,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
     const utils = api.useUtils();
     const { mutate, error, isPending } = api.card.createCard.useMutation({
       onSuccess: async (data) => {
-        await utils.card.invalidate();
+        await utils.card.getCardsByListId.invalidate({ listId });
         await utils.list.invalidate();
 
         toast.success(`Card "${data?.title}" created!`);

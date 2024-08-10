@@ -5,7 +5,9 @@ import { api, HydrateClient } from "~/trpc/server";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
 
 import { ContentLayout } from "../../_components/content-layout";
+import { BoardNavbar } from "./_components/board-navbar";
 import { ListContainer } from "./_components/list-container";
+import { CardModal } from "./_components/modal";
 
 export default async function BoardIdPage({ params }: { params: { id: string } }) {
   const { orgId } = auth();
@@ -27,8 +29,10 @@ export default async function BoardIdPage({ params }: { params: { id: string } }
   return (
     <HydrateClient>
       <div className="min-h-svh">
+        <CardModal />
         <ContentLayout title={board?.title}>
           <ScrollArea className="h-[500px]">
+            <BoardNavbar data={board} />
             <ListContainer boardId={board.id} />
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
