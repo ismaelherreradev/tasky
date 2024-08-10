@@ -21,15 +21,14 @@ export const actionEnum = {
 } as const;
 
 export type Action = (typeof actionEnum)[keyof typeof actionEnum];
-
+// Define the entityTypeEnum
 export const entityTypeEnum = {
   BOARD: "BOARD",
   LIST: "LIST",
   CARD: "CARD",
 } as const;
 
-// Define types based on enums
-export type EntityType = (typeof actionEnum)[keyof typeof actionEnum];
+export type EntityType = (typeof entityTypeEnum)[keyof typeof entityTypeEnum];
 
 // Define the Board table
 export const boards = createTable("board", {
