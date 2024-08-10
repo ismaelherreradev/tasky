@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import type { CardSelect, ListSelect } from "~/server/db/schema";
 import { api } from "~/trpc/react";
@@ -26,8 +26,13 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 export function ListContainer({ boardId }: ListContainerProps) {
   const [list] = api.list.getlistsWithCards.useSuspenseQuery({ boardId: boardId });
 
-  const [orderedList, setOrderedList] = useState<ListWithCards[]>(list);
+  useEffect(() => {
+    if (list) {
+      setOrderedList(list);
+    }
+  }, [list]);
 
+  const [orderedList, setOrderedList] = useState<ListWithCards[]>(list);
   const updateListOrder = api.list.updateListOrder.useMutation({
     onSuccess: async () => {
       toast.success("List reordered");

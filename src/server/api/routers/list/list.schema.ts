@@ -1,28 +1,59 @@
 import { z } from "zod";
 
+// Common schema for list ID and board ID
+const listIdSchema = z.number().int().positive();
+const boardIdSchema = z.number().int().positive();
+
+// Schema for list item in update operation
+const listItemSchema = z.object({
+  id: listIdSchema,
+  title: z.string().min(3, { message: "Title must be at least 3 characters long." }),
+  order: z.number().int().nonnegative(),
+});
+
 export const ZUpdateListOrder = z.object({
-  items: z.array(
-    z.object({
-      id: z.number(),
-      title: z.string(),
-      order: z.number(),
-    }),
-  ),
+  items: z.array(listItemSchema).nonempty({ message: "At least one item is required." }),
 });
 
 export type TUpdateListOrder = z.infer<typeof ZUpdateListOrder>;
 
 export const ZCreateList = z.object({
   title: z
-    .string({ required_error: "Title is required", invalid_type_error: "Title is required" })
-    .min(3, { message: "Title must be at least 3 characters long." }),
-  boardId: z.number(),
+    .string()
+    .min(3, { message: "Title must be at least 3 characters long." })
+    .max(255, { message: "Title must be at most 255 characters long." }),
+  boardId: boardIdSchema,
 });
 
 export type TCreateList = z.infer<typeof ZCreateList>;
 
 export const ZGetlistsWithCards = z.object({
-  boardId: z.number(),
+  boardId: boardIdSchema,
 });
 
-export type TZGetlistsWithCards = z.infer<typeof ZGetlistsWithCards>;
+export type TGetlistsWithCards = z.infer<typeof ZGetlistsWithCards>;
+
+export const ZCopyList = z.object({
+  listId: listIdSchema,
+  boardId: boardIdSchema,
+});
+
+export type TCopyList = z.infer<typeof ZCopyList>;
+
+export const ZDeleteList = z.object({
+  listId: listIdSchema,
+  boardId: boardIdSchema,
+});
+
+export type TDeleteList = z.infer<typeof ZDeleteList>;
+
+export const ZUpdateList = z.object({
+  title: z
+    .string()
+    .min(3, { message: "Title must be at least 3 characters long." })
+    .max(255, { message: "Title must be at most 255 characters long." }),
+  listId: listIdSchema,
+  boardId: boardIdSchema,
+});
+
+export type TUpdateList = z.infer<typeof ZUpdateList>;

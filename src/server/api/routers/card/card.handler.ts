@@ -3,6 +3,7 @@ import type { ProtectedTRPCContext } from "~/server/api/trpc";
 import { boards, cards, lists } from "~/server/db/schema";
 import { and, desc, eq, exists } from "drizzle-orm";
 
+import { validateOrgId } from "../../utils";
 import type * as Schema from "./card.schema";
 
 type Card<T> = {
@@ -10,15 +11,12 @@ type Card<T> = {
   input: T;
 };
 
-export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
-  const { title, listId } = input;
-  const { orgId } = ctx.auth;
-
-  if (!orgId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "OrgId not found" });
-  }
-
-  const list = await ctx.db.query.lists.findMany({
+async function validateListAccess(
+  ctx: ProtectedTRPCContext,
+  listId: number,
+  orgId: string,
+): Promise<void> {
+  const list = await ctx.db.query.lists.findFirst({
     where: (lists, { eq, and, exists }) =>
       and(
         eq(lists.id, listId),
@@ -30,10 +28,15 @@ export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
         ),
       ),
   });
-
   if (!list) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "List not found" });
   }
+}
+
+export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
+  const { title, listId } = input;
+  const orgId = await validateOrgId(ctx);
+  await validateListAccess(ctx, listId, orgId);
 
   const lastCard = await ctx.db.query.cards.findFirst({
     where: eq(cards.listId, listId),
@@ -59,11 +62,7 @@ export async function createCard({ input, ctx }: Card<Schema.TCreateCard>) {
 
 export async function updateCardOrder({ input, ctx }: Card<Schema.TUpdateCardOrder>) {
   const { items } = input;
-  const { orgId } = ctx.auth;
-
-  if (!orgId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "OrgId not found" });
-  }
+  const orgId = await validateOrgId(ctx);
 
   if (!items) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "Items not found" });

@@ -28,37 +28,37 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
         await utils.card.invalidate();
         await utils.list.invalidate();
 
-        toast.success(`List "${data?.title}" created!`);
+        toast.success(`Card "${data?.title}" created!`);
         resetForm();
       },
     });
 
-    const resetForm = () => {
+    function resetForm() {
       disableEditing();
       setTitle("");
-    };
+    }
 
-    const handleEscapeKey = (e: KeyboardEvent) => {
+    function handleEscapeKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         resetForm();
       }
-    };
+    }
 
-    const handleOutsideClick = () => {
+    function handleOutsideClick() {
       resetForm();
-    };
+    }
 
-    const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    function handleTextareaKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         formRef.current?.requestSubmit();
       }
-    };
+    }
 
-    const handleFormSubmit = (e: FormEvent) => {
+    function handleFormSubmit(e: FormEvent) {
       e.preventDefault();
       mutate({ title, listId });
-    };
+    }
 
     useOnClickOutside(formRef, handleOutsideClick);
     useEventListener("keydown", handleEscapeKey);
@@ -86,7 +86,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
             )}
             <div className="flex items-center gap-x-1">
               <Button size="sm" type="submit" disabled={isPending}>
-                {isPending ? "Add list..." : "Add list"}
+                {isPending ? "Add card..." : "Add card"}
               </Button>
               <Button onClick={resetForm} size="sm" variant="ghost">
                 <X className="h-5 w-5" />

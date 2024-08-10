@@ -1,38 +1,28 @@
 import { z } from "zod";
 
+// Common schema for ID fields
+const idSchema = z.number().int().positive();
+const orgIdSchema = z.string().min(1, { message: "orgId is required" });
+
 export const ZCreateBoard = z.object({
   title: z
-    .string({
-      required_error: "Title is required",
-      invalid_type_error: "Title is required",
-    })
-    .min(3, { message: "Title must be at least 3 characters long." }),
-  orgId: z.string({
-    required_error: "Missing orgId.",
-    invalid_type_error: "Missing orgId.",
-  }),
+    .string()
+    .min(3, { message: "Title must be at least 3 characters long." })
+    .max(255, { message: "Title must be at most 255 characters long." }),
+  orgId: orgIdSchema,
 });
 
 export type TCreateBoard = z.infer<typeof ZCreateBoard>;
 
 export const ZGetBoards = z.object({
-  orgId: z.string({
-    required_error: "Missing orgId.",
-    invalid_type_error: "Missing orgId.",
-  }),
+  orgId: orgIdSchema,
 });
 
 export type TGetBoards = z.infer<typeof ZGetBoards>;
 
 export const ZGetBoardById = z.object({
-  orgId: z.string({
-    required_error: "Missing orgId.",
-    invalid_type_error: "Missing orgId.",
-  }),
-  boardId: z.number({
-    required_error: "Missing boardId.",
-    invalid_type_error: "Missing boardId.",
-  }),
+  orgId: orgIdSchema,
+  boardId: idSchema,
 });
 
 export type TGetBoardById = z.infer<typeof ZGetBoardById>;

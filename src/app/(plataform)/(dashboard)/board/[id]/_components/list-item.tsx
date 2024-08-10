@@ -8,6 +8,7 @@ import { cn } from "~/lib/utils";
 
 import { CardForm } from "./card-form";
 import CardItem from "./card-item";
+import { ListHeader } from "./list-header";
 
 export type ListWithCards = ListSelect & { cards: CardSelect[] };
 
@@ -41,6 +42,7 @@ export function ListItem({ index, data }: ListItemProps) {
           className="h-full w-[272px] shrink-0 select-none"
         >
           <div {...provided.dragHandleProps} className="w-full rounded-md bg-muted pb-2 shadow-md">
+            <ListHeader onAddCard={enableEditing} data={data} />
             <Droppable droppableId={String(data.id)} type="card">
               {(provided) => (
                 <ol
