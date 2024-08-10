@@ -111,17 +111,6 @@ export const auditLogs = createTable("audit_log", {
 export type AuditLogsSelect = typeof auditLogs.$inferSelect;
 export type AuditLogsInser = typeof auditLogs.$inferInsert;
 
-// Define the OrgLimit table
-export const orgLimits = createTable("org_limit", {
-  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  orgId: text("org_id").unique().notNull(),
-  count: integer("count").default(0),
-  createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch())`)
-    .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
-});
-
 // Define relationships
 export const boardRelations = relations(boards, ({ many }) => ({
   lists: many(lists),
