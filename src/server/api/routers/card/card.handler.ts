@@ -1,6 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import type { ProtectedTRPCContext } from "~/server/api/trpc";
-import { type Action, boards, cards, type EntityType, lists, type CardSelect } from "~/server/db/schema";
+import {
+  boards,
+  cards,
+  lists,
+  type Action,
+  type CardSelect,
+  type EntityType,
+} from "~/server/db/schema";
 import { and, desc, eq, exists, type InferSelectModel } from "drizzle-orm";
 
 import { createAuditLog, validateOrgId } from "../../utils";
@@ -302,7 +309,6 @@ export async function deleteCard({ input, ctx }: Card<Schema.TDeleteCard>) {
 
 export async function getCardsByListId({ input, ctx }: Card<Schema.TGetCardsByListId>) {
   const { listId } = input;
-  const orgId = await validateOrgId(ctx);
 
   // Fetch the cards by list ID
   const cardList = await ctx.db.query.cards.findMany({

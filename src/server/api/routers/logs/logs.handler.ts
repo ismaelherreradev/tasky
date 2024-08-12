@@ -34,3 +34,17 @@ export async function getAuditLogs({ ctx, input }: Logs<Schema.TGetAuditLogs>) {
 
   return auditLogsQuery ?? null;
 }
+
+export async function getAllAuditLogs({ ctx }: { ctx: ProtectedTRPCContext }) {
+  const orgId = await validateOrgId(ctx);
+
+  if (!orgId) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid card ID" });
+  }
+
+  const auditLogs = await ctx.db.query.auditLogs.findMany({
+    where: (auditLogs, { eq }) => eq(auditLogs.orgId, orgId),
+  });
+
+  return auditLogs ?? null;
+}

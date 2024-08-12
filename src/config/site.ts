@@ -1,6 +1,6 @@
 export const SiteConfig = {
   title: "Tasky",
-  description: "Collaborative task management for teams",
+  description: "Simplify task management, boost collaboration, and achieve more together",
 } as const;
 
 export const Paths = {
@@ -9,4 +9,7 @@ export const Paths = {
   SignUpPage: "/sign-up",
   Organization: "/organization",
   SelectOrg: "/select-org",
+  Activity: "/organization/:param1/activity",
+  Settings: "/organization/:param1/settings",
+  Board: "/board/:param1",
 } as const;

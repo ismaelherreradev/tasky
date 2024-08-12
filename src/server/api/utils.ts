@@ -2,13 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 
 import { db } from "../db";
-import {
-  actionEnum,
-  auditLogs,
-  type Action,
-  type AuditLogsSelect,
-  type EntityType,
-} from "../db/schema";
+import { auditLogs, type Action, type EntityType } from "../db/schema";
 import type { ProtectedTRPCContext } from "./trpc";
 
 export async function validateOrgId(ctx: ProtectedTRPCContext): Promise<string> {
@@ -52,20 +46,5 @@ export async function createAuditLog(data: {
   } catch (error) {
     console.error("Error creating audit log:", error);
     throw error;
-  }
-}
-
-export function generateLogMessage(log: AuditLogsSelect) {
-  const { action, entityTitle, entityType } = log;
-
-  switch (action) {
-    case actionEnum.CREATE:
-      return `created ${entityType.toLowerCase()} "${entityTitle}"`;
-    case actionEnum.UPDATE:
-      return `updated ${entityType.toLowerCase()} "${entityTitle}"`;
-    case actionEnum.DELETE:
-      return `deleted ${entityType.toLowerCase()} "${entityTitle}"`;
-    default:
-      return `unknown action ${entityType.toLowerCase()} "${entityTitle}"`;
   }
 }

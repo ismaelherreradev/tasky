@@ -269,7 +269,6 @@ export async function updateList({ ctx, input }: List<Schema.TUpdateList>) {
 
 export async function getListById({ ctx, input }: List<Schema.TGetListById>) {
   const { id } = input;
-  const orgId = await validateOrgId(ctx);
 
   const list = await ctx.db.query.lists.findFirst({
     where: eq(lists.id, id),
@@ -284,7 +283,6 @@ export async function getListById({ ctx, input }: List<Schema.TGetListById>) {
 
 export async function getListsByBoardId({ ctx, input }: List<Schema.TGetListsByBoardId>) {
   const { boardId } = input;
-  const orgId = await validateOrgId(ctx);
 
   const list = await ctx.db.query.lists.findMany({
     where: eq(lists.boardId, boardId),

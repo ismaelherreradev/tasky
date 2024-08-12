@@ -1,9 +1,9 @@
 "use client";
 
 import { useClerk } from "@clerk/nextjs";
-import { Button } from "~/components/ui/button";
 
 import { Paths } from "~/config/site";
+import { Button } from "~/components/ui/button";
 
 export function SignOutButton() {
   const { signOut } = useClerk();
