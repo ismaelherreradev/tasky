@@ -10,11 +10,11 @@ import { BoardNavbar } from "./_components/board-navbar";
 import { ListContainer } from "./_components/list-container";
 import { CardModal } from "./_components/modal";
 
-type BoardIdPageProps = PropsWithChildren<{
+type BoardIdPageProps = {
   params: {
     id: string;
   };
-}>;
+};
 
 export async function generateMetadata({ params }: BoardIdPageProps) {
   const { orgId } = auth();
