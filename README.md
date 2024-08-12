@@ -2,7 +2,7 @@
 
 
 ### Features in this application.
-- 🏢 Authentication and User Management 
+- 🏢 Authentication, User Management and Organization
 - 💻 Role-based Access
 - 📢 Get leads from funnels
 - 🎨 Task board
