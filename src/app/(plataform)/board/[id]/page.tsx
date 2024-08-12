@@ -1,4 +1,3 @@
-import type { PropsWithChildren } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { api, HydrateClient } from "~/trpc/server";
