@@ -1,5 +1,5 @@
 # T3 Stack
-# Project Management using Nextjs14, Bun, Clerk | Authentication and User Management , Drizzle with libSQL, Tuso, Tailwindm, shadcn
+# Project Management using Nextjs14, Bun, Clerk | Authentication and User Management , Drizzle with libSQL, Turso, Tailwindm, shadcn
 
 
 ### Features in this application.
