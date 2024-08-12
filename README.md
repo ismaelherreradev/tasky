@@ -8,7 +8,7 @@
 - 📢 Get leads from funnels
 - 🎨 Task board
 - 📂 Project management system
-- 🔗 Notifications
+- 🔗 Logs activity
 - ☀️ Light & Dark mode
 
 
