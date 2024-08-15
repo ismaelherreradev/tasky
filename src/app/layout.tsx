@@ -22,6 +22,9 @@ export const metadata: Metadata = {
       href: "/tasky.svg",
     },
   ],
+  openGraph: {
+    images: ["/tasky.jpg"],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
