@@ -24,7 +24,11 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
 }
 
 export function ListContainer({ boardId }: ListContainerProps) {
-  const [list, { isLoading, isError }] = api.list.getlistsWithCards.useSuspenseQuery({
+  const {
+    data: list,
+    isLoading,
+    isError,
+  } = api.list.getlistsWithCards.useQuery({
     boardId: boardId,
   });
   const [orderedList, setOrderedList] = useState<ListWithCards[]>([]);

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { api, HydrateClient } from "~/trpc/server";
+import { api } from "~/trpc/server";
 import { Provider } from "jotai";
 
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";
@@ -52,19 +52,17 @@ export default async function BoardIdPage({ params }: BoardIdPageProps) {
 
   void api.list.getlistsWithCards.prefetch({ boardId: board.id });
   return (
-    <HydrateClient>
-      <Provider>
-        <CardModal />
-        <div className="space-y-5 mb-5">
-          <BoardNavbar data={board} orgId={orgId} />
-          <ScrollArea>
-            <div className="mb-10">
-              <ListContainer boardId={board.id} />
-            </div>
-            <ScrollBar hidden orientation="horizontal" />
-          </ScrollArea>
-        </div>
-      </Provider>
-    </HydrateClient>
+    <Provider>
+      <CardModal />
+      <div className="space-y-5 mb-5">
+        <BoardNavbar data={board} orgId={orgId} />
+        <ScrollArea>
+          <div className="mb-10">
+            <ListContainer boardId={board.id} />
+          </div>
+          <ScrollBar hidden orientation="horizontal" />
+        </ScrollArea>
+      </div>
+    </Provider>
   );
 }
