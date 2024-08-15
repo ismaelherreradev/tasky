@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     },
   ],
   openGraph: {
-    images: ["/tasky.jpg"],
+    images: ["/tasky.png"],
   },
 };
 
