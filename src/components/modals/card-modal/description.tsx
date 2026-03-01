@@ -69,10 +69,10 @@ export function Description({ data }: DescriptionProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-x-3">
-        <div className="shrink-0 rounded-lg bg-secondary/50 p-2 text-secondary-foreground">
+        <div className="bg-secondary/50 text-secondary-foreground shrink-0 rounded-lg p-2">
           <AlignLeft className="h-4 w-4" />
         </div>
-        <h3 className="font-semibold text-foreground">Description</h3>
+        <h3 className="text-foreground font-semibold">Description</h3>
       </div>
 
       {isEditing ? (
@@ -82,7 +82,7 @@ export function Description({ data }: DescriptionProps) {
             name="description"
             placeholder="Add a more detailed description..."
             defaultValue={data.description ?? ""}
-            className="min-h-[120px] resize-none border border-border bg-background text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 min-h-[120px] resize-none border transition-colors focus:ring-2"
             ref={textareaRef}
           />
           <div className="flex items-center gap-x-2">
@@ -110,25 +110,25 @@ export function Description({ data }: DescriptionProps) {
             type="button"
             onClick={enableEditing}
             className={cn(
-              "group relative w-full cursor-pointer rounded-lg border-2 border-border/60 border-dashed bg-muted/30 text-left transition-colors hover:bg-muted/50",
+              "group border-border/60 bg-muted/30 hover:bg-muted/50 relative w-full cursor-pointer rounded-lg border-2 border-dashed text-left transition-colors",
               "min-h-[80px] p-4 text-sm",
               data.description &&
-                "border-border border-solid bg-background hover:bg-muted/20",
+                "border-border bg-background hover:bg-muted/20 border-solid",
             )}
           >
             {data.description ? (
               <>
-                <p className="whitespace-pre-wrap text-foreground leading-relaxed">
+                <p className="text-foreground leading-relaxed whitespace-pre-wrap">
                   {data.description}
                 </p>
                 <div className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="rounded border bg-background/80 p-1 shadow-sm backdrop-blur-sm">
-                    <Edit3 className="h-3 w-3 text-muted-foreground" />
+                  <div className="bg-background/80 rounded border p-1 shadow-sm backdrop-blur-sm">
+                    <Edit3 className="text-muted-foreground h-3 w-3" />
                   </div>
                 </div>
               </>
             ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
+              <div className="text-muted-foreground flex h-full items-center justify-center">
                 <div className="space-y-2 text-center">
                   <Edit3 className="mx-auto h-5 w-5 opacity-40" />
                   <p>Add a more detailed description...</p>
@@ -146,7 +146,7 @@ Description.Skeleton = function DescriptionSkeleton() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-x-3">
-        <div className="shrink-0 rounded-lg bg-muted p-2">
+        <div className="bg-muted shrink-0 rounded-lg p-2">
           <Skeleton className="h-4 w-4" />
         </div>
         <Skeleton className="h-5 w-24" />

@@ -32,7 +32,7 @@ export function DroppableArea({ id, className, children }: DroppableAreaProps) {
       ref={ref}
       className={cn(
         "min-h-[20px] rounded-md transition-colors",
-        isOver && "bg-primary/10 ring-2 ring-primary/20",
+        isOver && "bg-primary/10 ring-primary/20 ring-2",
         className,
       )}
     >

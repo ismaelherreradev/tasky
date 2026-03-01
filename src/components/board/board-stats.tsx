@@ -22,13 +22,13 @@ export function BoardStats({
   if (isLoading) {
     return (
       <div className={cn("flex items-center gap-4", className)}>
-        <div className="flex items-center gap-1 text-muted-foreground text-xs">
-          <div className="h-3 w-3 animate-pulse rounded bg-muted" />
-          <div className="h-3 w-8 animate-pulse rounded bg-muted" />
+        <div className="text-muted-foreground flex items-center gap-1 text-xs">
+          <div className="bg-muted h-3 w-3 animate-pulse rounded" />
+          <div className="bg-muted h-3 w-8 animate-pulse rounded" />
         </div>
-        <div className="flex items-center gap-1 text-muted-foreground text-xs">
-          <div className="h-3 w-3 animate-pulse rounded bg-muted" />
-          <div className="h-3 w-8 animate-pulse rounded bg-muted" />
+        <div className="text-muted-foreground flex items-center gap-1 text-xs">
+          <div className="bg-muted h-3 w-3 animate-pulse rounded" />
+          <div className="bg-muted h-3 w-8 animate-pulse rounded" />
         </div>
       </div>
     );
@@ -43,7 +43,7 @@ export function BoardStats({
     return (
       <div
         className={cn(
-          "flex items-center gap-6 text-muted-foreground text-sm",
+          "text-muted-foreground flex items-center gap-6 text-sm",
           className,
         )}
       >
@@ -70,7 +70,7 @@ export function BoardStats({
   return (
     <div
       className={cn(
-        "flex items-center gap-4 text-muted-foreground text-xs",
+        "text-muted-foreground flex items-center gap-4 text-xs",
         className,
       )}
     >

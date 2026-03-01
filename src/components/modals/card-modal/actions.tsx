@@ -89,7 +89,7 @@ export function Actions({ data }: ActionsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-x-2 font-semibold text-foreground text-sm">
+      <div className="text-foreground flex items-center gap-x-2 text-sm font-semibold">
         <MoreHorizontal className="h-4 w-4" />
         Actions
       </div>
@@ -99,10 +99,10 @@ export function Actions({ data }: ActionsProps) {
           onClick={handleCopy}
           disabled={isCopying}
           variant="ghost"
-          className="h-9 w-full justify-start px-3 transition-colors hover:bg-muted"
+          className="hover:bg-muted h-9 w-full justify-start px-3 transition-colors"
           size="sm"
         >
-          <Copy className="mr-3 h-4 w-4 text-muted-foreground" />
+          <Copy className="text-muted-foreground mr-3 h-4 w-4" />
           <span className="text-sm">{isCopying ? "Copying..." : "Copy"}</span>
         </Button>
 
@@ -110,10 +110,10 @@ export function Actions({ data }: ActionsProps) {
           onClick={handleDelete}
           disabled={isDeleting}
           variant="ghost"
-          className="group h-9 w-full justify-start px-3 transition-colors hover:bg-destructive/10 hover:text-destructive"
+          className="group hover:bg-destructive/10 hover:text-destructive h-9 w-full justify-start px-3 transition-colors"
           size="sm"
         >
-          <Trash2 className="mr-3 h-4 w-4 text-muted-foreground transition-colors group-hover:text-destructive" />
+          <Trash2 className="text-muted-foreground group-hover:text-destructive mr-3 h-4 w-4 transition-colors" />
           <span className="text-sm">
             {isDeleting ? "Deleting..." : "Delete"}
           </span>

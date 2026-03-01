@@ -48,13 +48,13 @@ function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
 
   return (
     <>
-      <Card className="group relative flex h-36 cursor-pointer flex-col overflow-hidden border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+      <Card className="group hover:border-primary/20 hover:shadow-primary/5 relative flex h-36 cursor-pointer flex-col overflow-hidden border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+        <div className="from-primary/5 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
         <Link href={`/board/${board.id}`} className="relative z-10 flex-1">
           <CardHeader className="flex-shrink-0 pb-3">
-            <CardTitle className="flex items-center gap-3 pr-10 font-bold text-lg transition-colors group-hover:text-primary">
-              <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
+            <CardTitle className="group-hover:text-primary flex items-center gap-3 pr-10 text-lg font-bold transition-colors">
+              <div className="bg-primary/10 group-hover:bg-primary/20 rounded-lg p-2 transition-colors">
                 <LayoutDashboardIcon size={18} className="text-primary" />
               </div>
               <span className="truncate">{board.title}</span>
@@ -81,7 +81,7 @@ function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
               e.stopPropagation();
               setShowDeleteDialog(true);
             }}
-            className="h-8 w-8 p-0 opacity-0 transition-all duration-200 hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+            className="hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0 opacity-0 transition-all duration-200 group-hover:opacity-100"
           >
             <Trash2 size={14} />
           </Button>
@@ -127,7 +127,7 @@ export function BoardsClient({ initialBoards, orgId }: BoardsClientProps) {
     <section className="mt-10 space-y-8 pb-16">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h2 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-3xl">
+          <h2 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-3xl font-bold">
             Your Boards
           </h2>
           <p className="text-muted-foreground">
@@ -143,11 +143,11 @@ export function BoardsClient({ initialBoards, orgId }: BoardsClientProps) {
 
       {!boards || boards.length === 0 ? (
         <div className="flex flex-col items-center py-20">
-          <div className="mb-6 rounded-full bg-primary/5 p-6">
+          <div className="bg-primary/5 mb-6 rounded-full p-6">
             <LayoutDashboardIcon size={48} className="text-primary" />
           </div>
-          <h3 className="mb-3 font-bold text-2xl">No boards yet</h3>
-          <p className="mb-8 max-w-md text-center text-muted-foreground leading-relaxed">
+          <h3 className="mb-3 text-2xl font-bold">No boards yet</h3>
+          <p className="text-muted-foreground mb-8 max-w-md text-center leading-relaxed">
             Create your first board to start organizing your tasks and projects.
             Boards help you visualize your workflow and collaborate effectively.
           </p>
@@ -164,16 +164,16 @@ export function BoardsClient({ initialBoards, orgId }: BoardsClientProps) {
           ))}
 
           <CreateBoardDialog orgId={orgId}>
-            <Card className="group h-36 cursor-pointer border-2 border-dashed transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/5 hover:shadow-md">
+            <Card className="group hover:border-primary/50 hover:bg-primary/5 h-36 cursor-pointer border-2 border-dashed transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
               <CardContent className="flex h-full flex-col items-center justify-center space-y-3">
-                <div className="rounded-full border-2 border-muted-foreground/30 border-dashed p-3 transition-colors group-hover:border-primary/50">
+                <div className="border-muted-foreground/30 group-hover:border-primary/50 rounded-full border-2 border-dashed p-3 transition-colors">
                   <PlusIcon
                     size={20}
-                    className="text-muted-foreground transition-colors group-hover:text-primary"
+                    className="text-muted-foreground group-hover:text-primary transition-colors"
                   />
                 </div>
                 <div className="space-y-1 text-center">
-                  <p className="font-medium text-muted-foreground text-sm transition-colors group-hover:text-primary">
+                  <p className="text-muted-foreground group-hover:text-primary text-sm font-medium transition-colors">
                     Create new board
                   </p>
                   <p className="text-muted-foreground/70 text-xs">

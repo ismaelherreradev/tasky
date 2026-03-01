@@ -44,7 +44,7 @@ function BoardDropdownItem({ board }: { board: BoardSelect }) {
         <div className="flex w-full items-center gap-2">
           <LayoutDashboardIcon size={14} className="text-muted-foreground" />
           <span
-            className={`flex-1 truncate ${isMatchingPath ? "font-semibold text-primary" : ""}`}
+            className={`flex-1 truncate ${isMatchingPath ? "text-primary font-semibold" : ""}`}
           >
             {board.title}
           </span>
@@ -97,7 +97,7 @@ export function SelectBoardButton({ orgId }: ItemProps) {
               </div>
             </ScrollArea>
           ) : (
-            <div className="p-4 text-center text-muted-foreground text-sm">
+            <div className="text-muted-foreground p-4 text-center text-sm">
               No boards found
             </div>
           )}
@@ -106,7 +106,7 @@ export function SelectBoardButton({ orgId }: ItemProps) {
         <DropdownMenuItem asChild>
           <Link
             href={`/organization/${orgId}`}
-            className="w-full cursor-pointer font-medium text-primary"
+            className="text-primary w-full cursor-pointer font-medium"
           >
             <LayoutDashboardIcon size={14} className="mr-2" />
             View all boards

@@ -208,10 +208,10 @@ function AuthErrorFallback({
 
           {process.env.NODE_ENV === "development" && (
             <details className="mt-4">
-              <summary className="cursor-pointer text-muted-foreground text-sm hover:text-foreground">
+              <summary className="text-muted-foreground hover:text-foreground cursor-pointer text-sm">
                 Error Details (Development Only)
               </summary>
-              <pre className="mt-2 whitespace-pre-wrap rounded bg-gray-100 p-2 text-xs">
+              <pre className="mt-2 rounded bg-gray-100 p-2 text-xs whitespace-pre-wrap">
                 {error.message}
                 {error.stack && `\n\nStack trace:\n${error.stack}`}
               </pre>

@@ -38,11 +38,11 @@ export function FeaturesSection() {
 
       <div className="relative mx-auto max-w-6xl">
         <div className="mb-20 text-center">
-          <h2 className="mb-6 font-extralight text-4xl text-foreground tracking-tight lg:text-5xl">
+          <h2 className="text-foreground mb-6 text-4xl font-extralight tracking-tight lg:text-5xl">
             Everything you need
           </h2>
 
-          <p className="mx-auto max-w-2xl font-light text-lg text-muted-foreground leading-relaxed">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg leading-relaxed font-light">
             Simple tools that work the way you do
           </p>
         </div>
@@ -50,7 +50,7 @@ export function FeaturesSection() {
         <AnimatedFeatures features={features} />
       </div>
 
-      <div className="absolute bottom-0 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-radial-gradient from-primary/2 via-primary/3 to-transparent opacity-50 blur-3xl" />
+      <div className="bg-radial-gradient from-primary/2 via-primary/3 absolute bottom-0 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full to-transparent opacity-50 blur-3xl" />
     </section>
   );
 }

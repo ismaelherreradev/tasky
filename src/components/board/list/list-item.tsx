@@ -61,7 +61,7 @@ export function ListItem({ data }: ListItemProps) {
         isDragging && "opacity-50",
       )}
     >
-      <div className="w-full rounded-md bg-muted pb-2 shadow-md">
+      <div className="bg-muted w-full rounded-md pb-2 shadow-md">
         <div>
           <ListHeader onAddCard={enableEditing} data={data} />
         </div>

@@ -69,23 +69,23 @@ export function AnimatedFeatures({ features }: AnimatedFeaturesProps) {
             className="group text-center"
           >
             <motion.div
-              className="mb-6 flex justify-center text-muted-foreground"
+              className="text-muted-foreground mb-6 flex justify-center"
               whileHover={{ scale: 1.1, y: -2 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
               <Icon size={32} />
             </motion.div>
 
-            <h3 className="mb-4 font-light text-foreground text-xl">
+            <h3 className="text-foreground mb-4 text-xl font-light">
               {feature.title}
             </h3>
 
-            <p className="font-light text-base text-muted-foreground leading-relaxed">
+            <p className="text-muted-foreground text-base leading-relaxed font-light">
               {feature.description}
             </p>
 
             <motion.div
-              className="mx-auto mt-6 h-px w-12 bg-muted-foreground/20"
+              className="bg-muted-foreground/20 mx-auto mt-6 h-px w-12"
               initial={{ width: 0 }}
               whileInView={{ width: 48 }}
               transition={{ duration: 0.8, delay: 0.2 }}

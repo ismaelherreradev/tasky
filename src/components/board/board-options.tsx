@@ -80,7 +80,7 @@ export function BoardOptions({ id, orgId }: BoardOptionsProps) {
         >
           <PopoverClose asChild>
             <Button
-              className="absolute top-2 right-2 h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground absolute top-2 right-2 h-6 w-6 p-0"
               variant="ghost"
               size="sm"
               aria-label="Close board options menu"
@@ -90,7 +90,7 @@ export function BoardOptions({ id, orgId }: BoardOptionsProps) {
           </PopoverClose>
           <div
             id="board-actions-title"
-            className="px-3 pr-8 pb-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"
+            className="text-muted-foreground px-3 pr-8 pb-3 text-xs font-medium tracking-wider uppercase"
           >
             Board actions
           </div>
@@ -98,7 +98,7 @@ export function BoardOptions({ id, orgId }: BoardOptionsProps) {
           <Button
             variant="ghost"
             onClick={() => setShowDeleteDialog(true)}
-            className="h-9 w-full justify-start rounded-none px-3 font-normal text-destructive text-sm hover:bg-destructive/10 hover:text-destructive"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive h-9 w-full justify-start rounded-none px-3 text-sm font-normal"
             role="menuitem"
             aria-label="Delete this board permanently"
           >
@@ -132,7 +132,7 @@ export function BoardOptions({ id, orgId }: BoardOptionsProps) {
             <li>All cards in those lists</li>
             <li>All associated data</li>
           </ul>
-          <p className="mt-2 font-medium text-destructive" role="alert">
+          <p className="text-destructive mt-2 font-medium" role="alert">
             This action is irreversible.
           </p>
         </div>

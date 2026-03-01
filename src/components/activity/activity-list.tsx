@@ -37,7 +37,7 @@ export default function ActivityList() {
   return (
     <ol className="mt-4 space-y-4">
       {auditLogs?.length === 0 ? (
-        <p className="text-center text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-center text-xs">
           No activity found inside this organization
         </p>
       ) : (

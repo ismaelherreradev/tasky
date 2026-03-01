@@ -20,14 +20,14 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-radial-gradient from-primary/3 via-primary/5 to-transparent blur-3xl" />
+      <div className="bg-radial-gradient from-primary/3 via-primary/5 absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full to-transparent blur-3xl" />
 
       <AnimatedHero>
-        <h1 className="mb-8 font-extralight text-6xl text-foreground tracking-tight lg:text-8xl">
+        <h1 className="text-foreground mb-8 text-6xl font-extralight tracking-tight lg:text-8xl">
           {SiteConfig.title}
         </h1>
 
-        <p className="mx-auto mb-12 max-w-2xl font-light text-muted-foreground text-xl leading-relaxed">
+        <p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-xl leading-relaxed font-light">
           {SiteConfig.description}
         </p>
 
@@ -35,7 +35,7 @@ export function HeroSection() {
           <Button
             asChild
             size="lg"
-            className="group relative overflow-hidden rounded-full px-10 py-6 font-medium text-base shadow-lg transition-all hover:shadow-xl"
+            className="group relative overflow-hidden rounded-full px-10 py-6 text-base font-medium shadow-lg transition-all hover:shadow-xl"
           >
             <Link href={Paths.SignUpPage} className="flex items-center gap-3">
               Start now
@@ -47,7 +47,7 @@ export function HeroSection() {
             variant="ghost"
             size="lg"
             asChild
-            className="rounded-full px-8 py-6 font-medium text-base text-muted-foreground transition-all hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground rounded-full px-8 py-6 text-base font-medium transition-all"
           >
             <Link href={Paths.SignInPage}>Sign in</Link>
           </Button>

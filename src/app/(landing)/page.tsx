@@ -16,7 +16,7 @@ export default function LandingPage() {
         />
       </div>
 
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-background via-background to-muted/20" />
+      <div className="from-background via-background to-muted/20 fixed inset-0 -z-10 bg-gradient-to-b" />
 
       <HeroSection />
     </div>

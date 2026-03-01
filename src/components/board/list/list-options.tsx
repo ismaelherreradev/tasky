@@ -61,7 +61,7 @@ export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="px-0 py-3" side="bottom" align="start">
-        <div className="pb-4 text-center font-medium text-neutral-600 text-sm">
+        <div className="pb-4 text-center text-sm font-medium text-neutral-600">
           List actions
         </div>
         <PopoverClose ref={closeRef} asChild>
@@ -74,7 +74,7 @@ export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
         </PopoverClose>
         <Button
           onClick={onAddCard}
-          className="h-auto w-full justify-start rounded-none p-2 px-5 font-normal text-sm"
+          className="h-auto w-full justify-start rounded-none p-2 px-5 text-sm font-normal"
           variant="ghost"
         >
           Add card...
@@ -92,7 +92,7 @@ export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
             type="submit"
             disabled={copyList.isPending}
             variant="ghost"
-            className="h-auto w-full justify-start rounded-none p-2 px-5 font-normal text-sm"
+            className="h-auto w-full justify-start rounded-none p-2 px-5 text-sm font-normal"
           >
             Copy list...
           </Button>
@@ -111,7 +111,7 @@ export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
             type="submit"
             disabled={deleteList.isPending}
             variant="ghost"
-            className="h-auto w-full justify-start rounded-none p-2 px-5 font-normal text-sm"
+            className="h-auto w-full justify-start rounded-none p-2 px-5 text-sm font-normal"
           >
             Delete this list
           </Button>

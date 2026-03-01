@@ -90,7 +90,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className={cn(
-              "resize-none shadow-sm outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+              "resize-none shadow-sm ring-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
             )}
             placeholder="Enter a title for this card..."
             aria-label="Card title"
@@ -134,7 +134,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
             "title" in error.data.zodError.fieldErrors && (
               <span
                 id="card-title-error"
-                className="mb-8 text-red-500 text-xs"
+                className="mb-8 text-xs text-red-500"
                 role="alert"
                 aria-live="polite"
               >
@@ -166,7 +166,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
       ) : (
         <Button
           onClick={enableEditing}
-          className="h-auto w-full justify-start px-2 py-1.5 text-muted-foreground text-sm"
+          className="text-muted-foreground h-auto w-full justify-start px-2 py-1.5 text-sm"
           size="sm"
           variant="ghost"
           aria-label="Add a new card to this list"

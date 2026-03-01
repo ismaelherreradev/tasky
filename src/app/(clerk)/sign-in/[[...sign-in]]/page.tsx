@@ -21,11 +21,11 @@ export default function SignInPage() {
           <Card className="w-full">
             <CardHeader className="text-center">
               <div className="mb-4 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <span className="font-bold text-lg">T</span>
+                <div className="bg-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-lg">
+                  <span className="text-lg font-bold">T</span>
                 </div>
               </div>
-              <CardTitle className="font-semibold text-2xl">
+              <CardTitle className="text-2xl font-semibold">
                 Welcome back
               </CardTitle>
               <CardDescription>

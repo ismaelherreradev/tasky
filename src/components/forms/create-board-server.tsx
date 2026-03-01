@@ -79,7 +79,7 @@ export function CreateBoardServer({ orgId, children }: CreateBoardServerProps) {
         </form>
 
         {state.error && (
-          <div className="mt-2 text-red-600 text-sm">{state.error}</div>
+          <div className="mt-2 text-sm text-red-600">{state.error}</div>
         )}
       </DialogContent>
     </Dialog>

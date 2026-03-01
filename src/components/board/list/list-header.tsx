@@ -58,7 +58,7 @@ export function ListHeader({ data, onAddCard }: ListHeaderProps) {
   useEventListener("keydown", handleKeyDown);
 
   return (
-    <div className="flex items-start justify-between gap-x-2 px-2 pt-2 font-semibold text-sm">
+    <div className="flex items-start justify-between gap-x-2 px-2 pt-2 text-sm font-semibold">
       {isEditing ? (
         <form ref={formRef} action={handleSubmit} className="flex-1 px-[2px]">
           <input hidden id="id" name="id" defaultValue={data.id} />
@@ -75,7 +75,7 @@ export function ListHeader({ data, onAddCard }: ListHeaderProps) {
             value={title}
             onBlur={() => formRef.current?.requestSubmit()}
             onChange={(e) => setTitle(e.target.value)}
-            className="border-transparent px-2 py-1 font-medium text-sm transition hover:border-input focus:border-input"
+            className="hover:border-input focus:border-input border-transparent px-2 py-1 text-sm font-medium transition"
             placeholder="Enter list title..."
           />
           <button type="submit" hidden />
@@ -84,7 +84,7 @@ export function ListHeader({ data, onAddCard }: ListHeaderProps) {
         <button
           type="button"
           onClick={enableEditing}
-          className="h-7 w-full border-transparent px-2.5 py-1 text-left font-medium text-sm"
+          className="h-7 w-full border-transparent px-2.5 py-1 text-left text-sm font-medium"
         >
           {title}
         </button>

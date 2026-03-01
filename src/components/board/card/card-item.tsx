@@ -44,10 +44,10 @@ export function CardItem({ data, isDragOverlay = false }: CardItemProps) {
   if (isDragOverlay) {
     return (
       <div
-        className="rotate-2 transform cursor-grabbing rounded-lg border-2 border-primary/20 bg-card px-4 py-3 text-sm shadow-xl backdrop-blur-sm"
+        className="border-primary/20 bg-card rotate-2 transform cursor-grabbing rounded-lg border-2 px-4 py-3 text-sm shadow-xl backdrop-blur-sm"
         aria-hidden="true"
       >
-        <div className="line-clamp-3 font-medium text-foreground leading-relaxed">
+        <div className="text-foreground line-clamp-3 leading-relaxed font-medium">
           {data.title}
         </div>
       </div>
@@ -62,19 +62,19 @@ export function CardItem({ data, isDragOverlay = false }: CardItemProps) {
       aria-label={`Card: ${data.title}. Press Enter or Space to open, use arrow keys to move`}
       aria-describedby={`card-${data.id}-description`}
       className={cn(
-        "group w-full cursor-grab rounded-lg border border-border/50 bg-card p-4 text-left text-sm transition-all duration-200 hover:border-border hover:bg-card/90 hover:shadow-md",
-        "focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2",
+        "group border-border/50 bg-card hover:border-border hover:bg-card/90 w-full cursor-grab rounded-lg border p-4 text-left text-sm transition-all duration-200 hover:shadow-md",
+        "focus:border-primary/50 focus:ring-primary/20 focus:ring-2 focus:ring-offset-2 focus:outline-none",
         "hover:-translate-y-0.5 hover:shadow-lg",
-        isDragging && "rotate-1 scale-105 cursor-grabbing opacity-60 shadow-xl",
+        isDragging && "scale-105 rotate-1 cursor-grabbing opacity-60 shadow-xl",
       )}
     >
       <div className="space-y-3">
-        <div className="line-clamp-4 font-medium text-foreground leading-relaxed transition-colors group-hover:text-primary/90">
+        <div className="text-foreground group-hover:text-primary/90 line-clamp-4 leading-relaxed font-medium transition-colors">
           {data.title}
         </div>
 
         {data.description && (
-          <div className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">
+          <div className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
             {data.description}
           </div>
         )}
@@ -82,14 +82,14 @@ export function CardItem({ data, isDragOverlay = false }: CardItemProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {data.description && (
-              <div className="flex items-center gap-1 text-muted-foreground text-xs">
+              <div className="text-muted-foreground flex items-center gap-1 text-xs">
                 <MessageSquare className="h-3 w-3" />
                 <span>1</span>
               </div>
             )}
 
             {data.createdAt && (
-              <div className="flex items-center gap-1 text-muted-foreground text-xs">
+              <div className="text-muted-foreground flex items-center gap-1 text-xs">
                 <Calendar className="h-3 w-3" />
                 <span>
                   {new Date(data.createdAt).toLocaleDateString("en-US", {
