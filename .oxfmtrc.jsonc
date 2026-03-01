@@ -4,9 +4,12 @@
   "tabWidth": 2,
   "useTabs": false,
   "singleQuote": false,
-  "semi": true,
+  "semi": false,
   "trailingComma": "all",
   "sortTailwindcss": {
-    "functions": ["cn", "clsx"],
+    "functions": [
+      "cn",
+      "clsx"
+    ],
   },
 }
