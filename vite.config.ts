@@ -10,14 +10,10 @@ export default defineConfig({
   plugins: [
     devtools(),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
-    tanstackStart({
-      srcDirectory: "src",
-      router: {
-        routesDirectory: "app",
-      },
-    }),
+    tanstackStart(),
     viteReact({
       babel: {
         plugins: ["babel-plugin-react-compiler"],

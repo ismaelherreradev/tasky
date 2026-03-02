@@ -1,15 +1,15 @@
-import "~/styles/globals.css";
+import "~/styles/globals.css"
 
-import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
-import { ThemeProvider } from "~/components/theme-provider";
-import { Toaster } from "~/components/ui/sonner";
-import { env } from "~/env";
-import { recursive } from "~/fonts";
-import { defaultMetadata } from "~/lib/metadata";
-import { TRPCReactProvider } from "~/trpc/react";
+import { ClerkProvider } from "@clerk/nextjs"
+import type { Metadata } from "next"
+import { ThemeProvider } from "~/components/theme-provider"
+import { Toaster } from "~/components/ui/sonner"
+import { env } from "~/env"
+import { recursive } from "~/fonts"
+import { defaultMetadata } from "~/lib/metadata"
+import { TRPCReactProvider } from "~/trpc/react"
 
-export const metadata: Metadata = defaultMetadata;
+export const metadata: Metadata = defaultMetadata
 
 export default function RootLayout({
   children,
@@ -40,5 +40,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

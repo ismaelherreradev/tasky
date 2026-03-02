@@ -1,8 +1,8 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { AnimatedHero } from "~/components/landing/animated-hero";
-import { Button } from "~/components/ui/button";
-import { Paths, SiteConfig } from "~/config/site";
+import { Link } from "@tanstack/react-router"
+import { ArrowRight } from "lucide-react"
+import { AnimatedHero } from "~/components/landing/animated-hero"
+import { Button } from "~/components/ui/button"
+import { Paths, SiteConfig } from "~/config/site"
 
 export function HeroSection() {
   return (
@@ -37,7 +37,7 @@ export function HeroSection() {
             size="lg"
             className="group relative overflow-hidden rounded-full px-10 py-6 text-base font-medium shadow-lg transition-all hover:shadow-xl"
           >
-            <Link href={Paths.SignUpPage} className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3">
               Start now
               <ArrowRight size={18} />
             </Link>
@@ -49,10 +49,10 @@ export function HeroSection() {
             asChild
             className="text-muted-foreground hover:text-foreground rounded-full px-8 py-6 text-base font-medium transition-all"
           >
-            <Link href={Paths.SignInPage}>Sign in</Link>
+            <Link to="/">Sign in</Link>
           </Button>
         </div>
       </AnimatedHero>
     </section>
-  );
+  )
 }

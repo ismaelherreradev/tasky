@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import * as Clerk from "@clerk/elements/common";
-import * as SignUp from "@clerk/elements/sign-up";
-import { Button } from "~/components/ui/button";
+import * as Clerk from "@clerk/elements/common"
+import * as SignUp from "@clerk/elements/sign-up"
+import { Button } from "~/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card";
-import { Icons } from "~/components/ui/icons";
-import { SiteConfig } from "~/config/site";
+} from "~/components/ui/card"
+import { Icons } from "~/components/ui/icons"
+import { SiteConfig } from "~/config/site"
 
 export default function SignUpPage() {
   return (
@@ -84,5 +84,5 @@ export default function SignUpPage() {
         )}
       </Clerk.Loading>
     </SignUp.Root>
-  );
+  )
 }

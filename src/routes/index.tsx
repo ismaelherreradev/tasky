@@ -1,6 +1,11 @@
-import { HeroSection } from "~/components/landing";
+import { createFileRoute } from "@tanstack/react-router"
+import { HeroSection } from "#/components/landing"
 
-export default function LandingPage() {
+export const Route = createFileRoute("/")({
+  component: LandingPage,
+})
+
+function LandingPage() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 -z-10 opacity-[0.015]">
@@ -20,5 +25,5 @@ export default function LandingPage() {
 
       <HeroSection />
     </div>
-  );
+  )
 }
