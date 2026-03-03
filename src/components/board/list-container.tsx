@@ -1,5 +1,3 @@
-"use client";
-
 import {
   dropTargetForElements,
   monitorForElements,
@@ -40,7 +38,7 @@ type ListContainerProps = {
   boardId: number;
 };
 
-export function ListContainer({ boardId: _boardId }: ListContainerProps) {
+export function ListContainer({ boardId }: ListContainerProps) {
   const { lists, isLoading, isError, moveCard, moveList } =
     useOptimisticBoard();
 
@@ -227,7 +225,7 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
             scrollbarColor: "hsl(var(--border)) transparent",
           }}
         >
-          <style jsx>{`
+          <style>{`
             div::-webkit-scrollbar {
               height: 8px;
             }
@@ -245,7 +243,7 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
             }
           `}</style>
 
-          <ListForm />
+          <ListForm boardId={boardId} />
           <div className="w-4 shrink-0" />
         </div>
       </div>
@@ -262,7 +260,7 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
           scrollbarColor: "hsl(var(--border)) transparent",
         }}
       >
-        <style jsx>{`
+        <style>{`
           .board-scroll::-webkit-scrollbar {
             height: 8px;
           }
@@ -283,7 +281,7 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
           <ListItem key={list.id} data={list} />
         ))}
 
-        <ListForm />
+        <ListForm boardId={boardId} />
         <div className="w-6 shrink-0" />
       </div>
       <div

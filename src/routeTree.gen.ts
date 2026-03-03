@@ -9,38 +9,171 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlatformRouteImport } from './routes/_platform'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignUpRouteImport } from './routes/_auth.sign-up'
+import { Route as AuthSignInRouteImport } from './routes/_auth.sign-in'
+import { Route as AuthSelectOrgRouteImport } from './routes/_auth.select-org'
+import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
+import { Route as PlatformOrganizationIdRouteImport } from './routes/_platform.organization.$id'
+import { Route as PlatformBoardIdRouteImport } from './routes/_platform.board.$id'
+import { Route as PlatformOrganizationIdSettingsRouteImport } from './routes/_platform.organization.$id.settings'
+import { Route as PlatformOrganizationIdActivityRouteImport } from './routes/_platform.organization.$id.activity'
 
+const PlatformRoute = PlatformRouteImport.update({
+  id: '/_platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSelectOrgRoute = AuthSelectOrgRouteImport.update({
+  id: '/select-org',
+  path: '/select-org',
+  getParentRoute: () => AuthRoute,
+} as any)
+const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
+  id: '/api/trpc/$',
+  path: '/api/trpc/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlatformOrganizationIdRoute = PlatformOrganizationIdRouteImport.update({
+  id: '/organization/$id',
+  path: '/organization/$id',
+  getParentRoute: () => PlatformRoute,
+} as any)
+const PlatformBoardIdRoute = PlatformBoardIdRouteImport.update({
+  id: '/board/$id',
+  path: '/board/$id',
+  getParentRoute: () => PlatformRoute,
+} as any)
+const PlatformOrganizationIdSettingsRoute =
+  PlatformOrganizationIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => PlatformOrganizationIdRoute,
+  } as any)
+const PlatformOrganizationIdActivityRoute =
+  PlatformOrganizationIdActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => PlatformOrganizationIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/select-org': typeof AuthSelectOrgRoute
+  '/sign-in': typeof AuthSignInRoute
+  '/sign-up': typeof AuthSignUpRoute
+  '/board/$id': typeof PlatformBoardIdRoute
+  '/organization/$id': typeof PlatformOrganizationIdRouteWithChildren
+  '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/organization/$id/activity': typeof PlatformOrganizationIdActivityRoute
+  '/organization/$id/settings': typeof PlatformOrganizationIdSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/select-org': typeof AuthSelectOrgRoute
+  '/sign-in': typeof AuthSignInRoute
+  '/sign-up': typeof AuthSignUpRoute
+  '/board/$id': typeof PlatformBoardIdRoute
+  '/organization/$id': typeof PlatformOrganizationIdRouteWithChildren
+  '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/organization/$id/activity': typeof PlatformOrganizationIdActivityRoute
+  '/organization/$id/settings': typeof PlatformOrganizationIdSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/_platform': typeof PlatformRouteWithChildren
+  '/_auth/select-org': typeof AuthSelectOrgRoute
+  '/_auth/sign-in': typeof AuthSignInRoute
+  '/_auth/sign-up': typeof AuthSignUpRoute
+  '/_platform/board/$id': typeof PlatformBoardIdRoute
+  '/_platform/organization/$id': typeof PlatformOrganizationIdRouteWithChildren
+  '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/_platform/organization/$id/activity': typeof PlatformOrganizationIdActivityRoute
+  '/_platform/organization/$id/settings': typeof PlatformOrganizationIdSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/select-org'
+    | '/sign-in'
+    | '/sign-up'
+    | '/board/$id'
+    | '/organization/$id'
+    | '/api/trpc/$'
+    | '/organization/$id/activity'
+    | '/organization/$id/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/select-org'
+    | '/sign-in'
+    | '/sign-up'
+    | '/board/$id'
+    | '/organization/$id'
+    | '/api/trpc/$'
+    | '/organization/$id/activity'
+    | '/organization/$id/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/_platform'
+    | '/_auth/select-org'
+    | '/_auth/sign-in'
+    | '/_auth/sign-up'
+    | '/_platform/board/$id'
+    | '/_platform/organization/$id'
+    | '/api/trpc/$'
+    | '/_platform/organization/$id/activity'
+    | '/_platform/organization/$id/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  PlatformRoute: typeof PlatformRouteWithChildren
+  ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_platform': {
+      id: '/_platform'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PlatformRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +181,114 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/sign-up': {
+      id: '/_auth/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/sign-in': {
+      id: '/_auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/select-org': {
+      id: '/_auth/select-org'
+      path: '/select-org'
+      fullPath: '/select-org'
+      preLoaderRoute: typeof AuthSelectOrgRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/api/trpc/$': {
+      id: '/api/trpc/$'
+      path: '/api/trpc/$'
+      fullPath: '/api/trpc/$'
+      preLoaderRoute: typeof ApiTrpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_platform/organization/$id': {
+      id: '/_platform/organization/$id'
+      path: '/organization/$id'
+      fullPath: '/organization/$id'
+      preLoaderRoute: typeof PlatformOrganizationIdRouteImport
+      parentRoute: typeof PlatformRoute
+    }
+    '/_platform/board/$id': {
+      id: '/_platform/board/$id'
+      path: '/board/$id'
+      fullPath: '/board/$id'
+      preLoaderRoute: typeof PlatformBoardIdRouteImport
+      parentRoute: typeof PlatformRoute
+    }
+    '/_platform/organization/$id/settings': {
+      id: '/_platform/organization/$id/settings'
+      path: '/settings'
+      fullPath: '/organization/$id/settings'
+      preLoaderRoute: typeof PlatformOrganizationIdSettingsRouteImport
+      parentRoute: typeof PlatformOrganizationIdRoute
+    }
+    '/_platform/organization/$id/activity': {
+      id: '/_platform/organization/$id/activity'
+      path: '/activity'
+      fullPath: '/organization/$id/activity'
+      preLoaderRoute: typeof PlatformOrganizationIdActivityRouteImport
+      parentRoute: typeof PlatformOrganizationIdRoute
+    }
   }
 }
 
+interface AuthRouteChildren {
+  AuthSelectOrgRoute: typeof AuthSelectOrgRoute
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthSelectOrgRoute: AuthSelectOrgRoute,
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface PlatformOrganizationIdRouteChildren {
+  PlatformOrganizationIdActivityRoute: typeof PlatformOrganizationIdActivityRoute
+  PlatformOrganizationIdSettingsRoute: typeof PlatformOrganizationIdSettingsRoute
+}
+
+const PlatformOrganizationIdRouteChildren: PlatformOrganizationIdRouteChildren =
+  {
+    PlatformOrganizationIdActivityRoute: PlatformOrganizationIdActivityRoute,
+    PlatformOrganizationIdSettingsRoute: PlatformOrganizationIdSettingsRoute,
+  }
+
+const PlatformOrganizationIdRouteWithChildren =
+  PlatformOrganizationIdRoute._addFileChildren(
+    PlatformOrganizationIdRouteChildren,
+  )
+
+interface PlatformRouteChildren {
+  PlatformBoardIdRoute: typeof PlatformBoardIdRoute
+  PlatformOrganizationIdRoute: typeof PlatformOrganizationIdRouteWithChildren
+}
+
+const PlatformRouteChildren: PlatformRouteChildren = {
+  PlatformBoardIdRoute: PlatformBoardIdRoute,
+  PlatformOrganizationIdRoute: PlatformOrganizationIdRouteWithChildren,
+}
+
+const PlatformRouteWithChildren = PlatformRoute._addFileChildren(
+  PlatformRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
+  PlatformRoute: PlatformRouteWithChildren,
+  ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

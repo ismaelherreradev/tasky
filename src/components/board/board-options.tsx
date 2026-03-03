@@ -1,7 +1,5 @@
-"use client";
-
 import { MoreHorizontal, Trash2, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -12,7 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { Paths } from "~/config/site";
 import { api } from "~/trpc/react";
 
 type BoardOptionsProps = {
@@ -21,7 +18,7 @@ type BoardOptionsProps = {
 };
 
 export function BoardOptions({ id, orgId }: BoardOptionsProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const utils = api.useUtils();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
@@ -32,7 +29,7 @@ export function BoardOptions({ id, orgId }: BoardOptionsProps) {
       await utils.board.invalidate();
       setShowDeleteDialog(false);
       setShowPopover(false);
-      router.replace(`${Paths.Organization}/${orgId}`);
+      void navigate({ to: "/organization/$id", params: { id: orgId } });
     },
     onError: (error: unknown) => {
       const errorMessage =

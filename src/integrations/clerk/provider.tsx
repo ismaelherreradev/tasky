@@ -15,6 +15,8 @@ export default function AppClerkProvider({
       publishableKey={PUBLISHABLE_KEY}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/select-org"
+      signUpFallbackRedirectUrl="/select-org"
     >
       {children}
     </ClerkProvider>

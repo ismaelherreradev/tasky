@@ -1,8 +1,6 @@
-"use client";
-
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/clerk-react";
 import { AlertTriangle, Home, LogIn, RefreshCw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import React from "react";
 
 import { Button } from "~/components/ui/button";
@@ -101,7 +99,7 @@ function AuthErrorFallback({
   error: Error;
   retry: () => void;
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { signOut } = useAuth();
 
   const isAuthError =
@@ -122,7 +120,7 @@ function AuthErrorFallback({
         actions: (
           <>
             <Button
-              onClick={() => router.push("/select-org")}
+              onClick={() => void navigate({ to: "/select-org" })}
               className="w-full"
             >
               <Home className="mr-2 h-4 w-4" />
@@ -144,7 +142,7 @@ function AuthErrorFallback({
         icon: <LogIn className="h-8 w-8 text-blue-500" />,
         actions: (
           <>
-            <Button onClick={() => router.push("/sign-in")} className="w-full">
+            <Button               onClick={() => void navigate({ to: "/sign-in" })} className="w-full">
               <LogIn className="mr-2 h-4 w-4" />
               Sign In
             </Button>
@@ -170,7 +168,7 @@ function AuthErrorFallback({
           </Button>
           <Button
             variant="outline"
-            onClick={() => router.push("/")}
+              onClick={() => void navigate({ to: "/" })}
             className="w-full"
           >
             <Home className="mr-2 h-4 w-4" />

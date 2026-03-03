@@ -1,5 +1,3 @@
-"use client";
-
 import { type ElementRef, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useEventListener } from "usehooks-ts";

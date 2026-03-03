@@ -1,5 +1,3 @@
-"use client";
-
 import { MoreHorizontal, X } from "lucide-react";
 import { type ElementRef, useRef } from "react";
 import { toast } from "sonner";

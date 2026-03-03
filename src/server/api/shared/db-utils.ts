@@ -1,4 +1,4 @@
-import { clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/tanstack-react-start/server";
 import { TRPCError } from "@trpc/server";
 import { eq, type SQL } from "drizzle-orm";
 import type { ProtectedTRPCContext } from "~/server/api/trpc";

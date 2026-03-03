@@ -1,19 +1,21 @@
 import { ArrowLeft, Calendar, Users } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import type { BoardSelect } from "~/server/db/schema";
+import { api } from "~/trpc/react";
 
 import { BoardOptions } from "./board-options";
 import { BoardStats } from "./board-stats";
 import { BoardTitleForm } from "./board-title-form";
 
 type BoardNavbarProps = {
-  data: BoardSelect;
+  boardId: number;
   orgId: string;
 };
 
-export async function BoardNavbar({ data, orgId }: BoardNavbarProps) {
+export function BoardNavbar({ boardId, orgId }: BoardNavbarProps) {
+  const { data } = api.board.getBoardById.useQuery({ boardId, orgId });
+
   return (
     <nav
       className="border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 w-full overflow-hidden border-b backdrop-blur"
@@ -27,7 +29,7 @@ export async function BoardNavbar({ data, orgId }: BoardNavbarProps) {
             asChild
             className="text-muted-foreground hover:text-foreground shrink-0 gap-1 sm:gap-2"
           >
-            <Link href={`/organization/${orgId}`}>
+            <Link to="/organization/$id" params={{ id: orgId }}>
               <ArrowLeft size={16} />
               <span className="hidden lg:inline">Back to Boards</span>
             </Link>
@@ -37,14 +39,15 @@ export async function BoardNavbar({ data, orgId }: BoardNavbarProps) {
 
           <div className="hidden min-w-0 items-center gap-2 text-sm lg:flex">
             <Link
-              href={`/organization/${orgId}`}
+              to="/organization/$id"
+              params={{ id: orgId }}
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Boards
             </Link>
             <span className="text-muted-foreground shrink-0">/</span>
             <span className="max-w-[150px] truncate font-medium">
-              {data.title}
+              {data?.title}
             </span>
           </div>
         </div>
@@ -55,26 +58,26 @@ export async function BoardNavbar({ data, orgId }: BoardNavbarProps) {
               <Users size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <BoardTitleForm data={data} />
+              {data && <BoardTitleForm data={data} />}
             </div>
           </div>
         </div>
 
         <div className="flex flex-shrink-0 items-center gap-2">
           <div className="hidden xl:block">
-            <BoardStats boardId={data.id} variant="compact" />
+            <BoardStats boardId={boardId} variant="compact" />
           </div>
 
           <div className="text-muted-foreground hidden items-center gap-2 text-sm 2xl:flex">
             <Calendar size={14} />
             <span className="whitespace-nowrap">
-              {data.createdAt ? data.createdAt.toLocaleDateString() : "Unknown"}
+              {data?.createdAt ? data.createdAt.toLocaleDateString() : ""}
             </span>
           </div>
 
           <Separator orientation="vertical" className="hidden h-6 xl:block" />
 
-          <BoardOptions id={data.id} orgId={orgId} />
+          <BoardOptions id={boardId} orgId={orgId} />
         </div>
       </div>
     </nav>

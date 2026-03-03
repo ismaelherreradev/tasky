@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { ThemeToggle } from "~/components/theme-toggle";
-import { SiteConfig } from "~/config/site";
+import { Link } from "@tanstack/react-router"
+import { ThemeToggle } from "~/components/theme-toggle"
+import { SiteConfig } from "~/config/site"
 
 import {
   ActivityButton,
@@ -8,19 +8,20 @@ import {
   SelectBoardButton,
   SettingsButton,
   UserClerkButton,
-} from "./navbar-items";
+} from "./navbar-items"
 
 type NavbarProps = {
   orgId: string;
 };
 
-export async function Navbar({ orgId }: NavbarProps) {
+export function Navbar({ orgId }: NavbarProps) {
   return (
     <header className="border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b shadow-sm backdrop-blur">
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6">
           <Link
-            href={`/organization/${orgId}`}
+            to="/organization/$id"
+            params={{ id: orgId }}
             className="group flex items-center space-x-2 transition-all hover:opacity-80"
           >
             <div className="from-primary to-primary/80 text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r text-sm font-bold transition-transform group-hover:scale-105">
@@ -50,5 +51,5 @@ export async function Navbar({ orgId }: NavbarProps) {
         </div>
       </div>
     </header>
-  );
+  )
 }

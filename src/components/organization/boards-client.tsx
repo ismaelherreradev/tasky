@@ -1,7 +1,6 @@
-"use client";
 
-import { LayoutDashboardIcon, PlusIcon, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { LayoutDashboardIcon, PlusIcon, Trash2 } from "lucide-react"
+import { Link } from "@tanstack/react-router"
 import { useState } from "react";
 import { toast } from "sonner";
 import { CreateBoardDialog } from "~/components/forms";
@@ -51,7 +50,7 @@ function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
       <Card className="group hover:border-primary/20 hover:shadow-primary/5 relative flex h-36 cursor-pointer flex-col overflow-hidden border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
         <div className="from-primary/5 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
-        <Link href={`/board/${board.id}`} className="relative z-10 flex-1">
+        <Link to="/board/$id" params={{ id: board.id.toString() }} className="relative z-10 flex-1">
           <CardHeader className="flex-shrink-0 pb-3">
             <CardTitle className="group-hover:text-primary flex items-center gap-3 pr-10 text-lg font-bold transition-colors">
               <div className="bg-primary/10 group-hover:bg-primary/20 rounded-lg p-2 transition-colors">

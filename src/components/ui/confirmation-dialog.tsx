@@ -1,4 +1,3 @@
-"use client";
 
 import { AlertTriangle, HelpCircle, Info } from "lucide-react";
 

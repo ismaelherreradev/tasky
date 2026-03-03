@@ -1,8 +1,6 @@
-"use client";
-
 import { useAtom } from "jotai";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -16,7 +14,7 @@ type ActionsProps = {
 };
 
 export function Actions({ data }: ActionsProps) {
-  const params = useParams();
+  const params = useParams({ strict: false });
   const [, onClose] = useAtom(onCloseAtom);
 
   const utils = api.useUtils();

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { HeroSection } from "#/components/landing"
+import { LandingNavbar } from "#/components/navigation/landing-navbar"
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -23,6 +24,7 @@ function LandingPage() {
 
       <div className="from-background via-background to-muted/20 fixed inset-0 -z-10 bg-gradient-to-b" />
 
+      <LandingNavbar />
       <HeroSection />
     </div>
   )

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
@@ -18,13 +21,12 @@
     "format:write": "oxfmt",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "preview": "next build && next start",
+    "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.8",
     "@clerk/clerk-react": "^5.49.0",
-    "@clerk/elements": "^0.24.13",
     "@clerk/tanstack-react-start": "^0.29.8",
     "@clerk/themes": "^2.4.57",
     "@hookform/resolvers": "^5.2.2",
@@ -40,7 +42,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@radix-ui/react-visually-hidden": "^1.2.4",
-    "@t3-oss/env-nextjs": "^0.13.10",
+    "@t3-oss/env-core": "^0.13.10",
     "@tanstack/react-devtools": "^0.9.6",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.84.2",
@@ -62,7 +64,6 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.71.2",
-    "server-only": "^0.0.1",
     "sonner": "^2.0.7",
     "superjson": "^2.2.6",
     "tailwind-merge": "^3.5.0",
@@ -84,7 +85,7 @@
     "lefthook": "^2.1.2",
     "oxfmt": "^0.36.0",
     "oxlint": "^1.51.0",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.8",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",

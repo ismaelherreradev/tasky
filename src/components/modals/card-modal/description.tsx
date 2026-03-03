@@ -1,5 +1,3 @@
-"use client";
-
 import { AlignLeft, Edit3 } from "lucide-react";
 import { type ElementRef, useRef, useState } from "react";
 import { toast } from "sonner";

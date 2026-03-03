@@ -1,7 +1,5 @@
-"use client";
-
-import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react"
+import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -25,16 +23,16 @@ type CreateBoardDialogProps = {
 export function CreateBoardDialog({ children, orgId }: CreateBoardDialogProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
-  const router = useRouter();
-  const utils = api.useUtils();
+  const navigate = useNavigate()
+  const utils = api.useUtils()
 
   const { mutate, error, isPending } = api.board.create.useMutation({
     onSuccess: async (data) => {
       toast.success(`Board "${data?.title}" created successfully!`);
-      await utils.board.getBoards.invalidate({ orgId });
-      setOpen(false);
-      setTitle("");
-      router.push(`/board/${data?.id}`);
+      await utils.board.getBoards.invalidate({ orgId })
+      setOpen(false)
+      setTitle("")
+      void navigate({ to: "/board/$id", params: { id: String(data?.id) } })
     },
     onError: (error: unknown) => {
       const errorMessage =

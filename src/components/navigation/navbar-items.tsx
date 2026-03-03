@@ -1,21 +1,18 @@
-"use client";
-
 import {
   ClerkLoaded,
   ClerkLoading,
   OrganizationSwitcher,
   UserButton,
-} from "@clerk/nextjs";
+} from "@clerk/clerk-react"
 import {
   ActivityIcon,
   ChevronDown,
   LayoutDashboardIcon,
   SettingsIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useMemo } from "react";
-import { Button } from "~/components/ui/button";
+} from "lucide-react"
+import { Link, useRouterState } from "@tanstack/react-router"
+import { useMemo } from "react"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,23 +21,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Skeleton } from "~/components/ui/skeleton";
-import { useBoardPath, useOrganizationPath } from "~/hooks/use-path-matcher";
-import type { BoardSelect } from "~/server/db/schema";
-import { api } from "~/trpc/react";
+} from "~/components/ui/dropdown-menu"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Skeleton } from "~/components/ui/skeleton"
+import type { BoardSelect } from "~/server/db/schema"
+import { api } from "~/trpc/react"
 
 type ItemProps = {
   orgId: string;
 };
 
 function BoardDropdownItem({ board }: { board: BoardSelect }) {
-  const { path, isMatchingPath } = useBoardPath("Board", board.id.toString());
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isMatchingPath = pathname === `/board/${board.id}`
 
   return (
     <DropdownMenuItem asChild>
-      <Link href={path} className="w-full cursor-pointer">
+      <Link to="/board/$id" params={{ id: String(board.id) }} className="w-full cursor-pointer">
         <div className="flex w-full items-center gap-2">
           <LayoutDashboardIcon size={14} className="text-muted-foreground" />
           <span
@@ -51,17 +48,17 @@ function BoardDropdownItem({ board }: { board: BoardSelect }) {
         </div>
       </Link>
     </DropdownMenuItem>
-  );
+  )
 }
 
 export function SelectBoardButton({ orgId }: ItemProps) {
-  const { data: boards, isPending } = api.board.getBoards.useQuery({ orgId });
+  const { data: boards, isPending } = api.board.getBoards.useQuery({ orgId })
   const memoizedBoards = useMemo(
     () => boards as BoardSelect[] | undefined,
     [boards],
-  );
-  const pathname = usePathname();
-  const isActive = pathname.includes("board");
+  )
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isActive = pathname.includes("board")
 
   return (
     <DropdownMenu>
@@ -105,7 +102,8 @@ export function SelectBoardButton({ orgId }: ItemProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
-            href={`/organization/${orgId}`}
+            to="/organization/$id"
+            params={{ id: orgId }}
             className="text-primary w-full cursor-pointer font-medium"
           >
             <LayoutDashboardIcon size={14} className="mr-2" />
@@ -114,11 +112,12 @@ export function SelectBoardButton({ orgId }: ItemProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }
 
 export function SettingsButton({ orgId }: ItemProps) {
-  const { path, isMatchingPath } = useOrganizationPath("Settings", orgId);
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isMatchingPath = pathname === `/organization/${orgId}/settings`
 
   return (
     <Button
@@ -127,16 +126,17 @@ export function SettingsButton({ orgId }: ItemProps) {
       className="h-8 gap-2 px-3 font-medium transition-all hover:scale-105"
       asChild
     >
-      <Link href={path}>
+      <Link to="/organization/$id/settings" params={{ id: orgId }}>
         <SettingsIcon size={16} />
         <span className="hidden sm:inline">Settings</span>
       </Link>
     </Button>
-  );
+  )
 }
 
 export function ActivityButton({ orgId }: ItemProps) {
-  const { path, isMatchingPath } = useOrganizationPath("Activity", orgId);
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isMatchingPath = pathname === `/organization/${orgId}/activity`
 
   return (
     <Button
@@ -145,12 +145,12 @@ export function ActivityButton({ orgId }: ItemProps) {
       className="h-8 gap-2 px-3 font-medium transition-all hover:scale-105"
       asChild
     >
-      <Link href={path}>
+      <Link to="/organization/$id/activity" params={{ id: orgId }}>
         <ActivityIcon size={16} />
         <span className="hidden sm:inline">Activity</span>
       </Link>
     </Button>
-  );
+  )
 }
 
 export function OrganizationSwitcherButton() {
@@ -168,7 +168,7 @@ export function OrganizationSwitcherButton() {
         />
       </ClerkLoaded>
     </div>
-  );
+  )
 }
 
 export function UserClerkButton() {
@@ -181,5 +181,5 @@ export function UserClerkButton() {
         <UserButton />
       </ClerkLoaded>
     </div>
-  );
+  )
 }

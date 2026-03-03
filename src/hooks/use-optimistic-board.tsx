@@ -1,4 +1,3 @@
-"use client";
 
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
 import { toast } from "sonner";

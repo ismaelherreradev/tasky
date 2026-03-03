@@ -1,4 +1,3 @@
-"use client";
 
 import { Activity, FileText, LayoutList } from "lucide-react";
 import { cn } from "~/lib/utils";

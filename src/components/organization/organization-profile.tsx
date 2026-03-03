@@ -1,6 +1,4 @@
-"use client";
-
-import { OrganizationProfile } from "@clerk/nextjs";
+import { OrganizationProfile } from "@clerk/clerk-react";
 import { dark, experimental__simple } from "@clerk/themes";
 import { useTheme } from "next-themes";
 

@@ -1,5 +1,3 @@
-"use client";
-
 import { CreditCard } from "lucide-react";
 import { type ElementRef, useRef, useState } from "react";
 import { toast } from "sonner";

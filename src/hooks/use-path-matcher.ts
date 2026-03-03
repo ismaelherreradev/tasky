@@ -1,31 +1,31 @@
-import { usePathname } from "next/navigation";
+import { useRouterState } from "@tanstack/react-router"
 
-import { Paths } from "~/config/site";
+import { Paths } from "~/config/site"
 
 export type PathKey = keyof typeof Paths;
 export type PathValue = (typeof Paths)[PathKey];
 
 export function usePathMatcher(targetPath: string) {
-  const pathname = usePathname();
-  return pathname === targetPath;
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  return pathname === targetPath
 }
 
 export function generatePath(key: PathKey, ...params: string[]): PathValue {
-  let path = Paths[key];
+  let path = Paths[key]
   params.forEach((param, index) => {
-    path = path.replace(`:param${index + 1}`, param) as PathValue;
-  });
-  return path;
+    path = path.replace(`:param${index + 1}`, param) as PathValue
+  })
+  return path
 }
 
 export function useBoardPath(pathKey: PathKey, boardId: string) {
-  const path = generatePath(pathKey, boardId);
-  const isMatchingPath = usePathMatcher(path);
-  return { path, isMatchingPath };
+  const path = generatePath(pathKey, boardId)
+  const isMatchingPath = usePathMatcher(path)
+  return { path, isMatchingPath }
 }
 
 export function useOrganizationPath(pathKey: PathKey, orgId: string) {
-  const path = generatePath(pathKey, orgId);
-  const isMatchingPath = usePathMatcher(path);
-  return { path, isMatchingPath };
+  const path = generatePath(pathKey, orgId)
+  const isMatchingPath = usePathMatcher(path)
+  return { path, isMatchingPath }
 }

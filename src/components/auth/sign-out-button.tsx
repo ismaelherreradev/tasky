@@ -1,6 +1,4 @@
-"use client";
-
-import { useClerk } from "@clerk/nextjs";
+import { useClerk } from "@clerk/clerk-react";
 import { Button } from "~/components/ui/button";
 import { Paths } from "~/config/site";
 

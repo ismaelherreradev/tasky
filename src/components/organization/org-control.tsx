@@ -1,20 +1,20 @@
-"use client";
+import { useOrganizationList } from "@clerk/clerk-react"
+import { useEffect } from "react"
 
-import { useOrganizationList } from "@clerk/nextjs";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
+type OrgControlProps = {
+  id: string;
+};
 
-export function OrgControl() {
-  const params = useParams();
-  const { setActive } = useOrganizationList();
+export function OrgControl({ id }: OrgControlProps) {
+  const { setActive } = useOrganizationList()
 
   useEffect(() => {
-    if (!setActive) return;
+    if (!setActive) return
 
     void setActive({
-      organization: params.id as string,
-    });
-  }, [setActive, params.id]);
+      organization: id,
+    })
+  }, [setActive, id])
 
-  return null;
+  return null
 }

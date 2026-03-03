@@ -1,7 +1,4 @@
-"use client";
-
-import { Plus, X } from "lucide-react";
-import { useParams } from "next/navigation";
+import { Plus, X } from "lucide-react"
 import {
   type FormEvent,
   type KeyboardEvent,
@@ -15,10 +12,13 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
 
-import { ListWrapper } from "../board/list/list-wrapper";
+import { ListWrapper } from "../board/list/list-wrapper"
 
-export function ListForm() {
-  const params = useParams();
+type ListFormProps = {
+  boardId: number;
+};
+
+export function ListForm({ boardId }: ListFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -60,7 +60,7 @@ export function ListForm() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    mutate({ title, boardId: Number(params.id) });
+    mutate({ title, boardId });
   };
 
   return (

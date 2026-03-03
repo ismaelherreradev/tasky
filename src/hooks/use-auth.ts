@@ -1,6 +1,4 @@
-"use client";
-
-import { useOrganization, useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/clerk-react";
 
 export function useAuth() {
   const { user, isLoaded: userLoaded } = useUser();

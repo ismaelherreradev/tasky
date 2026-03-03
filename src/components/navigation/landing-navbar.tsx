@@ -1,8 +1,8 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 import { Paths } from "~/config/site";
 
-export async function LandingNavbar() {
+export function LandingNavbar() {
   return (
     <nav className="fixed inset-x-0 flex h-20">
       <div className="container flex w-full items-center justify-between gap-4">
@@ -11,10 +11,10 @@ export async function LandingNavbar() {
         </h1>
         <div className="space-x-4">
           <Button size="sm" variant="ghost" asChild>
-            <Link href={Paths.SignInPage}>Sign in</Link>
+            <Link to={Paths.SignInPage}>Sign in</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href={Paths.SignUpPage}>Get started</Link>
+            <Link to={Paths.SignUpPage}>Get started</Link>
           </Button>
         </div>
       </div>

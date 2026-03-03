@@ -1,4 +1,3 @@
-"use client";
 
 import { Activity as ActivityIcon, Clock } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";

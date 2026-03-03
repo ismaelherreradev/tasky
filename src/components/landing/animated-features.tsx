@@ -1,4 +1,3 @@
-"use client";
 
 import { motion, useInView } from "framer-motion";
 import { Calendar, Users, Zap } from "lucide-react";
