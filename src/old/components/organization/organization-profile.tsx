@@ -1,7 +1,7 @@
-"use client";
-
+"use client";;
 import { OrganizationProfile } from "@clerk/nextjs";
-import { dark, experimental__simple } from "@clerk/themes";
+import { dark } from "@clerk/ui/themes";
+import { simple } from "@clerk/ui/themes/experimental";
 import { useTheme } from "next-themes";
 
 export default function OrganizationProfileSettings() {
@@ -11,7 +11,7 @@ export default function OrganizationProfileSettings() {
     <OrganizationProfile
       routing="hash"
       appearance={{
-        baseTheme: theme === "dark" ? dark : experimental__simple,
+        theme: theme === "dark" ? dark : simple,
         elements: {
           rootBox: {
             boxShadow: "none",
