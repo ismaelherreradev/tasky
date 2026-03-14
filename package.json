@@ -25,6 +25,7 @@
     "@clerk/react": "^6.1.0",
     "@clerk/ui": "^1.2.1",
     "@cloudflare/vite-plugin": "^1.26.0",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
     "@libsql/client": "^0.17.0",
     "@phosphor-icons/react": "^2.1.10",
