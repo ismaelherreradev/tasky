@@ -81,7 +81,7 @@
 }
 
 @theme inline {
-  --font-mono: var(--font-mono);
+  --font-mono: 'JetBrains Mono Variable', monospace;
 
   --color-sidebar-ring: var(--sidebar-ring);
 
