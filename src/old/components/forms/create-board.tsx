@@ -145,11 +145,7 @@ export function CreateBoardDialog({ children, orgId }: CreateBoardDialogProps) {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isPending || !title.trim()}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={isPending || !title.trim()} className="gap-2">
               {isPending ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
