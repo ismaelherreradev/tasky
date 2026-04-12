@@ -4,6 +4,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 
 import appCss from "../styles.css?url"
 
+import ClerkProvider from "../integrations/clerk/provider"
 // import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
 interface MyRouterContext {
@@ -44,26 +45,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            // TanStackQueryDevtools,
-          ]}
-        />
-
-        {/**<TanStackQueryProvider>
-        </TanStackQueryProvider>
+      <body className="relative">
         <ClerkProvider>
-        </ClerkProvider>**/}
-
+          <div className="isolate relative flex min-h-svh flex-col">{children}</div>
+          <TanStackDevtools
+            config={{
+              position: "bottom-right",
+            }}
+            plugins={[
+              {
+                name: "Tanstack Router",
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              // TanStackQueryDevtools,
+            ]}
+          />
+        </ClerkProvider>
         <Scripts />
       </body>
     </html>
