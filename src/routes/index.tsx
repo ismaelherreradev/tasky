@@ -1,8 +1,6 @@
-import { Show, UserButton } from "@clerk/tanstack-react-start"
 import { createFileRoute } from "@tanstack/react-router"
 
 import AuthModal from "#/components/dialogs/auth"
-import { Button } from "#/components/ui/button"
 import { SiteConfig } from "#/old/config/site"
 
 export const Route = createFileRoute("/")({ component: MainApp })
@@ -20,14 +18,6 @@ function MainApp() {
 
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
         <AuthModal />
-
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
-
-        <Button variant="ghost" size="lg">
-          Sign in
-        </Button>
       </div>
     </section>
   )

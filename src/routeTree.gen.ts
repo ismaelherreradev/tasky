@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SsoCallbackRouteImport } from './routes/sso-callback'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProtectedOrganizationRouteImport } from './routes/_protected/organization'
+import { Route as ProtectedOrganizationsRouteImport } from './routes/_protected/organizations'
 
 const SsoCallbackRoute = SsoCallbackRouteImport.update({
   id: '/sso-callback',
@@ -28,40 +28,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedOrganizationRoute = ProtectedOrganizationRouteImport.update({
-  id: '/organization',
-  path: '/organization',
+const ProtectedOrganizationsRoute = ProtectedOrganizationsRouteImport.update({
+  id: '/organizations',
+  path: '/organizations',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/organization': typeof ProtectedOrganizationRoute
+  '/organizations': typeof ProtectedOrganizationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/organization': typeof ProtectedOrganizationRoute
+  '/organizations': typeof ProtectedOrganizationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_protected': typeof ProtectedRouteWithChildren
   '/sso-callback': typeof SsoCallbackRoute
-  '/_protected/organization': typeof ProtectedOrganizationRoute
+  '/_protected/organizations': typeof ProtectedOrganizationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sso-callback' | '/organization'
+  fullPaths: '/' | '/sso-callback' | '/organizations'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sso-callback' | '/organization'
+  to: '/' | '/sso-callback' | '/organizations'
   id:
     | '__root__'
     | '/'
     | '/_protected'
     | '/sso-callback'
-    | '/_protected/organization'
+    | '/_protected/organizations'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,22 +93,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/organization': {
-      id: '/_protected/organization'
-      path: '/organization'
-      fullPath: '/organization'
-      preLoaderRoute: typeof ProtectedOrganizationRouteImport
+    '/_protected/organizations': {
+      id: '/_protected/organizations'
+      path: '/organizations'
+      fullPath: '/organizations'
+      preLoaderRoute: typeof ProtectedOrganizationsRouteImport
       parentRoute: typeof ProtectedRoute
     }
   }
 }
 
 interface ProtectedRouteChildren {
-  ProtectedOrganizationRoute: typeof ProtectedOrganizationRoute
+  ProtectedOrganizationsRoute: typeof ProtectedOrganizationsRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedOrganizationRoute: ProtectedOrganizationRoute,
+  ProtectedOrganizationsRoute: ProtectedOrganizationsRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(

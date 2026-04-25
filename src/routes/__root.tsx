@@ -1,10 +1,10 @@
+import { TanStackDevtools } from "@tanstack/react-devtools"
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
-
-import appCss from "../styles.css?url"
 
 import ClerkProvider from "../integrations/clerk/provider"
+
+import appCss from "../styles.css?url"
 // import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
 interface MyRouterContext {
@@ -47,7 +47,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="relative">
         <ClerkProvider>
-          <div className="isolate relative flex min-h-svh flex-col">{children}</div>
+          <div className="relative isolate flex min-h-svh flex-col">{children}</div>
           <TanStackDevtools
             config={{
               position: "bottom-right",
