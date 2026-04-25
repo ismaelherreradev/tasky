@@ -15,7 +15,7 @@ export default function OAuth() {
     const { error } = await signIn.sso({
       strategy,
       redirectCallbackUrl: "/sso-callback",
-      redirectUrl: "/",
+      redirectUrl: "/organization",
     })
 
     if (error) {
