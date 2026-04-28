@@ -3,13 +3,17 @@ import { redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 
 export const getSession = createServerFn().handler(async () => {
-  const { isAuthenticated, userId } = await auth()
+  const { isAuthenticated, userId, orgId } = await auth()
 
   if (!isAuthenticated) {
     throw redirect({
       to: "/",
     })
+  } else if (!orgId) {
+    throw redirect({
+      to: "/select-org",
+    })
   }
 
-  return { userId }
+  return { userId, orgId }
 })

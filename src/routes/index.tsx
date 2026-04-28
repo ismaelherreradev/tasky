@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 import AuthModal from "#/components/dialogs/auth"
-import { SiteConfig } from "#/old/config/site"
+import { SiteConfig } from "#/config/site"
 
 export const Route = createFileRoute("/")({ component: MainApp })
 
