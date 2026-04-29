@@ -1,9 +1,14 @@
 import { and, eq, inArray } from "drizzle-orm"
-import type { ProtectedTRPCContext } from "~/server/api/trpc"
-import { boards, cards, type EntityType, lists } from "~/server/db/schema"
 
-import { createCrudHandlers } from "../../shared/crud-handler"
-import { createAuditLog, requireOrgAccess, validateOrgAccess } from "../../shared/db-utils"
+import { boards, cards, type EntityType, lists } from "#/db/schema"
+import type { ProtectedTRPCContext } from "#/integrations/trpc/init"
+import { createCrudHandlers } from "#/integrations/trpc/shared/crud-handler"
+import {
+  createAuditLog,
+  requireOrgAccess,
+  validateOrgAccess,
+} from "#/integrations/trpc/shared/db-utils"
+
 import type * as Schema from "./board.schema"
 
 type Board<T> = {

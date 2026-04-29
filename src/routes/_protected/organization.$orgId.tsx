@@ -1,4 +1,6 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
+
+import { BoardsClient } from "#/components/organization"
 
 export const Route = createFileRoute("/_protected/organization/$orgId")({
   component: RouteComponent,
@@ -7,10 +9,5 @@ export const Route = createFileRoute("/_protected/organization/$orgId")({
 function RouteComponent() {
   const { orgId } = Route.useParams()
 
-  return (
-    <div>
-      organization {orgId}
-      <Outlet />
-    </div>
-  )
+  return <BoardsClient initialBoards={[]} orgId={orgId} />
 }

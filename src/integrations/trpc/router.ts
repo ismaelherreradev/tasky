@@ -1,25 +1,17 @@
-import { z } from "zod";
+import { createTRPCRouter, createCallerFactory } from "./init"
 
-import { createTRPCRouter, publicProcedure } from "./init";
+// import { cardRouter } from "~/server/api/routers/card/_router";
+// import { listRouter } from "~/server/api/routers/list/_router";
+// import { logsRouter } from "~/server/api/routers/logs/_router";
+//
+export const appRouter = createTRPCRouter({
+  board: boardRouter,
+  // list: listRouter,
+  // card: cardRouter,
+  // logs: logsRouter,
+})
 
-import type { TRPCRouterRecord } from "@trpc/server";
+import { boardRouter } from "./routers/board/_router"
 
-const todos = [
-  { id: 1, name: "Get groceries" },
-  { id: 2, name: "Buy a new phone" },
-  { id: 3, name: "Finish the project" },
-];
-
-const todosRouter = {
-  list: publicProcedure.query(() => todos),
-  add: publicProcedure.input(z.object({ name: z.string() })).mutation(({ input }) => {
-    const newTodo = { id: todos.length + 1, name: input.name };
-    todos.push(newTodo);
-    return newTodo;
-  }),
-} satisfies TRPCRouterRecord;
-
-export const trpcRouter = createTRPCRouter({
-  todos: todosRouter,
-});
-export type TRPCRouter = typeof trpcRouter;
+export const createCaller = createCallerFactory(appRouter)
+export type AppRouter = typeof appRouter
