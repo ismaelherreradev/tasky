@@ -1,6 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm"
 
 import { boards, cards, type EntityType, lists } from "#/db/schema"
+import type { BoardSelect } from "#/db/schema"
 import type { ProtectedTRPCContext } from "#/integrations/trpc/init"
 import { createCrudHandlers } from "#/integrations/trpc/shared/crud-handler"
 import {
@@ -10,7 +11,6 @@ import {
 } from "#/integrations/trpc/shared/db-utils"
 
 import type * as Schema from "./board.schema"
-
 type Board<T> = {
   ctx: ProtectedTRPCContext
   input: T
@@ -37,7 +37,7 @@ export async function getBoards({ ctx, input }: Board<Schema.TGetBoards>) {
   validateOrgAccess(ctx, input.orgId)
 
   const boardResults = await boardCrud.findMany(ctx, eq(boards.orgId, input.orgId))
-  return boardResults ?? null
+  return boardResults as BoardSelect[]
 }
 
 export async function getBoardById({ ctx, input }: Board<Schema.TGetBoardById>) {

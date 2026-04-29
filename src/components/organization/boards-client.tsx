@@ -12,12 +12,12 @@ import { LayoutIcon } from "@phosphor-icons/react"
 //   CardTitle,
 // } from "#/components/ui/card"
 // import { ConfirmationDialog } from "~/components/ui/confirmation-dialog";
-import type { BoardSelect } from "#/server/db/schema"
+import type { BoardSelect } from "#/db/schema"
 
 // import { Button } from "../ui/button"
 // import { api } from "~/trpc/react";
 
-function BoardCard({ board, orgId }: { board: []; orgId: string }) {
+function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
   // const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   console.log({ board, orgId })
   // const utils = api.useUtils();
@@ -112,22 +112,11 @@ function BoardCard({ board, orgId }: { board: []; orgId: string }) {
 }
 
 interface BoardsClientProps {
-  initialBoards: BoardSelect[] | null
+  boards: BoardSelect[] | null
   orgId: string
 }
 
-export function BoardsClient({ initialBoards, orgId }: BoardsClientProps) {
-  // const { data: boards } = api.board.getBoards.useQuery(
-  //   { orgId },
-  //   {
-  //     initialData: initialBoards ?? undefined,
-  //   },
-  // );
-  //
-  //
-  console.log({ initialBoards, orgId })
-  const boards: string | any[] = []
-
+export function BoardsClient({ boards, orgId }: BoardsClientProps) {
   return (
     <section className="mt-10 space-y-8 pb-16">
       <div className="flex items-center justify-between">
@@ -166,12 +155,11 @@ export function BoardsClient({ initialBoards, orgId }: BoardsClientProps) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <h1>Boards</h1>
 
-          <BoardCard key={"da"} board={[]} orgId={"sa"} />
-          {/*{(boards as BoardSelect[])?.map((board) => (
-            <BoardCard key={board.id} board={board} orgId={orgId} />
+          {boards.map((b) => (
+            <BoardCard key={b.id} board={b} orgId={orgId} />
           ))}
 
-          <CreateBoardDialog orgId={orgId}>
+          {/*<CreateBoardDialog orgId={orgId}>
             <Card className="group h-36 cursor-pointer border-2 border-dashed transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/5 hover:shadow-md">
               <CardContent className="flex h-full flex-col items-center justify-center space-y-3">
                 <div className="rounded-full border-2 border-muted-foreground/30 border-dashed p-3 transition-colors group-hover:border-primary/50">
