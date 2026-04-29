@@ -5,7 +5,7 @@ import type { ReactNode } from "react"
 import superjson from "superjson"
 
 import { TRPCProvider } from "#/integrations/trpc/react"
-import type { TRPCRouter } from "#/integrations/trpc/router"
+import type { AppRouter } from "#/integrations/trpc/router"
 
 function getUrl() {
   const base = (() => {
@@ -15,7 +15,7 @@ function getUrl() {
   return `${base}/api/trpc`
 }
 
-export const trpcClient = createTRPCClient<TRPCRouter>({
+export const trpcClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchStreamLink({
       transformer: superjson,
