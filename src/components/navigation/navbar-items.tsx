@@ -127,7 +127,7 @@ export function SettingsButton({ orgId }: ItemProps) {
       size="sm"
       variant="link"
       render={
-        <Link to="/organizaton/$orgId/settings" params={{ orgId }}>
+        <Link to="/organization/$orgId/settings" params={{ orgId }}>
           <GearIcon size={16} />
           <span className="hidden sm:inline">Settings</span>
         </Link>

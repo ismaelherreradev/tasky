@@ -9,8 +9,8 @@ function OrganizationListPage() {
   return (
     <OrganizationList
       hidePersonal
-      afterCreateOrganizationUrl={(org) => `/app/organization/${org.id}`}
-      afterSelectOrganizationUrl={(org) => `/app/organization/${org.id}`}
+      afterCreateOrganizationUrl={(org) => `/organization/${org.id}`}
+      afterSelectOrganizationUrl={(org) => `/organization/${org.id}`}
     />
   )
 }

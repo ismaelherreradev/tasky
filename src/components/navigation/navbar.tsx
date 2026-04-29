@@ -37,7 +37,7 @@ export function Navbar({ orgId }: NavbarProps) {
           <nav className="hidden items-center gap-2 md:flex">
             {/* <SelectBoardButton orgId={orgId} />
             <ActivityButton orgId={orgId} />  */}
-            <SettingsButton orgId={orgId} />{" "}
+            <SettingsButton orgId={orgId} />
           </nav>
 
           <div className="ml-4 flex items-center gap-3 border-l border-border/40 pl-4">

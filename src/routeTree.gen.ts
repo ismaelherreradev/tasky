@@ -15,7 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedSelectOrgRouteImport } from './routes/_protected/select-org'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 import { Route as ProtectedOrganizationOrgIdRouteImport } from './routes/_protected/organization.$orgId'
-import { Route as ProtectedOrganizatonOrgIdSettingsRouteImport } from './routes/_protected/organizaton.$orgId.settings'
+import { Route as ProtectedOrganizationOrgIdSettingsRouteImport } from './routes/_protected/organization_.$orgId.settings'
 
 const SsoCallbackRoute = SsoCallbackRouteImport.update({
   id: '/sso-callback',
@@ -47,10 +47,10 @@ const ProtectedOrganizationOrgIdRoute =
     path: '/organization/$orgId',
     getParentRoute: () => ProtectedRoute,
   } as any)
-const ProtectedOrganizatonOrgIdSettingsRoute =
-  ProtectedOrganizatonOrgIdSettingsRouteImport.update({
-    id: '/organizaton/$orgId/settings',
-    path: '/organizaton/$orgId/settings',
+const ProtectedOrganizationOrgIdSettingsRoute =
+  ProtectedOrganizationOrgIdSettingsRouteImport.update({
+    id: '/organization_/$orgId/settings',
+    path: '/organization/$orgId/settings',
     getParentRoute: () => ProtectedRoute,
   } as any)
 
@@ -60,7 +60,7 @@ export interface FileRoutesByFullPath {
   '/select-org': typeof ProtectedSelectOrgRoute
   '/organization/$orgId': typeof ProtectedOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
-  '/organizaton/$orgId/settings': typeof ProtectedOrganizatonOrgIdSettingsRoute
+  '/organization/$orgId/settings': typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,7 +68,7 @@ export interface FileRoutesByTo {
   '/select-org': typeof ProtectedSelectOrgRoute
   '/organization/$orgId': typeof ProtectedOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
-  '/organizaton/$orgId/settings': typeof ProtectedOrganizatonOrgIdSettingsRoute
+  '/organization/$orgId/settings': typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,7 +78,7 @@ export interface FileRoutesById {
   '/_protected/select-org': typeof ProtectedSelectOrgRoute
   '/_protected/organization/$orgId': typeof ProtectedOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
-  '/_protected/organizaton/$orgId/settings': typeof ProtectedOrganizatonOrgIdSettingsRoute
+  '/_protected/organization_/$orgId/settings': typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,7 +88,7 @@ export interface FileRouteTypes {
     | '/select-org'
     | '/organization/$orgId'
     | '/api/trpc/$'
-    | '/organizaton/$orgId/settings'
+    | '/organization/$orgId/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -96,7 +96,7 @@ export interface FileRouteTypes {
     | '/select-org'
     | '/organization/$orgId'
     | '/api/trpc/$'
-    | '/organizaton/$orgId/settings'
+    | '/organization/$orgId/settings'
   id:
     | '__root__'
     | '/'
@@ -105,7 +105,7 @@ export interface FileRouteTypes {
     | '/_protected/select-org'
     | '/_protected/organization/$orgId'
     | '/api/trpc/$'
-    | '/_protected/organizaton/$orgId/settings'
+    | '/_protected/organization_/$orgId/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -159,11 +159,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOrganizationOrgIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/organizaton/$orgId/settings': {
-      id: '/_protected/organizaton/$orgId/settings'
-      path: '/organizaton/$orgId/settings'
-      fullPath: '/organizaton/$orgId/settings'
-      preLoaderRoute: typeof ProtectedOrganizatonOrgIdSettingsRouteImport
+    '/_protected/organization_/$orgId/settings': {
+      id: '/_protected/organization_/$orgId/settings'
+      path: '/organization/$orgId/settings'
+      fullPath: '/organization/$orgId/settings'
+      preLoaderRoute: typeof ProtectedOrganizationOrgIdSettingsRouteImport
       parentRoute: typeof ProtectedRoute
     }
   }
@@ -172,14 +172,14 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteChildren {
   ProtectedSelectOrgRoute: typeof ProtectedSelectOrgRoute
   ProtectedOrganizationOrgIdRoute: typeof ProtectedOrganizationOrgIdRoute
-  ProtectedOrganizatonOrgIdSettingsRoute: typeof ProtectedOrganizatonOrgIdSettingsRoute
+  ProtectedOrganizationOrgIdSettingsRoute: typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedSelectOrgRoute: ProtectedSelectOrgRoute,
   ProtectedOrganizationOrgIdRoute: ProtectedOrganizationOrgIdRoute,
-  ProtectedOrganizatonOrgIdSettingsRoute:
-    ProtectedOrganizatonOrgIdSettingsRoute,
+  ProtectedOrganizationOrgIdSettingsRoute:
+    ProtectedOrganizationOrgIdSettingsRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
