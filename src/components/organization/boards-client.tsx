@@ -1,50 +1,49 @@
-import { LayoutIcon, TrashIcon } from "@phosphor-icons/react"
+import { LayoutIcon, TrashIcon, PlusIcon } from "@phosphor-icons/react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { TRPCClientError } from "@trpc/client"
 import { useState } from "react"
 
+import { CreateBoardDialog } from "#/components/forms"
 import { Button } from "#/components/ui/button"
-// import { useState } from "react";
-// import { toast } from "sonner";
-// import { CreateBoardDialog } from "~/components/forms";
 import {
   Card,
   CardAction,
-  // CardContent,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "#/components/ui/card"
 import { ConfirmationDialog } from "#/components/ui/confirmation-dialog"
 import type { BoardSelect } from "#/db/schema"
-// import { api } from "~/trpc/react";
+import { useTRPC } from "#/integrations/trpc/react"
+
+import { toastManager } from "../ui/toast"
 
 function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  console.log({ board, orgId })
-  // const utils = api.useUtils();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
-  // const deleteBoard = api.board.deleteBoard.useMutation({
-  //   onSuccess: async () => {
-  //     toast.success("Board deleted successfully");
-  //     await utils.board.getBoards.invalidate({ orgId });
-  //     setShowDeleteDialog(false);
-  //   },
-  //   onError: (error: unknown) => {
-  //     const errorMessage =
-  //       (
-  //         error as {
-  //           data?: { zodError?: { fieldErrors?: { boardId?: string[] } } };
-  //           message?: string;
-  //         }
-  //       )?.data?.zodError?.fieldErrors?.boardId?.[0] ??
-  //       (error as { message?: string })?.message ??
-  //       "Failed to delete board. Please try again.";
-  //     toast.error(errorMessage);
-  //   },
-  // });
+  const { mutate, isPending } = useMutation({
+    ...trpc.board.deleteBoard.mutationOptions(),
+    onSuccess: () => {
+      queryClient.setQueryData(trpc.board.getBoards.queryOptions({ orgId }).queryKey, (old) =>
+        old?.filter((b) => b.id !== board.id),
+      )
+    },
+    onError: (error) => {
+      const message =
+        error instanceof TRPCClientError
+          ? (error.data?.zodError?.fieldErrors?.boardId?.[0] ?? error.message)
+          : "Failed to delete board. Please try again."
 
-  // const handleDeleteConfirm = () => {
-  //   deleteBoard.mutate({ boardId: board.id });
-  // };
+      toastManager.add({ title: "Error", description: message })
+    },
+  })
+
+  const handleDeleteConfirm = () => {
+    mutate({ boardId: board.id })
+  }
 
   return (
     <>
@@ -94,9 +93,9 @@ function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
         onOpenChange={setShowDeleteDialog}
         title="Delete Board"
         variant="destructive"
-        confirmLabel={true ? "Deleting..." : "Delete Board"}
-        isLoading={false}
-        onConfirm={() => console.log("hi")}
+        confirmLabel={isPending ? "Deleting..." : "Delete Board"}
+        isLoading={isPending}
+        onConfirm={handleDeleteConfirm}
       >
         <div className="text-sm text-muted-foreground">
           Are you sure you want to delete this board? This action cannot be undone and will
@@ -128,11 +127,11 @@ export function BoardsClient({ boards, orgId }: BoardsClientProps) {
             Organize your projects and collaborate with your team
           </p>
         </div>
-        {/*<CreateBoardDialog orgId={orgId}>
+        <CreateBoardDialog orgId={orgId}>
           <Button size="lg" className="gap-2">
             <PlusIcon size={18} /> Create Board
           </Button>
-        </CreateBoardDialog>*/}
+        </CreateBoardDialog>
       </div>
 
       {!boards || boards.length === 0 ? (
@@ -145,40 +144,36 @@ export function BoardsClient({ boards, orgId }: BoardsClientProps) {
             Create your first board to start organizing your tasks and projects. Boards help you
             visualize your workflow and collaborate effectively.
           </p>
-          {/*<CreateBoardDialog orgId={orgId}>
+          <CreateBoardDialog orgId={orgId}>
             <Button size="lg" className="gap-2">
               <PlusIcon size={18} /> Create your first board
             </Button>
-          </CreateBoardDialog> */}
+          </CreateBoardDialog>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <h1>Boards</h1>
-
-          {boards.map((b) => (
-            <BoardCard key={b.id} board={b} orgId={orgId} />
-          ))}
-
-          {/*<CreateBoardDialog orgId={orgId}>
+          <CreateBoardDialog orgId={orgId}>
             <Card className="group h-36 cursor-pointer border-2 border-dashed transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/5 hover:shadow-md">
               <CardContent className="flex h-full flex-col items-center justify-center space-y-3">
-                <div className="rounded-full border-2 border-muted-foreground/30 border-dashed p-3 transition-colors group-hover:border-primary/50">
+                <div className="rounded-full border-2 border-dashed border-muted-foreground/30 p-3 transition-colors group-hover:border-primary/50">
                   <PlusIcon
                     size={20}
                     className="text-muted-foreground transition-colors group-hover:text-primary"
                   />
                 </div>
                 <div className="space-y-1 text-center">
-                  <p className="font-medium text-muted-foreground text-sm transition-colors group-hover:text-primary">
+                  <p className="text-sm font-medium text-muted-foreground transition-colors group-hover:text-primary">
                     Create new board
                   </p>
-                  <p className="text-muted-foreground/70 text-xs">
-                    Start a new project
-                  </p>
+                  <p className="text-xs text-muted-foreground/70">Start a new project</p>
                 </div>
               </CardContent>
             </Card>
-            </CreateBoardDialog>*/}
+          </CreateBoardDialog>
+
+          {boards.map((b) => (
+            <BoardCard key={b.id} board={b} orgId={orgId} />
+          ))}
         </div>
       )}
     </section>
