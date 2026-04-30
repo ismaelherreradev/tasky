@@ -1,47 +1,38 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react"
 
 interface ScreenReaderAnnouncementsProps {
-  announcement: string | null;
-  clearAfter?: number;
+  announcement: string | null
+  clearAfter?: number
 }
 
 export function ScreenReaderAnnouncements({
   announcement,
   clearAfter = 3000,
 }: ScreenReaderAnnouncementsProps) {
-  const announcementRef = useRef<HTMLDivElement>(null);
+  const announcementRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (announcement && announcementRef.current) {
-      announcementRef.current.textContent = "";
+      announcementRef.current.textContent = ""
 
       const timer = setTimeout(() => {
         if (announcementRef.current) {
-          announcementRef.current.textContent = announcement;
+          announcementRef.current.textContent = announcement
         }
-      }, 100);
+      }, 100)
 
       const clearTimer = setTimeout(() => {
         if (announcementRef.current) {
-          announcementRef.current.textContent = "";
+          announcementRef.current.textContent = ""
         }
-      }, clearAfter);
+      }, clearAfter)
 
       return () => {
-        clearTimeout(timer);
-        clearTimeout(clearTimer);
-      };
+        clearTimeout(timer)
+        clearTimeout(clearTimer)
+      }
     }
-  }, [announcement, clearAfter]);
+  }, [announcement, clearAfter])
 
-  return (
-    <div
-      ref={announcementRef}
-      aria-live="polite"
-      aria-atomic="true"
-      className="sr-only"
-    />
-  );
+  return <div ref={announcementRef} aria-live="polite" aria-atomic="true" className="sr-only" />
 }

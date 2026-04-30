@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { Provider } from "jotai"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+
 import { BoardNavbar, ListContainer, ScreenReaderAnnouncements } from "~/components/board"
 import { CardModal } from "~/components/modals"
 import { OptimisticBoardProvider } from "~/hooks/use-optimistic-board"
@@ -9,46 +10,6 @@ import { createPageMetadata } from "~/lib/metadata"
 import { api } from "~/trpc/server"
 
 type BoardIdPageProps = Promise<{ id: string }>
-
-export async function generateMetadata(props: { params: BoardIdPageProps }): Promise<Metadata> {
-  const { orgId } = await auth()
-
-  if (!orgId) {
-    return createPageMetadata({
-      title: "Board",
-      description: "Access your project board to manage tasks and collaborate with your team",
-      noIndex: true,
-    })
-  }
-
-  try {
-    const { id } = await props.params
-    const board = await api.board.getBoardById({
-      boardId: Number(id),
-      orgId,
-    })
-
-    if (!board) {
-      return createPageMetadata({
-        title: "Board Not Found",
-        description: "The requested board could not be found",
-        noIndex: true,
-      })
-    }
-
-    return createPageMetadata({
-      title: board.title,
-      description: `Manage tasks and collaborate on ${board.title} board with your team`,
-      path: `/board/${board.id}`,
-    })
-  } catch {
-    return createPageMetadata({
-      title: "Board",
-      description: "Access your project board to manage tasks and collaborate with your team",
-      noIndex: true,
-    })
-  }
-}
 
 export default async function BoardIdPage(props: { params: BoardIdPageProps }) {
   const { orgId } = await auth()

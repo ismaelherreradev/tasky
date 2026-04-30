@@ -1,97 +1,92 @@
-"use client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useEffect, useRef, useState } from "react"
 
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { Input } from "~/components/ui/input";
-import type { BoardSelect } from "~/server/db/schema";
-import { api } from "~/trpc/react";
+import { Input } from "#/components/ui/input"
+import { toastManager } from "#/components/ui/toast"
+import type { BoardSelect } from "#/db/schema"
+import { useTRPC } from "#/integrations/trpc/react"
 
 interface BoardTitleFormProps {
-  data: BoardSelect;
+  boardId: number
+  orgId: string
 }
+export function BoardTitleForm({ boardId, orgId }: BoardTitleFormProps) {
+  const trpc = useTRPC()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [title, setTitle] = useState("")
 
-export function BoardTitleForm({ data }: BoardTitleFormProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(data.title);
+  const { data: board } = useQuery(trpc.board.getBoardById.queryOptions({ boardId, orgId }))
 
-  const updateBoard = api.board.updateBoard.useMutation({
-    onSuccess: () => {
-      toast.success("Board title updated successfully!");
-      setIsEditing(false);
+  const queryClient = useQueryClient()
+
+  const { mutate, isPending } = useMutation({
+    ...trpc.board.updateBoard.mutationOptions(),
+
+    onSuccess: (data) => {
+      const board = data as BoardSelect
+
+      queryClient.setQueryData<BoardSelect>(
+        trpc.board.getBoardById.queryOptions({ boardId, orgId }).queryKey,
+        (old) => {
+          if (!old) return board
+          return { ...old, ...board }
+        },
+      )
+
+      toastManager.add({ title: "Success", id: board.title, description: "Board title updated" })
+      setIsEditing(false)
     },
-    onError: (error: unknown) => {
-      const errorMessage =
-        (
-          error as {
-            data?: { zodError?: { fieldErrors?: { title?: string[] } } };
-            message?: string;
-          }
-        )?.data?.zodError?.fieldErrors?.title?.[0] ??
-        (error as { message?: string })?.message ??
-        "Failed to update board title";
-      toast.error(errorMessage);
-      setTitle(data.title);
-      setIsEditing(false);
+    onError: (error) => {
+      toastManager.add({ title: "Error", description: error.message })
     },
-  });
+  })
 
   useEffect(() => {
-    setTitle(data.title);
-  }, [data.title]);
-
+    if (board?.title) setTitle(board.title)
+  }, [board?.title])
   const enableEditing = () => {
-    setIsEditing(true);
-    setTitle(data.title);
+    setIsEditing(true)
+    if (board?.title) setTitle(board.title)
     setTimeout(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    }, 0);
-  };
-
+      inputRef.current?.focus()
+      inputRef.current?.select()
+    }, 0)
+  }
   const disableEditing = () => {
-    setIsEditing(false);
-    setTitle(data.title);
-  };
+    setIsEditing(false)
+    if (board?.title) setTitle(board.title)
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (isPending) return
 
-    if (updateBoard.isPending) return;
-
-    const trimmedTitle = title.trim();
+    const trimmedTitle = title.trim()
 
     if (!trimmedTitle) {
-      toast.error("Board title cannot be empty");
-      setTitle(data.title);
-      return;
+      toastManager.add({ title: "Error", description: "Title cannot be empty" })
+      return
     }
 
-    if (trimmedTitle === data.title) {
-      setIsEditing(false);
-      return;
+    if (trimmedTitle === board?.title) {
+      setIsEditing(false)
+      return
     }
 
-    updateBoard.mutate({
-      boardId: data.id,
-      title: trimmedTitle,
-    });
-  };
+    mutate({ boardId, title: trimmedTitle })
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      disableEditing();
-    }
-  };
+    if (e.key === "Escape") disableEditing()
+  }
 
   const handleBlur = () => {
     setTimeout(() => {
-      if (isEditing && !updateBoard.isPending) {
-        const formEvent = new Event("submit") as unknown as React.FormEvent;
-        handleSubmit(formEvent);
-      }
-    }, 100);
-  };
+      if (isEditing && !isPending)
+        handleSubmit(new Event("submit") as unknown as React.SubmitEvent<HTMLFormElement>)
+    }, 100)
+  }
 
   if (isEditing) {
     return (
@@ -102,21 +97,21 @@ export function BoardTitleForm({ data }: BoardTitleFormProps) {
           onKeyDown={handleKeyDown}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="h-7 border-none bg-transparent px-[7px] py-1 font-bold text-lg shadow-sm transition-colors focus-visible:bg-white dark:focus-visible:bg-muted"
-          disabled={updateBoard.isPending}
+          className="h-7 border-none bg-transparent px-1.75 py-1 text-lg font-bold shadow-sm transition-colors focus-visible:bg-white dark:focus-visible:bg-muted"
+          disabled={isPending}
         />
       </form>
-    );
+    )
   }
 
   return (
     <button
       type="button"
       onClick={enableEditing}
-      className="h-auto rounded-sm p-1 px-2 text-left font-bold text-lg transition-colors hover:bg-muted/50"
-      disabled={updateBoard.isPending}
+      className="h-auto rounded-sm p-1 px-2 text-left text-lg font-bold transition-colors hover:bg-muted/50"
+      disabled={isPending}
     >
-      {data.title}
+      {board?.title ?? "Loading..."}
     </button>
-  );
+  )
 }

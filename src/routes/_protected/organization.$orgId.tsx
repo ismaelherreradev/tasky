@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_protected/organization/$orgId")({
   component: OrganizationIdPage,
   loader: async ({ context }) => {
     await context.queryClient.prefetchQuery(
-      context.trpc.board.GetBoards.queryOptions({ orgId: context.orgId }),
+      context.trpc.board.getBoards.queryOptions({ orgId: context.orgId }),
     )
   },
 })

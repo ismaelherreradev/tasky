@@ -1,5 +1,6 @@
 import { LayoutIcon, TrashIcon, PlusIcon } from "@phosphor-icons/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Link } from "@tanstack/react-router"
 import { TRPCClientError } from "@trpc/client"
 import { useState } from "react"
 
@@ -49,28 +50,30 @@ function BoardCard({ board, orgId }: { board: BoardSelect; orgId: string }) {
     <>
       <Card className="group relative flex h-36 cursor-pointer flex-col overflow-hidden border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
         <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-
-        <CardHeader className="shrink-0 pb-3">
-          <CardTitle className="flex items-center gap-3 pr-10 text-lg font-bold transition-colors group-hover:text-primary">
-            <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
-              <LayoutIcon size={18} className="text-primary" />
-            </div>
-            <span className="truncate">{board.title}</span>
-          </CardTitle>
-          <CardDescription className="text-sm opacity-70 transition-opacity group-hover:opacity-90">
-            Created{" "}
-            {board.createdAt
-              ? board.createdAt.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })
-              : "Unknown date"}
-          </CardDescription>
-        </CardHeader>
-
-        {/*<Link href={`/board/${board.id}`} className="relative z-10 flex-1">
-        </Link>*/}
+        <Link
+          to="/board/$boardId"
+          params={{ boardId: String(board.id) }}
+          className="relative z-10 flex-1"
+        >
+          <CardHeader className="shrink-0 pb-3">
+            <CardTitle className="flex items-center gap-3 pr-10 text-lg font-bold transition-colors group-hover:text-primary">
+              <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
+                <LayoutIcon size={18} className="text-primary" />
+              </div>
+              <span className="truncate">{board.title}</span>
+            </CardTitle>
+            <CardDescription className="text-sm opacity-70 transition-opacity group-hover:opacity-90">
+              Created{" "}
+              {board.createdAt
+                ? board.createdAt.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "Unknown date"}
+            </CardDescription>
+          </CardHeader>
+        </Link>
 
         <CardAction className="absolute top-4 right-4 z-20">
           <Button
