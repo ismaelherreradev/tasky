@@ -1,71 +1,70 @@
-import type { z } from "zod";
+import { z } from "zod"
 
-import {
-  createBatchItemSchema,
-  createEntitySchema,
-  createUpdateSchema,
-  idSchema,
-  orderSchema,
-  titleSchema,
-} from "../../shared/schema-utils";
+import { idSchema, orderSchema, titleSchema } from "#/integrations/trpc/shared/schema-utils"
 
 const listItemSchema = {
   id: idSchema,
   title: titleSchema,
   order: orderSchema,
-};
+}
 
-export const ZUpdateListOrder = createBatchItemSchema(listItemSchema);
+export const ZUpdateListOrder = z.object({
+  items: z.array(z.object(listItemSchema)).nonempty({ message: "At least one item is required." }),
+})
 
-export type TUpdateListOrder = z.infer<typeof ZUpdateListOrder>;
+export type TUpdateListOrder = z.infer<typeof ZUpdateListOrder>
 
-export const ZCreateList = createEntitySchema({
+export const ZCreateList = z.object({
   title: titleSchema,
   boardId: idSchema,
-});
+})
 
-export type TCreateList = z.infer<typeof ZCreateList>;
+export type TCreateList = z.infer<typeof ZCreateList>
 
-export const ZGetlistsWithCards = createEntitySchema({
+export const ZGetlistsWithCards = z.object({
   boardId: idSchema,
-});
+})
 
-export type TGetlistsWithCards = z.infer<typeof ZGetlistsWithCards>;
+export type TGetlistsWithCards = z.infer<typeof ZGetlistsWithCards>
 
-export const ZCopyList = createEntitySchema({
+export const ZCopyList = z.object({
   listId: idSchema,
   boardId: idSchema,
-});
+})
 
-export type TCopyList = z.infer<typeof ZCopyList>;
+export type TCopyList = z.infer<typeof ZCopyList>
 
-export const ZDeleteList = createEntitySchema({
+export const ZDeleteList = z.object({
   listId: idSchema,
   boardId: idSchema,
-});
+})
 
-export type TDeleteList = z.infer<typeof ZDeleteList>;
+export type TDeleteList = z.infer<typeof ZDeleteList>
 
-export const ZUpdateList = createUpdateSchema(
-  {
+export const ZUpdateList = z
+  .object({
     title: titleSchema,
     listId: idSchema,
     boardId: idSchema,
     order: orderSchema.optional(),
-  },
-  ["title", "listId", "boardId"],
-);
+  })
+  .partial()
+  .required({
+    title: true,
+    listId: true,
+    boardId: true,
+  })
 
-export type TUpdateList = z.infer<typeof ZUpdateList>;
+export type TUpdateList = z.infer<typeof ZUpdateList>
 
-export const ZGetListById = createEntitySchema({
+export const ZGetListById = z.object({
   id: idSchema,
-});
+})
 
-export type TGetListById = z.infer<typeof ZGetListById>;
+export type TGetListById = z.infer<typeof ZGetListById>
 
-export const ZGetListsByBoardId = createEntitySchema({
+export const ZGetListsByBoardId = z.object({
   boardId: idSchema,
-});
+})
 
-export type TGetListsByBoardId = z.infer<typeof ZGetListsByBoardId>;
+export type TGetListsByBoardId = z.infer<typeof ZGetListsByBoardId>

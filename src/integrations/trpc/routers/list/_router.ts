@@ -1,12 +1,10 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "#/integrations/trpc/init"
 
-import * as handler from "./list.handler";
-import * as schema from "./list.schema";
+import * as handler from "./list.handler"
+import * as schema from "./list.schema"
 
 export const listRouter = createTRPCRouter({
-  createList: protectedProcedure
-    .input(schema.ZCreateList)
-    .mutation(handler.createList),
+  createList: protectedProcedure.input(schema.ZCreateList).mutation(handler.createList),
 
   getlistsWithCards: protectedProcedure
     .input(schema.ZGetlistsWithCards)
@@ -16,23 +14,15 @@ export const listRouter = createTRPCRouter({
     .input(schema.ZUpdateListOrder)
     .mutation(handler.updateListOrder),
 
-  copyList: protectedProcedure
-    .input(schema.ZCopyList)
-    .mutation(handler.copyList),
+  copyList: protectedProcedure.input(schema.ZCopyList).mutation(handler.copyList),
 
-  deleteList: protectedProcedure
-    .input(schema.ZDeleteList)
-    .mutation(handler.deleteList),
+  deleteList: protectedProcedure.input(schema.ZDeleteList).mutation(handler.deleteList),
 
-  updateList: protectedProcedure
-    .input(schema.ZUpdateList)
-    .mutation(handler.updateList),
+  updateList: protectedProcedure.input(schema.ZUpdateList).mutation(handler.updateList),
 
-  getListById: protectedProcedure
-    .input(schema.ZGetListById)
-    .query(handler.getListById),
+  getListById: protectedProcedure.input(schema.ZGetListById).query(handler.getListById),
 
   getListsByBoardId: protectedProcedure
     .input(schema.ZGetListsByBoardId)
     .query(handler.getListsByBoardId),
-});
+})

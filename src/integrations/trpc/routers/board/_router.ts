@@ -1,4 +1,5 @@
-import { createTRPCRouter, orgProcedure, protectedProcedure } from "../../init"
+import { createTRPCRouter, orgProcedure, protectedProcedure } from "#/integrations/trpc/init"
+
 import * as handler from "./board.handler"
 import * as schema from "./board.schema"
 

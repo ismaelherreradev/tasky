@@ -1,9 +1,9 @@
-import type { z } from "zod";
+import { z } from "zod"
 
-import { createEntitySchema, idSchema } from "../../shared/schema-utils";
+import { idSchema } from "#/integrations/trpc/shared/schema-utils"
 
-export const ZGetAuditLogs = createEntitySchema({
+export const ZGetAuditLogs = z.object({
   id: idSchema,
-});
+})
 
-export type TGetAuditLogs = z.infer<typeof ZGetAuditLogs>;
+export type TGetAuditLogs = z.infer<typeof ZGetAuditLogs>

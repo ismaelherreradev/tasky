@@ -1,68 +1,67 @@
-import type { z } from "zod";
+import { z } from "zod"
 
 import {
-  createBatchItemSchema,
-  createEntitySchema,
-  createUpdateSchema,
   descriptionSchema,
   idSchema,
   orderSchema,
   titleSchema,
-} from "../../shared/schema-utils";
+} from "#/integrations/trpc/shared/schema-utils"
 
-export const ZCreateCard = createEntitySchema({
+export const ZCreateCard = z.object({
   title: titleSchema,
   listId: idSchema,
-});
+})
 
-export type TCreateCard = z.infer<typeof ZCreateCard>;
+export type TCreateCard = z.infer<typeof ZCreateCard>
 
 const cardItemSchema = {
   id: idSchema,
   title: titleSchema,
   order: orderSchema,
   listId: idSchema,
-};
+}
 
-export const ZUpdateCardOrder = createBatchItemSchema(cardItemSchema);
+export const ZUpdateCardOrder = z.object({
+  items: z.array(z.object(cardItemSchema)).nonempty({ message: "At least one item is required." }),
+})
 
-export type TUpdateCardOrder = z.infer<typeof ZUpdateCardOrder>;
+export type TUpdateCardOrder = z.infer<typeof ZUpdateCardOrder>
 
-export const ZGetCardById = createEntitySchema({
+export const ZGetCardById = z.object({
   id: idSchema,
-});
+})
 
-export type TGetCardById = z.infer<typeof ZGetCardById>;
+export type TGetCardById = z.infer<typeof ZGetCardById>
 
-export const ZUpdateCard = createUpdateSchema(
-  {
+export const ZUpdateCard = z
+  .object({
     id: idSchema,
     title: titleSchema.optional(),
     order: orderSchema.optional(),
     listId: idSchema.optional(),
     description: descriptionSchema,
-  },
-  ["id"],
-);
+  })
+  .partial()
+  .required({ id: true })
 
-export type TUpdateCard = z.infer<typeof ZUpdateCard>;
+export type TUpdateCard = z.infer<typeof ZUpdateCard>
 
-export const ZCopyCard = createEntitySchema({
+export const ZCopyCard = z.object({
   id: idSchema,
   boardId: idSchema,
-});
+})
 
-export type TCopyCard = z.infer<typeof ZCopyCard>;
+export type TCopyCard = z.infer<typeof ZCopyCard>
 
-export const ZDeleteCard = createEntitySchema({
+export const ZDeleteCard = z.object({
   id: idSchema,
   boardId: idSchema,
-});
+})
 
-export type TDeleteCard = z.infer<typeof ZDeleteCard>;
+export type TDeleteCard = z.infer<typeof ZDeleteCard>
 
-export const ZGetCardsByListId = createEntitySchema({
+export const ZGetCardsByListId = z.object({
   listId: idSchema,
-});
+})
 
-export type TGetCardsByListId = z.infer<typeof ZGetCardsByListId>;
+export type TGetCardsByListId = z.infer<typeof ZGetCardsByListId>
