@@ -1,87 +1,61 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
+import { sql } from "drizzle-orm"
+import { index, int, integer, text, sqliteTable } from "drizzle-orm/sqlite-core"
 
-import { relations, sql } from "drizzle-orm";
-import {
-  index,
-  int,
-  integer,
-  sqliteTableCreator,
-  text,
-} from "drizzle-orm/sqlite-core";
+// Multi-project prefix helper (v2 compatible)
+const prefix = "tasky-v2"
+const table = (name: string) => `${prefix}_${name}`
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
-
-export const createTable = sqliteTableCreator((name) => `tasky-v2_${name}`);
-
-// Define enums
+// Enums
 export const actionEnum = {
   CREATE: "CREATE",
   UPDATE: "UPDATE",
   DELETE: "DELETE",
-} as const;
+} as const
+export type Action = (typeof actionEnum)[keyof typeof actionEnum]
 
-export type Action = (typeof actionEnum)[keyof typeof actionEnum];
-// Define the entityTypeEnum
 export const entityTypeEnum = {
   BOARD: "BOARD",
   LIST: "LIST",
   CARD: "CARD",
-} as const;
+} as const
+export type EntityType = (typeof entityTypeEnum)[keyof typeof entityTypeEnum]
 
-export type EntityType = (typeof entityTypeEnum)[keyof typeof entityTypeEnum];
-
-// Define the Board table
-export const boards = createTable("board", {
-  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+// Boards
+export const boards = sqliteTable(table("board"), {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   orgId: text("orgId").notNull(),
   title: text("title").notNull(),
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date(),
-  ),
-});
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
+})
+export type BoardSelect = typeof boards.$inferSelect
+export type BoardInsert = typeof boards.$inferInsert
 
-export type BoardSelect = typeof boards.$inferSelect;
-export type BoardInser = typeof boards.$inferInsert;
-
-// Define the List table
-export const lists = createTable(
-  "list",
+// Lists
+export const lists = sqliteTable(
+  table("list"),
   {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     order: integer("order").notNull(),
     boardId: integer("board_id").notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
-    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-      () => new Date(),
-    ),
+    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
   },
-  (t) => {
-    return {
-      boardIdx: index("boardIdx").on(t.boardId),
-    };
-  },
-);
+  (t) => [index("boardIdx").on(t.boardId)],
+)
+export type ListSelect = typeof lists.$inferSelect
+export type ListInsert = typeof lists.$inferInsert
 
-export type ListSelect = typeof lists.$inferSelect;
-export type ListInser = typeof lists.$inferInsert;
-
-// Define the Card table
-export const cards = createTable(
-  "card",
+// Cards
+export const cards = sqliteTable(
+  table("card"),
   {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     order: integer("order").notNull(),
     description: text("description"),
@@ -89,23 +63,16 @@ export const cards = createTable(
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
-    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-      () => new Date(),
-    ),
+    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
   },
-  (t) => {
-    return {
-      listIdx: index("listIdx").on(t.listId),
-    };
-  },
-);
+  (t) => [index("listIdx").on(t.listId)],
+)
+export type CardSelect = typeof cards.$inferSelect
+export type CardInsert = typeof cards.$inferInsert
 
-export type CardSelect = typeof cards.$inferSelect;
-export type CardInser = typeof cards.$inferInsert;
-
-// Define the AuditLog table
-export const auditLogs = createTable("audit_log", {
-  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+// Audit Logs
+export const auditLogs = sqliteTable(table("audit_log"), {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   orgId: text("org_id").notNull(),
   action: text("action").$type<Action>().notNull(),
   entityId: integer("entity_id").notNull(),
@@ -117,30 +84,7 @@ export const auditLogs = createTable("audit_log", {
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date(),
-  ),
-});
-
-export type AuditLogsSelect = typeof auditLogs.$inferSelect;
-export type AuditLogsInser = typeof auditLogs.$inferInsert;
-
-// Define relationships
-export const boardRelations = relations(boards, ({ many }) => ({
-  lists: many(lists),
-}));
-
-export const listRelations = relations(lists, ({ one, many }) => ({
-  board: one(boards, {
-    fields: [lists.boardId],
-    references: [boards.id],
-  }),
-  cards: many(cards),
-}));
-
-export const cardRelations = relations(cards, ({ one }) => ({
-  list: one(lists, {
-    fields: [cards.listId],
-    references: [lists.id],
-  }),
-}));
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(() => new Date()),
+})
+export type AuditLogsSelect = typeof auditLogs.$inferSelect
+export type AuditLogsInsert = typeof auditLogs.$inferInsert
