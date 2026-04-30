@@ -1,6 +1,5 @@
 import { clerkClient } from "@clerk/tanstack-react-start/server"
 import { TRPCError } from "@trpc/server"
-import { eq, type SQL } from "drizzle-orm"
 
 import { type Action, auditLogs, type EntityType } from "#/db/schema"
 import type { ProtectedTRPCContext } from "#/integrations/trpc/init"
@@ -69,35 +68,4 @@ export async function createAuditLog(
   } catch (error) {
     console.error("Failed to create audit log:", error)
   }
-}
-
-export async function createOrgAuditLog(
-  orgCtx: ProtectedTRPCContext & { auth: { orgId: string } },
-  params: {
-    action: Action
-    entityId: number
-    entityType: EntityType
-    entityTitle: string
-  },
-) {
-  await createAuditLog(orgCtx, {
-    orgId: orgCtx.auth.orgId,
-    ...params,
-  })
-}
-
-export function createOrgAccessCondition<T extends { orgId: unknown }>(
-  table: T,
-  orgId: string,
-): SQL {
-  return eq(table.orgId as Parameters<typeof eq>[0], orgId)
-}
-
-export async function executeInTransaction<T>(
-  ctx: ProtectedTRPCContext,
-  callback: (
-    tx: Parameters<typeof ctx.db.transaction>[0] extends (tx: infer U) => unknown ? U : never,
-  ) => Promise<T>,
-): Promise<T> {
-  return await ctx.db.transaction(callback)
 }

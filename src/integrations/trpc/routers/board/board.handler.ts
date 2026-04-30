@@ -1,9 +1,9 @@
-import { and, eq, inArray } from "drizzle-orm"
+import { TRPCError } from "@trpc/server"
+import { and, desc, eq, inArray } from "drizzle-orm"
 
 import { boards, cards, type EntityType, lists } from "#/db/schema"
 import type { BoardSelect } from "#/db/schema"
 import type { ProtectedTRPCContext } from "#/integrations/trpc/init"
-import { createCrudHandlers } from "#/integrations/trpc/shared/crud-handler"
 import {
   createAuditLog,
   requireOrgAccess,
@@ -16,27 +16,44 @@ type Board<T> = {
   input: T
 }
 
-const boardCrud = createCrudHandlers({
-  table: boards,
-  entityType: "BOARD" as EntityType,
-  entityName: "Board",
-  orgAccessCondition: (orgId: string) => eq(boards.orgId, orgId),
-})
+const boardEntity: EntityType = "BOARD"
 
 export async function createBoard({ ctx, input }: Board<Schema.TCreateBoard>) {
   requireOrgAccess(ctx)
   validateOrgAccess(ctx, input.orgId)
 
-  return await boardCrud.create(ctx, {
-    title: input.title,
+  const result = await ctx.db
+    .insert(boards)
+    .values({
+      title: input.title,
+      orgId: input.orgId,
+    })
+    .returning()
+
+  const board = result[0]
+  if (!board) {
+    throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create board" })
+  }
+
+  await createAuditLog(ctx, {
     orgId: input.orgId,
+    action: "CREATE",
+    entityId: board.id,
+    entityType: boardEntity,
+    entityTitle: board.title ?? `Board ${board.id}`,
   })
+
+  return board
 }
 
 export async function getBoards({ ctx, input }: Board<Schema.TGetBoards>) {
   validateOrgAccess(ctx, input.orgId)
 
-  const boardResults = await boardCrud.findMany(ctx, eq(boards.orgId, input.orgId))
+  const boardResults = await ctx.db
+    .select()
+    .from(boards)
+    .where(eq(boards.orgId, input.orgId))
+    .orderBy(desc(boards.createdAt))
   return boardResults as BoardSelect[]
 }
 
@@ -94,11 +111,27 @@ export async function deleteBoard({ ctx, input }: Board<Schema.TDeleteBoard>) {
 }
 
 export async function updateBoard({ ctx, input }: Board<Schema.TUpdateBoard>) {
-  requireOrgAccess(ctx)
+  const orgCtx = requireOrgAccess(ctx)
+  const orgId = orgCtx.auth.orgId
 
-  const board = await boardCrud.update(ctx, input.boardId, {
-    title: input.title,
+  const result = await ctx.db
+    .update(boards)
+    .set({ title: input.title })
+    .where(and(eq(boards.id, input.boardId), eq(boards.orgId, orgId)))
+    .returning()
+
+  const board = result[0]
+  if (!board) {
+    return null
+  }
+
+  await createAuditLog(ctx, {
+    orgId,
+    action: "UPDATE",
+    entityId: board.id,
+    entityType: boardEntity,
+    entityTitle: board.title ?? `Board ${board.id}`,
   })
 
-  return board ?? null
+  return board
 }

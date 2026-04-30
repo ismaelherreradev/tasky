@@ -1,39 +1,34 @@
-import type { z } from "zod"
+import { z } from "zod"
 
-import {
-  createEntitySchema,
-  idSchema,
-  orgIdSchema,
-  titleSchema,
-} from "#/integrations/trpc/shared/schema-utils"
+import { idSchema, orgIdSchema, titleSchema } from "#/integrations/trpc/shared/schema-utils"
 
-export const ZCreateBoard = createEntitySchema({
+export const ZCreateBoard = z.object({
   title: titleSchema,
   orgId: orgIdSchema,
 })
 
 export type TCreateBoard = z.infer<typeof ZCreateBoard>
 
-export const ZGetBoards = createEntitySchema({
+export const ZGetBoards = z.object({
   orgId: orgIdSchema,
 })
 
 export type TGetBoards = z.infer<typeof ZGetBoards>
 
-export const ZGetBoardById = createEntitySchema({
+export const ZGetBoardById = z.object({
   orgId: orgIdSchema,
   boardId: idSchema,
 })
 
 export type TGetBoardById = z.infer<typeof ZGetBoardById>
 
-export const ZDeleteBoard = createEntitySchema({
+export const ZDeleteBoard = z.object({
   boardId: idSchema,
 })
 
 export type TDeleteBoard = z.infer<typeof ZDeleteBoard>
 
-export const ZUpdateBoard = createEntitySchema({
+export const ZUpdateBoard = z.object({
   title: titleSchema,
   boardId: idSchema,
 })
