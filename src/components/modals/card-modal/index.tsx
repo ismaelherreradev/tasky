@@ -1,24 +1,25 @@
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+import { useQuery } from "@tanstack/react-query"
 import type { InferSelectModel } from "drizzle-orm"
 import { useAtom } from "jotai"
 import { useState } from "react"
-import { toast } from "sonner"
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "#/components/ui/dialog"
 import { ScrollArea } from "#/components/ui/scroll-area"
+import { toastManager } from "#/components/ui/toast"
 import type { CardSelect, lists } from "#/db/schema"
 import { cardModalAtom } from "#/hooks/use-card-modal"
-import { api } from "~/trpc/react"
+import { useTRPC } from "#/integrations/trpc/react"
 
-import { Actions } from "./actions"
-import { Activity } from "./activity"
-import { Description } from "./description"
-import { Header } from "./header"
+import Actions from "./actions"
+import Activity from "./activity"
+import Description from "./description"
+import Header from "./header"
 
 export type ListSelect = Omit<InferSelectModel<typeof lists>, "order">
 export type CardWithList = CardSelect & { list: ListSelect }
 
-export function CardModal() {
+export default function CardModal() {
   const [modalState, dispatch] = useAtom(cardModalAtom)
   const { id: modalId, isOpen } = modalState
 
@@ -26,48 +27,50 @@ export function CardModal() {
   const [logsRetryCount, setLogsRetryCount] = useState(0)
   const maxRetries = 3
 
+  const trpc = useTRPC()
+
   const {
     data: cardData,
     isLoading: isCardLoading,
     error: cardError,
-  } = api.card.getCardById.useQuery(
-    { id: modalId ?? -1 },
-    {
-      enabled: !!modalId,
-      retry:
-        cardRetryCount < maxRetries
-          ? () => {
-              setCardRetryCount(cardRetryCount + 1)
-              return true
-            }
-          : false,
-    },
-  )
+  } = useQuery({
+    ...trpc.card.getCardById.queryOptions({ id: modalId! }),
+    enabled: !!modalId,
+    retry:
+      cardRetryCount < maxRetries
+        ? () => {
+            setCardRetryCount(cardRetryCount + 1)
+            return true
+          }
+        : false,
+  })
 
   const {
     data: auditLogsData,
     isLoading: isLogsLoading,
     error: logsError,
-  } = api.logs.getAuditLogs.useQuery(
-    { id: modalId ?? -1 },
-    {
-      enabled: !!modalId,
-      retry:
-        logsRetryCount < maxRetries
-          ? () => {
-              setLogsRetryCount(logsRetryCount + 1)
-              return true
-            }
-          : false,
-    },
-  )
+  } = useQuery({
+    ...trpc.logs.getAuditLogs.queryOptions({ id: modalId! }),
+    enabled: !!modalId,
+    retry:
+      logsRetryCount < maxRetries
+        ? () => {
+            setLogsRetryCount(cardRetryCount + 1)
+            return true
+          }
+        : false,
+  })
 
   const handleClose = () => {
-    dispatch({ type: "close" })
+    dispatch((state) => ({ ...state, isOpen: false }))
   }
 
   if (cardError) {
-    toast.error(`Error loading card data: ${cardError.message}`)
+    toastManager.add({
+      title: "Error",
+      description: `Error loading card data: ${cardError.message}`,
+    })
+
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-md">
@@ -113,7 +116,10 @@ export function CardModal() {
   }
 
   if (logsError) {
-    toast.error(`Error loading audit logs: ${logsError.message}`)
+    toastManager.add({
+      title: "Error",
+      description: `Error loading audit logs: ${logsError.message}`,
+    })
   }
 
   return (

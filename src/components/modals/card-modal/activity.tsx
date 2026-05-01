@@ -1,16 +1,15 @@
-"use client";
+import { Activity as ActivityIcon, Clock } from "lucide-react"
 
-import { Activity as ActivityIcon, Clock } from "lucide-react";
-import { Skeleton } from "~/components/ui/skeleton";
-import type { AuditLogsSelect } from "~/server/db/schema";
+import { Skeleton } from "#/components/ui/skeleton"
+import type { AuditLogsSelect } from "#/db/schema"
 
-import { ActivityItem } from "./activity-item";
+import { ActivityItem } from "./activity-item"
 
 type ActivityProps = {
-  items: AuditLogsSelect[];
-};
+  items: AuditLogsSelect[]
+}
 
-export function Activity({ items }: ActivityProps) {
+export default function Activity({ items }: ActivityProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-x-3">
@@ -37,7 +36,7 @@ export function Activity({ items }: ActivityProps) {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 Activity.Skeleton = function ActivitySkeleton() {
@@ -55,5 +54,5 @@ Activity.Skeleton = function ActivitySkeleton() {
         <Skeleton className="h-12 w-full rounded-md" />
       </div>
     </div>
-  );
-};
+  )
+}

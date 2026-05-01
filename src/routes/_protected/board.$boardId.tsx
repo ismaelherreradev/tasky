@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { BoardNavbar } from "#/components/board/board-navbar"
 import { ListContainer } from "#/components/board/list-container"
 import { ScreenReaderAnnouncements } from "#/components/board/screen-reader-announcements"
-// import { CardModal } from "#/components/modals"
+import CardModal from "#/components/modals/card-modal"
 import { OptimisticBoardProvider } from "#/hooks/use-optimistic-board"
 
 export const Route = createFileRoute("/_protected/board/$boardId")({
@@ -42,9 +42,7 @@ function BoardIdPage() {
         <h1 className="sr-only">Board</h1>
         <ScreenReaderAnnouncements announcement="" />
 
-        {/*
-
-<CardModal />        */}
+        <CardModal />
 
         <div className="mb-5 space-y-5">
           <BoardNavbar boardId={boardId} orgId={orgId} />

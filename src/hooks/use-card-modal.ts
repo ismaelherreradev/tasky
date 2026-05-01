@@ -12,8 +12,15 @@ export const cardModalAtom = atom<CardModalState>({
 
 export const onOpenAtom = atom(
   (get) => get(cardModalAtom),
-  (get, set, update: { id: number }) => {
+  (_get, set, update: { id: number }) => {
     set(cardModalAtom, { id: update.id, isOpen: true })
+  },
+)
+
+export const onCloseAtom = atom(
+  (get) => get(cardModalAtom),
+  (_get, set) => {
+    set(cardModalAtom, { id: null, isOpen: false })
   },
 )
 

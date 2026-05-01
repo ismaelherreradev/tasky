@@ -1,96 +1,124 @@
-"use client";
+import { CopyIcon, DotsThreeCircleIcon, TrashIcon } from "@phosphor-icons/react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useParams } from "@tanstack/react-router"
+import { useAtom } from "jotai"
 
-import { useAtom } from "jotai";
-import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
-import { useParams } from "next/navigation";
-import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
-import { Skeleton } from "~/components/ui/skeleton";
-import { onCloseAtom } from "~/hooks/use-card-modal";
-import { api } from "~/trpc/react";
+import { Button } from "#/components/ui/button"
+import { Skeleton } from "#/components/ui/skeleton"
+import { toastManager } from "#/components/ui/toast"
+import { onCloseAtom } from "#/hooks/use-card-modal"
+import { useTRPC } from "#/integrations/trpc/react"
 
-import type { CardWithList } from ".";
+import type { CardWithList } from "."
 
 type ActionsProps = {
-  data: CardWithList;
-};
+  data: CardWithList
+}
 
-export function Actions({ data }: ActionsProps) {
-  const params = useParams();
-  const [, onClose] = useAtom(onCloseAtom);
+export default function Actions({ data }: ActionsProps) {
+  const params = useParams({ from: "/_protected/board/$boardId" })
+  const [, onClose] = useAtom(onCloseAtom)
 
-  const utils = api.useUtils();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
-  const { mutate: copyCard, isPending: isCopying } =
-    api.card.copyCard.useMutation({
-      onSuccess: async (copiedCard) => {
-        toast.success(`Card "${copiedCard?.title}" copied`);
-        onClose();
-        await utils.list.getlistsWithCards.invalidate({
-          boardId: Number(params.id),
-        });
-      },
-      onError: (error: unknown) => {
-        const errorMessage =
-          (
-            error as {
-              data?: { zodError?: { fieldErrors?: { title?: string } } };
-            }
-          )?.data?.zodError?.fieldErrors?.title ?? "Failed to copy card";
-        toast.error(errorMessage);
-      },
-    });
+  const { mutate: copyCard, isPending: isCopying } = useMutation({
+    ...trpc.card.copyCard.mutationOptions(),
+    onSuccess: (data) => {
+      onClose()
 
-  const { mutate: deleteCard, isPending: isDeleting } =
-    api.card.deleteCard.useMutation({
-      onSuccess: async (deletedCard) => {
-        toast.success(`Card "${deletedCard.title}" deleted`);
-        onClose();
-        await utils.list.getlistsWithCards.invalidate({
-          boardId: Number(params.id),
-        });
-      },
-      onError: (error: unknown) => {
-        const errorMessage =
-          (
-            error as {
-              data?: { zodError?: { fieldErrors?: { title?: string } } };
-            }
-          )?.data?.zodError?.fieldErrors?.title ?? "Failed to delete card";
-        toast.error(errorMessage);
-      },
-    });
+      void queryClient.invalidateQueries({
+        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId: Number(params.boardId) }),
+      })
+
+      toastManager.add({
+        title: "Success",
+        id: data.title,
+        description: `Card "${data.title}" copied!`,
+      })
+    },
+    onError: (error) => {
+      const errorMessage =
+        (
+          error as {
+            data?: { zodError?: { fieldErrors?: { title?: string } } }
+          }
+        )?.data?.zodError?.fieldErrors?.title ?? "Failed to copy card"
+
+      toastManager.add({
+        title: "Error",
+        id: data.title,
+        description: errorMessage,
+      })
+    },
+  })
+
+  const { mutate: deleteCard, isPending: isDeleting } = useMutation({
+    ...trpc.card.deleteCard.mutationOptions(),
+    onSuccess: (data) => {
+      onClose()
+
+      void queryClient.invalidateQueries({
+        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId: Number(params.boardId) }),
+      })
+
+      toastManager.add({
+        title: "Success",
+        id: data.title,
+        description: `Card "${data.title}" deleted!`,
+      })
+    },
+    onError: (error) => {
+      const errorMessage =
+        (
+          error as {
+            data?: { zodError?: { fieldErrors?: { title?: string } } }
+          }
+        )?.data?.zodError?.fieldErrors?.title ?? "Failed to delete card"
+      toastManager.add({
+        title: "Error",
+        id: data.title,
+        description: errorMessage,
+      })
+    },
+  })
 
   const handleCopy = () => {
-    const boardId = Number(params.id);
+    const boardId = Number(params.boardId)
     if (Number.isNaN(boardId)) {
-      toast.error("Invalid board ID");
-      return;
+      toastManager.add({
+        title: "Error",
+        description: "Invalid board ID",
+      })
+      return
     }
 
     copyCard({
       id: data.id,
       boardId,
-    });
-  };
+    })
+  }
 
   const handleDelete = () => {
-    const boardId = Number(params.id);
+    const boardId = Number(params.boardId)
     if (Number.isNaN(boardId)) {
-      toast.error("Invalid board ID");
-      return;
+      toastManager.add({
+        title: "Error",
+        description: "Invalid board ID",
+      })
+      return
     }
 
     deleteCard({
       id: data.id,
       boardId,
-    });
-  };
+    })
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-x-2 font-semibold text-foreground text-sm">
-        <MoreHorizontal className="h-4 w-4" />
+      <div className="flex items-center gap-x-2 text-sm font-semibold text-foreground">
+        <DotsThreeCircleIcon className="h-4 w-4" />
         Actions
       </div>
 
@@ -102,7 +130,7 @@ export function Actions({ data }: ActionsProps) {
           className="h-9 w-full justify-start px-3 transition-colors hover:bg-muted"
           size="sm"
         >
-          <Copy className="mr-3 h-4 w-4 text-muted-foreground" />
+          <CopyIcon className="mr-3 h-4 w-4 text-muted-foreground" />
           <span className="text-sm">{isCopying ? "Copying..." : "Copy"}</span>
         </Button>
 
@@ -113,14 +141,12 @@ export function Actions({ data }: ActionsProps) {
           className="group h-9 w-full justify-start px-3 transition-colors hover:bg-destructive/10 hover:text-destructive"
           size="sm"
         >
-          <Trash2 className="mr-3 h-4 w-4 text-muted-foreground transition-colors group-hover:text-destructive" />
-          <span className="text-sm">
-            {isDeleting ? "Deleting..." : "Delete"}
-          </span>
+          <TrashIcon className="mr-3 h-4 w-4 text-muted-foreground transition-colors group-hover:text-destructive" />
+          <span className="text-sm">{isDeleting ? "Deleting..." : "Delete"}</span>
         </Button>
       </div>
     </div>
-  );
+  )
 }
 
 Actions.Skeleton = function ActionsSkeleton() {
@@ -135,5 +161,5 @@ Actions.Skeleton = function ActionsSkeleton() {
         <Skeleton className="h-9 w-full rounded-md" />
       </div>
     </div>
-  );
-};
+  )
+}
