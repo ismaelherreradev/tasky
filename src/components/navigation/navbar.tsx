@@ -1,12 +1,12 @@
-import Link from "next/link"
+import { Link } from "@tanstack/react-router"
 
 import ThemeToggle from "#/components/theme-toggle"
 import { SiteConfig } from "#/config/site"
 
 import {
-  // ActivityButton,
+  ActivityButton,
   OrganizationSwitcherButton,
-  // SelectBoardButton,
+  SelectBoardButton,
   SettingsButton,
   UserClerkButton,
 } from "./navbar-items"
@@ -21,7 +21,8 @@ export function Navbar({ orgId }: NavbarProps) {
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6">
           <Link
-            href={`/organization/${orgId}`}
+            to="/organization/$orgId"
+            params={{ orgId }}
             className="group flex items-center space-x-2 transition-all hover:opacity-80"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-primary to-primary/80 text-sm font-bold text-primary-foreground transition-transform group-hover:scale-105">
@@ -35,15 +36,15 @@ export function Navbar({ orgId }: NavbarProps) {
 
         <div className="flex items-center gap-3">
           <nav className="hidden items-center gap-2 md:flex">
-            {/* <SelectBoardButton orgId={orgId} />
-            <ActivityButton orgId={orgId} />  */}
+            <SelectBoardButton orgId={orgId} />
+            <ActivityButton orgId={orgId} />
             <SettingsButton orgId={orgId} />
           </nav>
 
           <div className="ml-4 flex items-center gap-3 border-l border-border/40 pl-4">
-            {/* <div className="md:hidden">
+            <div className="md:hidden">
               <SelectBoardButton orgId={orgId} />
-            </div> */}
+            </div>
             <OrganizationSwitcherButton />
             <ThemeToggle />
             <UserClerkButton />

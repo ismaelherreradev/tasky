@@ -17,6 +17,7 @@ import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 import { Route as ProtectedOrganizationOrgIdRouteImport } from './routes/_protected/organization.$orgId'
 import { Route as ProtectedBoardBoardIdRouteImport } from './routes/_protected/board.$boardId'
 import { Route as ProtectedOrganizationOrgIdSettingsRouteImport } from './routes/_protected/organization_.$orgId.settings'
+import { Route as ProtectedOrganizationOrgIdActivityRouteImport } from './routes/_protected/organization_.$orgId.activity'
 
 const SsoCallbackRoute = SsoCallbackRouteImport.update({
   id: '/sso-callback',
@@ -59,6 +60,12 @@ const ProtectedOrganizationOrgIdSettingsRoute =
     path: '/organization/$orgId/settings',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ProtectedOrganizationOrgIdActivityRoute =
+  ProtectedOrganizationOrgIdActivityRouteImport.update({
+    id: '/organization_/$orgId/activity',
+    path: '/organization/$orgId/activity',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/board/$boardId': typeof ProtectedBoardBoardIdRoute
   '/organization/$orgId': typeof ProtectedOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/organization/$orgId/activity': typeof ProtectedOrganizationOrgIdActivityRoute
   '/organization/$orgId/settings': typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 export interface FileRoutesByTo {
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/board/$boardId': typeof ProtectedBoardBoardIdRoute
   '/organization/$orgId': typeof ProtectedOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/organization/$orgId/activity': typeof ProtectedOrganizationOrgIdActivityRoute
   '/organization/$orgId/settings': typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 export interface FileRoutesById {
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/_protected/board/$boardId': typeof ProtectedBoardBoardIdRoute
   '/_protected/organization/$orgId': typeof ProtectedOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
+  '/_protected/organization_/$orgId/activity': typeof ProtectedOrganizationOrgIdActivityRoute
   '/_protected/organization_/$orgId/settings': typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 export interface FileRouteTypes {
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/board/$boardId'
     | '/organization/$orgId'
     | '/api/trpc/$'
+    | '/organization/$orgId/activity'
     | '/organization/$orgId/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/board/$boardId'
     | '/organization/$orgId'
     | '/api/trpc/$'
+    | '/organization/$orgId/activity'
     | '/organization/$orgId/settings'
   id:
     | '__root__'
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/_protected/board/$boardId'
     | '/_protected/organization/$orgId'
     | '/api/trpc/$'
+    | '/_protected/organization_/$orgId/activity'
     | '/_protected/organization_/$orgId/settings'
   fileRoutesById: FileRoutesById
 }
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedOrganizationOrgIdSettingsRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/organization_/$orgId/activity': {
+      id: '/_protected/organization_/$orgId/activity'
+      path: '/organization/$orgId/activity'
+      fullPath: '/organization/$orgId/activity'
+      preLoaderRoute: typeof ProtectedOrganizationOrgIdActivityRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
   }
 }
 
@@ -192,6 +212,7 @@ interface ProtectedRouteChildren {
   ProtectedSelectOrgRoute: typeof ProtectedSelectOrgRoute
   ProtectedBoardBoardIdRoute: typeof ProtectedBoardBoardIdRoute
   ProtectedOrganizationOrgIdRoute: typeof ProtectedOrganizationOrgIdRoute
+  ProtectedOrganizationOrgIdActivityRoute: typeof ProtectedOrganizationOrgIdActivityRoute
   ProtectedOrganizationOrgIdSettingsRoute: typeof ProtectedOrganizationOrgIdSettingsRoute
 }
 
@@ -199,6 +220,8 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedSelectOrgRoute: ProtectedSelectOrgRoute,
   ProtectedBoardBoardIdRoute: ProtectedBoardBoardIdRoute,
   ProtectedOrganizationOrgIdRoute: ProtectedOrganizationOrgIdRoute,
+  ProtectedOrganizationOrgIdActivityRoute:
+    ProtectedOrganizationOrgIdActivityRoute,
   ProtectedOrganizationOrgIdSettingsRoute:
     ProtectedOrganizationOrgIdSettingsRoute,
 }
