@@ -1,37 +1,30 @@
-"use client";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+import type { InferSelectModel } from "drizzle-orm"
+import { useAtom } from "jotai"
+import { useState } from "react"
+import { toast } from "sonner"
 
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import type { InferSelectModel } from "drizzle-orm";
-import { useAtom } from "jotai";
-import { useState } from "react";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "~/components/ui/dialog";
-import { ScrollArea } from "~/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "#/components/ui/dialog"
+import { ScrollArea } from "#/components/ui/scroll-area"
+import type { CardSelect, lists } from "#/db/schema"
+import { cardModalAtom } from "#/hooks/use-card-modal"
+import { api } from "~/trpc/react"
 
-import { cardModalAtom } from "~/hooks/use-card-modal";
-import type { CardSelect, lists } from "~/server/db/schema";
-import { api } from "~/trpc/react";
+import { Actions } from "./actions"
+import { Activity } from "./activity"
+import { Description } from "./description"
+import { Header } from "./header"
 
-import { Actions } from "./actions";
-import { Activity } from "./activity";
-import { Description } from "./description";
-import { Header } from "./header";
-
-export type ListSelect = Omit<InferSelectModel<typeof lists>, "order">;
-export type CardWithList = CardSelect & { list: ListSelect };
+export type ListSelect = Omit<InferSelectModel<typeof lists>, "order">
+export type CardWithList = CardSelect & { list: ListSelect }
 
 export function CardModal() {
-  const [modalState, dispatch] = useAtom(cardModalAtom);
-  const { id: modalId, isOpen } = modalState;
+  const [modalState, dispatch] = useAtom(cardModalAtom)
+  const { id: modalId, isOpen } = modalState
 
-  const [cardRetryCount, setCardRetryCount] = useState(0);
-  const [logsRetryCount, setLogsRetryCount] = useState(0);
-  const maxRetries = 3;
+  const [cardRetryCount, setCardRetryCount] = useState(0)
+  const [logsRetryCount, setLogsRetryCount] = useState(0)
+  const maxRetries = 3
 
   const {
     data: cardData,
@@ -44,12 +37,12 @@ export function CardModal() {
       retry:
         cardRetryCount < maxRetries
           ? () => {
-              setCardRetryCount(cardRetryCount + 1);
-              return true;
+              setCardRetryCount(cardRetryCount + 1)
+              return true
             }
           : false,
     },
-  );
+  )
 
   const {
     data: auditLogsData,
@@ -62,19 +55,19 @@ export function CardModal() {
       retry:
         logsRetryCount < maxRetries
           ? () => {
-              setLogsRetryCount(logsRetryCount + 1);
-              return true;
+              setLogsRetryCount(logsRetryCount + 1)
+              return true
             }
           : false,
     },
-  );
+  )
 
   const handleClose = () => {
-    dispatch({ type: "close" });
-  };
+    dispatch({ type: "close" })
+  }
 
   if (cardError) {
-    toast.error(`Error loading card data: ${cardError.message}`);
+    toast.error(`Error loading card data: ${cardError.message}`)
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-md">
@@ -102,27 +95,25 @@ export function CardModal() {
                 </svg>
               </div>
             </div>
-            <h3 className="mb-3 font-semibold text-destructive text-lg">
-              Failed to load card
-            </h3>
-            <p className="mb-6 text-muted-foreground text-sm leading-relaxed">
+            <h3 className="mb-3 text-lg font-semibold text-destructive">Failed to load card</h3>
+            <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
               {cardError.message}
             </p>
             <button
               type="button"
               onClick={handleClose}
-              className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Close
             </button>
           </div>
         </DialogContent>
       </Dialog>
-    );
+    )
   }
 
   if (logsError) {
-    toast.error(`Error loading audit logs: ${logsError.message}`);
+    toast.error(`Error loading audit logs: ${logsError.message}`)
   }
 
   return (
@@ -137,11 +128,7 @@ export function CardModal() {
 
         <div className="flex h-full max-h-[90vh] flex-col">
           <div className="border-b bg-card px-6 py-5">
-            {isCardLoading || !cardData ? (
-              <Header.Skeleton />
-            ) : (
-              <Header data={cardData} />
-            )}
+            {isCardLoading || !cardData ? <Header.Skeleton /> : <Header data={cardData} />}
           </div>
 
           <div className="min-h-0 flex-1 overflow-hidden">
@@ -149,11 +136,7 @@ export function CardModal() {
               <div className="flex flex-col overflow-hidden lg:col-span-3">
                 <ScrollArea className="flex-1 px-6 py-6">
                   <div className="max-w-3xl space-y-8">
-                    {cardData ? (
-                      <Description data={cardData} />
-                    ) : (
-                      <Description.Skeleton />
-                    )}
+                    {cardData ? <Description data={cardData} /> : <Description.Skeleton />}
                     {isLogsLoading ? (
                       <Activity.Skeleton />
                     ) : (
@@ -166,11 +149,7 @@ export function CardModal() {
               <div className="border-l bg-muted/20 lg:col-span-1">
                 <ScrollArea className="h-full">
                   <div className="p-6">
-                    {cardData ? (
-                      <Actions data={cardData} />
-                    ) : (
-                      <Actions.Skeleton />
-                    )}
+                    {cardData ? <Actions data={cardData} /> : <Actions.Skeleton />}
                   </div>
                 </ScrollArea>
               </div>
@@ -179,5 +158,5 @@ export function CardModal() {
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

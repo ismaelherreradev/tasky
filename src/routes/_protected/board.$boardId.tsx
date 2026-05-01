@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 import { BoardNavbar } from "#/components/board/board-navbar"
-// import { BoardNavbar, ListContainer } from "#/components/board"
+import { ListContainer } from "#/components/board/list-container"
 import { ScreenReaderAnnouncements } from "#/components/board/screen-reader-announcements"
 // import { CardModal } from "#/components/modals"
 import { OptimisticBoardProvider } from "#/hooks/use-optimistic-board"
@@ -55,7 +55,7 @@ function BoardIdPage() {
             </div>
 
             <div role="application" aria-label="Kanban board">
-              {/* <ListContainer boardId={boardId} /> */}
+              <ListContainer boardId={boardId} />
             </div>
           </section>
         </div>

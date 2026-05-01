@@ -1,77 +1,83 @@
-"use client";
+"use client"
 
-import { Plus, X } from "lucide-react";
-import {
-  type ElementRef,
-  type FormEvent,
-  forwardRef,
-  useRef,
-  useState,
-} from "react";
-import { toast } from "sonner";
-import { useEventListener, useOnClickOutside } from "usehooks-ts";
-import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
-import { cn } from "~/lib/utils";
-import { api } from "~/trpc/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Plus, X } from "lucide-react"
+import { type ComponentRef, forwardRef, useRef, useState } from "react"
+import { useEventListener, useOnClickOutside } from "usehooks-ts"
+
+import { Button } from "#/components/ui/button"
+import { Textarea } from "#/components/ui/textarea"
+import { toastManager } from "#/components/ui/toast"
+import { useTRPC } from "#/integrations/trpc/react"
+import { cn } from "#/lib/utils"
 
 type CardFormProps = {
-  listId: number;
-  enableEditing: () => void;
-  disableEditing: () => void;
-  isEditing: boolean;
-};
+  listId: number
+  boardId: number
+  enableEditing: () => void
+  disableEditing: () => void
+  isEditing: boolean
+}
 
 export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
-  { listId, enableEditing, disableEditing, isEditing },
+  { listId, boardId, enableEditing, disableEditing, isEditing },
   ref,
 ) {
-  const formRef = useRef<ElementRef<"form">>(null);
-  const [title, setTitle] = useState("");
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
-  const utils = api.useUtils();
-  const { mutate, error, isPending } = api.card.createCard.useMutation({
+  const formRef = useRef<ComponentRef<"form">>(null)
+  const [title, setTitle] = useState("")
+
+  const { mutate, error, isPending } = useMutation({
+    ...trpc.card.createCard.mutationOptions(),
     onSuccess: async (data) => {
-      await utils.card.getCardsByListId.invalidate({ listId });
-      await utils.list.invalidate();
+      await queryClient.invalidateQueries({
+        queryKey: trpc.card.getCardsByListId.queryKey({ listId }),
+      })
 
-      toast.success(`Card "${data?.title}" created!`);
-      resetForm();
+      await queryClient.invalidateQueries({
+        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
+      })
+
+      toastManager.add({
+        title: "Success",
+        id: data.title,
+        description: `Card "${data.title}" created!`,
+      })
+      resetForm()
     },
-  });
+  })
 
   function resetForm() {
-    disableEditing();
-    setTitle("");
+    disableEditing()
+    setTitle("")
   }
 
   function handleEscapeKey(e: KeyboardEvent) {
     if (e.key === "Escape") {
-      resetForm();
+      resetForm()
     }
   }
 
   function handleOutsideClick() {
-    resetForm();
+    resetForm()
   }
 
   function handleTextareaKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      formRef.current?.requestSubmit();
+      e.preventDefault()
+      formRef.current?.requestSubmit()
     }
   }
 
-  function handleFormSubmit(e: FormEvent) {
-    e.preventDefault();
-    mutate({ title, listId });
+  function handleFormSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault()
+    mutate({ title, listId })
   }
 
-  useOnClickOutside(
-    formRef as React.RefObject<HTMLElement>,
-    handleOutsideClick,
-  );
-  useEventListener("keydown", handleEscapeKey);
+  useOnClickOutside(formRef as React.RefObject<HTMLElement>, handleOutsideClick)
+  useEventListener("keydown", handleEscapeKey)
 
   return (
     <div className="px-2 pt-2">
@@ -90,7 +96,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className={cn(
-              "resize-none shadow-sm outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+              "resize-none shadow-sm ring-0 outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
             )}
             placeholder="Enter a title for this card..."
             aria-label="Card title"
@@ -121,8 +127,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
             }
           />
           <div id="card-title-help" className="sr-only">
-            Press Enter to create card, Shift+Enter for new line, Escape to
-            cancel
+            Press Enter to create card, Shift+Enter for new line, Escape to cancel
           </div>
           {error?.data &&
             "zodError" in error.data &&
@@ -134,7 +139,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
             "title" in error.data.zodError.fieldErrors && (
               <span
                 id="card-title-error"
-                className="mb-8 text-red-500 text-xs"
+                className="mb-8 text-xs text-red-500"
                 role="alert"
                 aria-live="polite"
               >
@@ -146,9 +151,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
               size="sm"
               type="submit"
               disabled={isPending}
-              aria-label={
-                isPending ? "Adding card, please wait" : "Add card to list"
-              }
+              aria-label={isPending ? "Adding card, please wait" : "Add card to list"}
             >
               {isPending ? "Add card..." : "Add card"}
             </Button>
@@ -166,7 +169,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
       ) : (
         <Button
           onClick={enableEditing}
-          className="h-auto w-full justify-start px-2 py-1.5 text-muted-foreground text-sm"
+          className="h-auto w-full justify-start px-2 py-1.5 text-sm text-muted-foreground"
           size="sm"
           variant="ghost"
           aria-label="Add a new card to this list"
@@ -176,5 +179,5 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
         </Button>
       )}
     </div>
-  );
-});
+  )
+})

@@ -1,81 +1,83 @@
-"use client";
+import { useMutation } from "@tanstack/react-query"
+import { type ComponentRef, useRef, useState } from "react"
+import { useEventListener } from "usehooks-ts"
 
-import { type ElementRef, useRef, useState } from "react";
-import { toast } from "sonner";
-import { useEventListener } from "usehooks-ts";
-import { Input } from "~/components/ui/input";
-import type { ListSelect } from "~/server/db/schema";
-import { api } from "~/trpc/react";
+import { Input } from "#/components/ui/input"
+import { toastManager } from "#/components/ui/toast"
+import type { ListSelect } from "#/db/schema"
+import { useTRPC } from "#/integrations/trpc/react"
 
-import { ListOptions } from "./list-options";
+import ListOptions from "./list-options"
 
 type ListHeaderProps = {
-  data: ListSelect;
-  onAddCard: () => void;
-};
+  data: ListSelect
+  onAddCard: () => void
+}
 
-export function ListHeader({ data, onAddCard }: ListHeaderProps) {
-  const { mutate: updateList } = api.list.updateList.useMutation({
-    onSuccess: async (data) => {
-      toast.success(`Renamed to "${data?.title}"`);
-      setTitle((data?.title as string) ?? "");
-      disableEditing();
+export default function ListHeader({ data, onAddCard }: ListHeaderProps) {
+  const trpc = useTRPC()
+
+  const { mutate: updateList } = useMutation({
+    ...trpc.list.updateList.mutationOptions(),
+    onSuccess: (data) => {
+      toastManager.add({
+        title: "Success",
+        id: data.title,
+        description: `Renamed to "${data.title}"`,
+      })
+      setTitle((data?.title as string) ?? "")
+      disableEditing()
     },
-  });
+  })
 
-  const [title, setTitle] = useState(data.title);
-  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(data.title)
+  const [isEditing, setIsEditing] = useState(false)
 
-  const formRef = useRef<ElementRef<"form">>(null);
-  const inputRef = useRef<ElementRef<"input">>(null);
+  const formRef = useRef<ComponentRef<"form">>(null)
+  const inputRef = useRef<ComponentRef<"input">>(null)
 
   const enableEditing = () => {
-    setIsEditing(true);
+    setIsEditing(true)
     setTimeout(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    });
-  };
+      inputRef.current?.focus()
+      inputRef.current?.select()
+    })
+  }
 
-  const disableEditing = () => setIsEditing(false);
+  const disableEditing = () => setIsEditing(false)
 
   const handleSubmit = (formData: FormData) => {
-    const title = formData.get("title") as string;
-    const id = formData.get("id") as string;
-    const boardId = formData.get("boardId") as string;
+    const title = formData.get("title") as string
+    const id = formData.get("id") as string
+    const boardId = formData.get("boardId") as string
 
-    if (title === data.title) return disableEditing();
+    if (title === data.title) return disableEditing()
 
-    updateList({ title, listId: Number(id), boardId: Number(boardId) });
-  };
+    updateList({ title, listId: Number(id), boardId: Number(boardId) })
+  }
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
-      formRef.current?.requestSubmit();
+      formRef.current?.requestSubmit()
     }
-  };
+  }
 
-  useEventListener("keydown", handleKeyDown);
+  useEventListener("keydown", handleKeyDown)
 
   return (
-    <div className="flex items-start justify-between gap-x-2 px-2 pt-2 font-semibold text-sm">
+    <div className="flex items-start justify-between gap-x-2 px-2 pt-2 text-sm font-semibold">
       {isEditing ? (
-        <form ref={formRef} action={handleSubmit} className="flex-1 px-[2px]">
+        <form ref={formRef} action={handleSubmit} className="flex-1 px-0.5">
           <input hidden id="id" name="id" defaultValue={data.id} />
-          <input
-            hidden
-            id="boardId"
-            name="boardId"
-            defaultValue={data.boardId}
-          />
+          <input hidden id="boardId" name="boardId" defaultValue={data.boardId} />
           <Input
             id="title"
             name="title"
             ref={inputRef}
             value={title}
             onBlur={() => formRef.current?.requestSubmit()}
-            onChange={(e) => setTitle(e.target.value)}
-            className="border-transparent px-2 py-1 font-medium text-sm transition hover:border-input focus:border-input"
+            onChange={(e: { target: { value: any } }) => setTitle(e.target.value)}
+            className="border-transparent px-2 py-1 text-sm font-medium transition hover:border-input focus:border-input"
             placeholder="Enter list title..."
           />
           <button type="submit" hidden />
@@ -84,12 +86,12 @@ export function ListHeader({ data, onAddCard }: ListHeaderProps) {
         <button
           type="button"
           onClick={enableEditing}
-          className="h-7 w-full border-transparent px-2.5 py-1 text-left font-medium text-sm"
+          className="h-7 w-full border-transparent px-2.5 py-1 text-left text-sm font-medium"
         >
           {title}
         </button>
       )}
       <ListOptions onAddCard={onAddCard} data={data} />
     </div>
-  );
+  )
 }
