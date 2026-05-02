@@ -5,7 +5,7 @@ import { CardModal } from "#/features/board/card/card-modal"
 import { ListContainer } from "#/features/board/list/list-container"
 import { OptimisticBoardProvider } from "#/hooks/use-optimistic-board"
 
-export const Route = createFileRoute("/_auth/(board)/board/$boardId")({
+export const Route = createFileRoute("/_auth/board/$boardId")({
   component: BoardIdPage,
   loader: ({ context, params }) => {
     const boardId = Number(params.boardId)

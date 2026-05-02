@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
         }
       }
     } catch {
-      // Not authenticated or error - show landing page
+      // redirect to home
     }
   },
   component: MainApp,

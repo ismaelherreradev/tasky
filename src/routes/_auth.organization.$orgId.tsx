@@ -5,7 +5,7 @@ import { BoardsContainer } from "#/features/board/boards-container"
 import { useTRPC } from "#/integrations/trpc/react"
 import type { BoardSelect } from "#/server/db/schema"
 
-export const Route = createFileRoute("/_auth/(organization)/organization/$orgId")({
+export const Route = createFileRoute("/_auth/organization/$orgId")({
   component: OrganizationIdPage,
   loader: async ({ context }) => {
     await context.queryClient.prefetchQuery(

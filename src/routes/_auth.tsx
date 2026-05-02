@@ -16,8 +16,7 @@ function ProtectedAppLayout() {
 
   return (
     <>
-      {orgId ? <Navbar orgId={orgId} /> : null}
-
+      {orgId ? <Navbar orgId={orgId} /> : ""}
       <Outlet />
     </>
   )

@@ -16,7 +16,7 @@ type ActionsProps = {
 }
 
 export default function Actions({ data }: ActionsProps) {
-  const params = useParams({ from: "/_auth/(board)/board/$boardId" })
+  const params = useParams({ from: "/board/$boardId" })
   const [, onClose] = useAtom(onCloseAtom)
 
   const trpc = useTRPC()

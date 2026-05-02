@@ -1,11 +1,13 @@
+import type { AuthObject } from "@clerk/backend"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query"
 
+import { NotFound } from "#/components/not-found"
 import { AnchoredToastProvider, ToastProvider } from "#/components/ui/toast"
-import type { AppRouter } from "#/integrations/trpc/router"
+import type { AppRouter } from "#/server/trpc/router"
 
 import ClerkProvider from "../integrations/clerk/provider"
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
@@ -15,6 +17,7 @@ import appCss from "../styles.css?url"
 interface RouterContext {
   queryClient: QueryClient
   trpc: TRPCOptionsProxy<AppRouter>
+  auth: AuthObject
 }
 
 const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
@@ -40,6 +43,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       },
     ],
   }),
+  notFoundComponent: NotFound,
   shellComponent: RootDocument,
 })
 

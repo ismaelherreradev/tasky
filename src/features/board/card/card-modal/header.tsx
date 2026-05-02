@@ -15,7 +15,7 @@ type HeaderProps = {
 }
 
 export default function Header({ data }: HeaderProps) {
-  const params = useParams({ from: "/_auth/(board)/board/$boardId" })
+  const params = useParams({ from: "/board/$boardId" })
   const [title, setTitle] = useState(data?.title)
 
   const trpc = useTRPC()

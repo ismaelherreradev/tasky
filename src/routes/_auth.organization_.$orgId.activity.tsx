@@ -3,7 +3,7 @@ import { Suspense } from "react"
 
 import ActivityList, { ActivityListSkeleton } from "#/features/activity/activity-list"
 
-export const Route = createFileRoute("/_auth/(organization)/organization_/$orgId/activity")({
+export const Route = createFileRoute("/_auth/organization_/$orgId/activity")({
   component: ActivityPage,
 })
 
