@@ -20,6 +20,18 @@ export const trpcClient = createTRPCClient<AppRouter>({
     httpBatchStreamLink({
       transformer: superjson,
       url: getUrl(),
+      headers: async () => {
+        if (typeof window !== "undefined") {
+          return {}
+        }
+        try {
+          const { getRequest } = await import("@tanstack/react-start/server")
+          const cookie = getRequest().headers.get("cookie")
+          return cookie ? { cookie } : {}
+        } catch {
+          return {}
+        }
+      },
     }),
   ],
 })

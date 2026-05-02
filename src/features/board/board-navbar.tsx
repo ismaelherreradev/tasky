@@ -62,9 +62,7 @@ export function BoardNavbar({ boardId, orgId }: BoardNavbarProps) {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden xl:block">
-            <BoardStats boardId={boardId} variant="compact" />
-          </div>
+          <BoardStats boardId={boardId} variant="compact" />
 
           <div className="hidden items-center gap-2 text-sm text-muted-foreground 2xl:flex">
             <Calendar size={14} />

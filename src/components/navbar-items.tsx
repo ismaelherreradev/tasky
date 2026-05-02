@@ -32,9 +32,7 @@ export function SelectBoardButton({ orgId }: ItemProps) {
   const trpc = useTRPC()
   const navigate = useNavigate()
 
-  const { data: boards, isPending } = useQuery({
-    ...trpc.board.getBoards.queryOptions({ orgId }),
-  })
+  const { data: boards, isPending } = useQuery(trpc.board.getBoards.queryOptions({ orgId }))
 
   const memoizedBoards = useMemo(() => boards as BoardSelect[] | undefined, [boards])
 

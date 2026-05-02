@@ -9,6 +9,7 @@ export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     try {
       const { isAuthenticated, orgId } = await auth()
+
       if (isAuthenticated) {
         if (orgId) {
           throw redirect({

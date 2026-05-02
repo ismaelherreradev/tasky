@@ -7,17 +7,17 @@ import { OptimisticBoardProvider } from "#/hooks/use-optimistic-board"
 
 export const Route = createFileRoute("/_auth/board/$boardId")({
   component: BoardIdPage,
-  loader: ({ context, params }) => {
+  loader: async ({ context, params }) => {
     const boardId = Number(params.boardId)
 
-    context.queryClient.ensureQueryData(
+    await context.queryClient.ensureQueryData(
       context.trpc.board.getBoardById.queryOptions({
         boardId,
         orgId: context.orgId,
       }),
     )
 
-    context.queryClient.ensureQueryData(
+    await context.queryClient.ensureQueryData(
       context.trpc.list.getlistsWithCards.queryOptions({ boardId }),
     )
 
