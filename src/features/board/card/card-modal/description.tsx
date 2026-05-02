@@ -7,6 +7,7 @@ import { Button } from "#/components/ui/button"
 import { Skeleton } from "#/components/ui/skeleton"
 import { Textarea } from "#/components/ui/textarea"
 import { toastManager } from "#/components/ui/toast"
+import { extractZodError } from "#/hooks/utils"
 import { useTRPC } from "#/integrations/trpc/react"
 import { cn } from "#/lib/utils"
 
@@ -41,17 +42,7 @@ export default function Description({ data }: DescriptionProps) {
       disableEditing()
     },
     onError: (error) => {
-      const errorMessage =
-        error?.data &&
-        "zodError" in error.data &&
-        error.data.zodError &&
-        typeof error.data.zodError === "object" &&
-        "fieldErrors" in error.data.zodError &&
-        error.data.zodError.fieldErrors &&
-        typeof error.data.zodError.fieldErrors === "object" &&
-        "description" in error.data.zodError.fieldErrors
-          ? String(error.data.zodError.fieldErrors.description)
-          : "Failed to update description"
+      const errorMessage = extractZodError(error, "description", "Failed to update description")
 
       toastManager.add({
         title: "Error",

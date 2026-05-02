@@ -2,22 +2,21 @@
 
 import { Toast } from "@base-ui/react/toast";
 import {
-  CircleAlertIcon,
-  CircleCheckIcon,
+  CheckCircleIcon,
+  CircleWavyWarningIcon,
   InfoIcon,
-  LoaderCircleIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
+  SpinnerIcon,
+} from "@phosphor-icons/react";
 import type React from "react";
 import { cn } from "#/lib/utils";
 import { buttonVariants } from "#/components/ui/button";
 
 const TOAST_ICONS = {
-  error: CircleAlertIcon,
+  error: CircleWavyWarningIcon,
   info: InfoIcon,
-  loading: LoaderCircleIcon,
-  success: CircleCheckIcon,
-  warning: TriangleAlertIcon,
+  loading: SpinnerIcon,
+  success: CheckCircleIcon,
+  warning: CircleWavyWarningIcon,
 } as const;
 
 type SwipeDirection = "up" | "down" | "left" | "right";

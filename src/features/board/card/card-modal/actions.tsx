@@ -1,5 +1,4 @@
 import { CopyIcon, DotsThreeCircleIcon, TrashIcon } from "@phosphor-icons/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "@tanstack/react-router"
 import { useAtom } from "jotai"
 
@@ -7,7 +6,8 @@ import { Button } from "#/components/ui/button"
 import { Skeleton } from "#/components/ui/skeleton"
 import { toastManager } from "#/components/ui/toast"
 import { onCloseAtom } from "#/hooks/use-card-modal"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useCopyCard } from "#/hooks/mutations/use-copy-card"
+import { useDeleteCard } from "#/hooks/mutations/use-delete-card"
 
 import type { CardWithList } from "."
 
@@ -19,72 +19,19 @@ export default function Actions({ data }: ActionsProps) {
   const params = useParams({ from: "/board/$boardId" })
   const [, onClose] = useAtom(onCloseAtom)
 
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
+  const boardId = Number(params.boardId)
 
-  const { mutate: copyCard, isPending: isCopying } = useMutation({
-    ...trpc.card.copyCard.mutationOptions(),
-    onSuccess: (data) => {
-      onClose()
-
-      void queryClient.invalidateQueries({
-        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId: Number(params.boardId) }),
-      })
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `Card "${data.title}" copied!`,
-      })
-    },
-    onError: (error) => {
-      const errorMessage =
-        (
-          error as {
-            data?: { zodError?: { fieldErrors?: { title?: string } } }
-          }
-        )?.data?.zodError?.fieldErrors?.title ?? "Failed to copy card"
-
-      toastManager.add({
-        title: "Error",
-        id: data.title,
-        description: errorMessage,
-      })
-    },
+  const { mutate: copyCard, isPending: isCopying } = useCopyCard({
+    boardId,
+    onSuccess: () => onClose(),
   })
 
-  const { mutate: deleteCard, isPending: isDeleting } = useMutation({
-    ...trpc.card.deleteCard.mutationOptions(),
-    onSuccess: (data) => {
-      onClose()
-
-      void queryClient.invalidateQueries({
-        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId: Number(params.boardId) }),
-      })
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `Card "${data.title}" deleted!`,
-      })
-    },
-    onError: (error) => {
-      const errorMessage =
-        (
-          error as {
-            data?: { zodError?: { fieldErrors?: { title?: string } } }
-          }
-        )?.data?.zodError?.fieldErrors?.title ?? "Failed to delete card"
-      toastManager.add({
-        title: "Error",
-        id: data.title,
-        description: errorMessage,
-      })
-    },
+  const { mutate: deleteCard, isPending: isDeleting } = useDeleteCard({
+    boardId,
+    onSuccess: () => onClose(),
   })
 
   const handleCopy = () => {
-    const boardId = Number(params.boardId)
     if (Number.isNaN(boardId)) {
       toastManager.add({
         title: "Error",
@@ -100,7 +47,6 @@ export default function Actions({ data }: ActionsProps) {
   }
 
   const handleDelete = () => {
-    const boardId = Number(params.boardId)
     if (Number.isNaN(boardId)) {
       toastManager.add({
         title: "Error",

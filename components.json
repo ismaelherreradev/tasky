@@ -10,8 +10,7 @@
     "cssVariables": true,
     "prefix": ""
   },
-  "iconLibrary": "lucide",
-  "rtl": false,
+  "iconLibrary": "phosphor",
   "aliases": {
     "components": "#/components",
     "utils": "#/lib/utils",

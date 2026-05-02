@@ -6,6 +6,7 @@ import { type ComponentRef, useRef, useState } from "react"
 import { Input } from "#/components/ui/input"
 import { Skeleton } from "#/components/ui/skeleton"
 import { toastManager } from "#/components/ui/toast"
+import { extractZodError } from "#/hooks/utils"
 import { useTRPC } from "#/integrations/trpc/react"
 
 import type { CardWithList } from "."
@@ -37,17 +38,7 @@ export default function Header({ data }: HeaderProps) {
       setTitle((data.title as string) ?? "")
     },
     onError: (error) => {
-      const errorMessage =
-        error?.data &&
-        "zodError" in error.data &&
-        error.data.zodError &&
-        typeof error.data.zodError === "object" &&
-        "fieldErrors" in error.data.zodError &&
-        error.data.zodError.fieldErrors &&
-        typeof error.data.zodError.fieldErrors === "object" &&
-        "title" in error.data.zodError.fieldErrors
-          ? String(error.data.zodError.fieldErrors.title)
-          : "Failed to update card title"
+      const errorMessage = extractZodError(error, "title", "Failed to update card title")
 
       toastManager.add({
         title: "Error",

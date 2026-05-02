@@ -1,33 +1,40 @@
 import { auth } from "@clerk/tanstack-react-start/server"
 import { initTRPC, TRPCError } from "@trpc/server"
 import superjson from "superjson"
-import { ZodError } from "zod"
+import { z } from "zod"
 
 import { db } from "#/server/db"
 
-export const createTRPCContext = async (headers: Headers) => {
-  const authData = await auth(headers)
+type AuthObject = Awaited<ReturnType<typeof auth>>
+
+export const createTRPCContext = async (opts: { headers: Headers; auth: AuthObject | null }) => {
   return {
     db,
-    auth: authData,
+    auth: opts.auth,
+    headers: opts.headers,
   }
 }
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+    const zodError =
+      error.cause && typeof error.cause === "object" && "issues" in error.cause
+        ? error.cause
+        : null
+
     return {
       ...shape,
       data: {
         ...shape.data,
-        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError: zodError ? z.flattenError(zodError) : null,
       },
     }
   },
 })
 
 const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.auth.isAuthenticated) {
+  if (!ctx.auth?.isAuthenticated) {
     throw new TRPCError({ code: "UNAUTHORIZED" })
   }
 
@@ -39,7 +46,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 })
 
 const enforceUserInOrganization = t.middleware(({ ctx, next }) => {
-  if (!ctx.auth.orgId) {
+  if (!ctx.auth?.orgId) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "User must be in an organization to perform this action",

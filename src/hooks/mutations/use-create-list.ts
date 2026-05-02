@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { toastManager } from "#/components/ui/toast"
 import { useTRPC } from "#/integrations/trpc/react"
+import { extractZodError, toastError, toastSuccess } from "#/hooks/utils"
 import type { ListSelect } from "#/server/db/schema"
 
 interface UseCreateListOptions {
@@ -17,28 +17,15 @@ export function useCreateList({ boardId, onSuccess }: UseCreateListOptions) {
     ...trpc.list.createList.mutationOptions({
       onSuccess: (data) => {
         void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }) })
-        toastManager.add({
-          title: "Success",
-          id: String(data.id),
-          description: `List "${data.title}" created!`,
-        })
+        toastSuccess(`List "${data.title}" created!`)
         onSuccess?.(data)
       },
       onError: (error) => {
-        const message = extractErrorMessage(error, "title")
-        toastManager.add({ title: "Error", description: message })
+        const message = extractZodError(error, "title", "Failed to create list")
+        toastError(message)
       },
     }),
   })
 
   return mutation
-}
-
-function extractErrorMessage(error: unknown, field: string): string {
-  const err = error as { data?: { zodError?: { fieldErrors?: Record<string, string[]> } } }
-  const zodError = err.data?.zodError
-  if (zodError && "fieldErrors" in zodError && zodError.fieldErrors) {
-    return zodError.fieldErrors[field]?.[0] ?? "Failed to create list"
-  }
-  return "Failed to create list"
 }

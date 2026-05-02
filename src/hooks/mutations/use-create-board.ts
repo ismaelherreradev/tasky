@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { toastManager } from "#/components/ui/toast"
 import { useTRPC } from "#/integrations/trpc/react"
+import { extractZodError, toastError, toastSuccess } from "#/hooks/utils"
 import type { BoardSelect } from "#/server/db/schema"
 
 interface UseCreateBoardOptions {
@@ -21,27 +21,15 @@ export function useCreateBoard({ orgId, onSuccess }: UseCreateBoardOptions = { o
           trpc.board.getBoards.queryOptions({ orgId: Number(orgId) }).queryKey,
           (old) => (old ? [...old, board] : [board]),
         )
-        toastManager.add({
-          title: "Success",
-          description: `Board "${board.title}" created`,
-        })
+        toastSuccess(`Board "${board.title}" created`)
         onSuccess?.(board)
       },
       onError: (error) => {
-        const message = extractErrorMessage(error, "boardId")
-        toastManager.add({ title: "Error", description: message })
+        const message = extractZodError(error, "boardId", "Failed to create board")
+        toastError(message)
       },
     }),
   })
 
   return mutation
-}
-
-function extractErrorMessage(error: unknown, field: string): string {
-  const err = error as { data?: { zodError?: { fieldErrors?: Record<string, string[]> } } }
-  const zodError = err.data?.zodError
-  if (zodError && "fieldErrors" in zodError && zodError.fieldErrors) {
-    return zodError.fieldErrors[field]?.[0] ?? "Failed to create board"
-  }
-  return "Failed to create board"
 }
