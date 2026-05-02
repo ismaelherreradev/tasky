@@ -1,4 +1,5 @@
-import { entityTypeEnum } from "#/server/db/schema"
+import { count, eq } from "drizzle-orm"
+import { auditLogs, entityTypeEnum } from "#/server/db/schema"
 
 import type { ProtectedTRPCContext } from "../../init"
 import { validateOrgId } from "../../shared/db-utils"
@@ -26,15 +27,23 @@ export async function getAuditLogs({ ctx, input }: Logs<Schema.TGetAuditLogs>) {
   return auditLogsQuery ?? null
 }
 
-export async function getAllAuditLogs({ ctx }: { ctx: ProtectedTRPCContext }) {
+export async function getAllAuditLogs({ ctx, input }: Logs<Schema.TGetAllAuditLogs>) {
+  const { page, limit } = input
   const orgId = await validateOrgId(ctx)
+  const offset = (page - 1) * limit
 
-  const logs = await ctx.db.query.auditLogs.findMany({
-    where: {
-      orgId,
-    },
-    orderBy: { createdAt: "desc" },
-  })
+  const [logs, totalCountResult] = await Promise.all([
+    ctx.db.query.auditLogs.findMany({
+      where: { orgId },
+      orderBy: { createdAt: "desc" },
+      limit,
+      offset,
+    }),
+    ctx.db.select({ value: count() }).from(auditLogs).where(eq(auditLogs.orgId, orgId)),
+  ])
 
-  return logs ?? null
+  return {
+    items: logs ?? [],
+    totalCount: totalCountResult[0]?.value ?? 0,
+  }
 }
