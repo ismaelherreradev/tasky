@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { useTRPC } from "#/integrations/trpc/react"
 import { extractZodError, toastError, toastSuccess } from "#/hooks/utils"
+import { useTRPC } from "#/integrations/trpc/react"
 import type { CardSelect } from "#/server/db/schema"
 
 interface UseCreateCardOptions {
@@ -17,8 +17,12 @@ export function useCreateCard({ listId, boardId, onSuccess }: UseCreateCardOptio
   const mutation = useMutation({
     ...trpc.card.createCard.mutationOptions({
       onSuccess: async (data) => {
-        await queryClient.invalidateQueries({ queryKey: trpc.card.getCardsByListId.queryKey({ listId }) })
-        await queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }) })
+        await queryClient.invalidateQueries({
+          queryKey: trpc.card.getCardsByListId.queryKey({ listId }),
+        })
+        await queryClient.invalidateQueries({
+          queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
+        })
         toastSuccess(`Card "${data.title}" created!`)
         onSuccess?.(data)
       },

@@ -1,8 +1,9 @@
+import { CreditCardIcon } from "@phosphor-icons/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "@tanstack/react-router"
-import { CreditCard } from "lucide-react"
 import { type ComponentRef, useRef, useState } from "react"
 
+import { Badge } from "#/components/ui/badge"
 import { Input } from "#/components/ui/input"
 import { Skeleton } from "#/components/ui/skeleton"
 import { toastManager } from "#/components/ui/toast"
@@ -16,7 +17,7 @@ type HeaderProps = {
 }
 
 export default function Header({ data }: HeaderProps) {
-  const params = useParams({ from: "/board/$boardId" })
+  const params = useParams({ from: "/_auth/board/$boardId" })
   const [title, setTitle] = useState(data?.title)
 
   const trpc = useTRPC()
@@ -70,7 +71,7 @@ export default function Header({ data }: HeaderProps) {
   return (
     <div className="flex w-full items-start gap-x-3">
       <div className="mt-0.5 shrink-0 rounded-lg bg-primary/10 p-2 text-primary">
-        <CreditCard className="h-5 w-5" />
+        <CreditCardIcon className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
         <form action={onSubmit}>
@@ -87,9 +88,9 @@ export default function Header({ data }: HeaderProps) {
         </form>
         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
           <span>in list</span>
-          <span className="rounded bg-muted/50 px-2 py-0.5 text-xs font-medium">
+          <Badge variant="secondary" size="sm">
             {data.list.title}
-          </span>
+          </Badge>
         </div>
       </div>
     </div>

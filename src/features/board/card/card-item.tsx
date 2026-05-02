@@ -1,43 +1,38 @@
-import {
-  draggable,
-  dropTargetForElements,
-} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { useAtom } from "jotai";
-import { Calendar, MessageSquare } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { CalendarIcon, MessengerLogoIcon } from "@phosphor-icons/react"
+import { useEffect, useRef, useState } from "react"
 
-import type { CardSelect } from "#/server/db/schema";
-import { onOpenAtom } from "#/hooks/use-card-modal";
-import { cn } from "#/lib/utils";
+import { openCardModal } from "#/hooks/use-card-modal"
+import { cn } from "#/lib/utils"
+import type { CardSelect } from "#/server/db/schema"
 
 type CardItemProps = {
-  data: CardSelect;
-  isDragOverlay?: boolean;
-};
+  data: CardSelect
+  isDragOverlay?: boolean
+}
 
 export default function CardItem({ data, isDragOverlay = false }: CardItemProps) {
-  const [, onOpen] = useAtom(onOpenAtom);
-  const ref = useRef<HTMLButtonElement | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const ref = useRef<HTMLButtonElement | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
-    if (!ref.current || isDragOverlay) return;
-    const el = ref.current;
+    if (!ref.current || isDragOverlay) return
+    const el = ref.current
     const cleanupDrag = draggable({
       element: el,
       getInitialData: () => ({ type: "card", id: data.id }),
       onDragStart: () => setIsDragging(true),
       onDrop: () => setIsDragging(false),
-    });
+    })
     const cleanupDrop = dropTargetForElements({
       element: el,
       getData: () => ({ type: "card", id: data.id }),
-    });
+    })
     return () => {
-      cleanupDrag();
-      cleanupDrop();
-    };
-  }, [data.id, isDragOverlay]);
+      cleanupDrag()
+      cleanupDrop()
+    }
+  }, [data.id, isDragOverlay])
 
   if (isDragOverlay) {
     return (
@@ -47,14 +42,14 @@ export default function CardItem({ data, isDragOverlay = false }: CardItemProps)
       >
         <div className="line-clamp-3 leading-relaxed font-medium text-foreground">{data.title}</div>
       </div>
-    );
+    )
   }
 
   return (
     <button
       ref={ref}
       type="button"
-      onClick={() => onOpen({ id: data.id })}
+      onClick={() => openCardModal(data.id)}
       aria-label={`Card: ${data.title}. Press Enter or Space to open, use arrow keys to move`}
       aria-describedby={`card-${data.id}-description`}
       className={cn(
@@ -79,14 +74,14 @@ export default function CardItem({ data, isDragOverlay = false }: CardItemProps)
           <div className="flex items-center gap-2">
             {data.description && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <MessageSquare className="h-3 w-3" />
+                <MessengerLogoIcon className="h-3 w-3" />
                 <span>1</span>
               </div>
             )}
 
             {data.createdAt && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
+                <CalendarIcon className="h-3 w-3" />
                 <span>
                   {new Date(data.createdAt).toLocaleDateString("en-US", {
                     month: "short",
@@ -103,5 +98,5 @@ export default function CardItem({ data, isDragOverlay = false }: CardItemProps)
         Draggable card. Use mouse to drag or keyboard to navigate and press Enter to open.
       </div>
     </button>
-  );
+  )
 }

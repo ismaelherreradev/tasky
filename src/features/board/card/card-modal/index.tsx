@@ -1,13 +1,11 @@
-
 import { useQuery } from "@tanstack/react-query"
 import type { InferSelectModel } from "drizzle-orm"
-import { useAtom } from "jotai"
 import { useState } from "react"
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "#/components/ui/dialog"
 import { ScrollArea } from "#/components/ui/scroll-area"
 import { toastManager } from "#/components/ui/toast"
-import { cardModalAtom } from "#/hooks/use-card-modal"
+import { useCardModalStore } from "#/hooks/use-card-modal"
 import { useTRPC } from "#/integrations/trpc/react"
 import type { CardSelect, lists } from "#/server/db/schema"
 
@@ -20,8 +18,8 @@ export type ListSelect = Omit<InferSelectModel<typeof lists>, "order">
 export type CardWithList = CardSelect & { list: ListSelect }
 
 export function CardModal() {
-  const [modalState, dispatch] = useAtom(cardModalAtom)
-  const { id: modalId, isOpen } = modalState
+  const { state, close } = useCardModalStore()
+  const { id: modalId, isOpen } = state
 
   const [cardRetryCount, setCardRetryCount] = useState(0)
   const [logsRetryCount, setLogsRetryCount] = useState(0)
@@ -36,6 +34,7 @@ export function CardModal() {
   } = useQuery({
     ...trpc.card.getCardById.queryOptions({ id: modalId! }),
     enabled: !!modalId,
+    staleTime: 1000 * 60 * 5,
     retry:
       cardRetryCount < maxRetries
         ? () => {
@@ -52,6 +51,7 @@ export function CardModal() {
   } = useQuery({
     ...trpc.logs.getAuditLogs.queryOptions({ id: modalId! }),
     enabled: !!modalId,
+    staleTime: 1000 * 60 * 5,
     retry:
       logsRetryCount < maxRetries
         ? () => {
@@ -62,7 +62,7 @@ export function CardModal() {
   })
 
   const handleClose = () => {
-    dispatch((state) => ({ ...state, isOpen: false }))
+    close()
   }
 
   if (cardError) {

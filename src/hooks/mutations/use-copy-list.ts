@@ -16,7 +16,9 @@ export function useCopyList({ boardId, onSuccess }: UseCopyListOptions) {
   const mutation = useMutation({
     ...trpc.list.copyList.mutationOptions({
       onSuccess: (data) => {
-        void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }) })
+        void queryClient.invalidateQueries({
+          queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
+        })
         toastManager.add({
           title: "Success",
           id: String(data.id),
