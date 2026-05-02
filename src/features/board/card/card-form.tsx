@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
-import { type ComponentRef, forwardRef, useRef, useState } from "react"
+import { forwardRef, useRef, useState } from "react"
 import { useEventListener, useOnClickOutside } from "usehooks-ts"
 
 import { Button } from "#/components/ui/button"
@@ -23,11 +23,11 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
 ) {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
-
-  const formRef = useRef<ComponentRef<"form">>(null)
   const [title, setTitle] = useState("")
 
-  const { mutate, error, isPending } = useMutation({
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const { mutate, isPending } = useMutation({
     ...trpc.card.createCard.mutationOptions(),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({
@@ -45,7 +45,8 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
       })
       resetForm()
     },
-  })
+})
+
 
   function resetForm() {
     disableEditing()
@@ -65,13 +66,16 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
   function handleTextareaKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-      formRef.current?.requestSubmit()
+      handleSubmit()
     }
   }
 
-  function handleFormSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault()
-    mutate({ title, listId })
+  function handleSubmit() {
+    if (!title.trim()) {
+      toastManager.add({ title: "Error", description: "Title is required" })
+      return
+    }
+    mutate({ title: title.trim(), listId })
   }
 
   useOnClickOutside(formRef as React.RefObject<HTMLElement>, handleOutsideClick)
@@ -82,12 +86,15 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
       {isEditing ? (
         <form
           ref={formRef}
-          onSubmit={handleFormSubmit}
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit()
+          }}
           className="m-1 space-y-4 px-1 py-0.5"
           aria-label="Add new card"
         >
           <Textarea
-            id="title"
+            id="card-title"
             name="title"
             ref={ref}
             onKeyDown={handleTextareaKeyDown}
@@ -99,56 +106,15 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
             placeholder="Enter a title for this card..."
             aria-label="Card title"
             aria-required="true"
-            aria-invalid={
-              !!(
-                error?.data &&
-                "zodError" in error.data &&
-                error.data.zodError &&
-                typeof error.data.zodError === "object" &&
-                "fieldErrors" in error.data.zodError &&
-                error.data.zodError.fieldErrors &&
-                typeof error.data.zodError.fieldErrors === "object" &&
-                "title" in error.data.zodError.fieldErrors
-              )
-            }
-            aria-describedby={
-              error?.data &&
-              "zodError" in error.data &&
-              error.data.zodError &&
-              typeof error.data.zodError === "object" &&
-              "fieldErrors" in error.data.zodError &&
-              error.data.zodError.fieldErrors &&
-              typeof error.data.zodError.fieldErrors === "object" &&
-              "title" in error.data.zodError.fieldErrors
-                ? "card-title-error"
-                : "card-title-help"
-            }
           />
           <div id="card-title-help" className="sr-only">
             Press Enter to create card, Shift+Enter for new line, Escape to cancel
           </div>
-          {error?.data &&
-            "zodError" in error.data &&
-            error.data.zodError &&
-            typeof error.data.zodError === "object" &&
-            "fieldErrors" in error.data.zodError &&
-            error.data.zodError.fieldErrors &&
-            typeof error.data.zodError.fieldErrors === "object" &&
-            "title" in error.data.zodError.fieldErrors && (
-              <span
-                id="card-title-error"
-                className="mb-8 text-xs text-red-500"
-                role="alert"
-                aria-live="polite"
-              >
-                {String(error.data.zodError.fieldErrors.title)}
-              </span>
-            )}
           <div className="flex items-center gap-x-1">
             <Button
               size="sm"
               type="submit"
-              disabled={isPending}
+              disabled={isPending || !title.trim()}
               aria-label={isPending ? "Adding card, please wait" : "Add card to list"}
             >
               {isPending ? "Add card..." : "Add card"}

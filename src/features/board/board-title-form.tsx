@@ -42,8 +42,11 @@ export function BoardTitleForm({ boardId, orgId, board }: BoardTitleFormProps) {
   })
 
   useEffect(() => {
-    if (board?.title) setTitle(board.title)
+    if (board?.title) {
+      setTitle(board.title)
+    }
   }, [board?.title])
+
   const enableEditing = () => {
     setIsEditing(true)
     if (board?.title) setTitle(board.title)
@@ -52,13 +55,13 @@ export function BoardTitleForm({ boardId, orgId, board }: BoardTitleFormProps) {
       inputRef.current?.select()
     }, 0)
   }
+
   const disableEditing = () => {
     setIsEditing(false)
     if (board?.title) setTitle(board.title)
   }
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     if (isPending) return
 
     const trimmedTitle = title.trim()
@@ -77,19 +80,22 @@ export function BoardTitleForm({ boardId, orgId, board }: BoardTitleFormProps) {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleSubmit()
+    }
     if (e.key === "Escape") disableEditing()
   }
 
   const handleBlur = () => {
     setTimeout(() => {
-      if (isEditing && !isPending)
-        handleSubmit(new Event("submit") as unknown as React.SubmitEvent<HTMLFormElement>)
+      if (isEditing && !isPending) handleSubmit()
     }, 100)
   }
 
   if (isEditing) {
     return (
-      <form onSubmit={handleSubmit} className="flex items-center gap-x-2">
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit() }} className="flex items-center gap-x-2">
         <Input
           ref={inputRef}
           onBlur={handleBlur}

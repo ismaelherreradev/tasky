@@ -19,7 +19,7 @@ export default function ListForm({ boardId }: { boardId: number }) {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
-  const { mutate, error, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     ...trpc.list.createList.mutationOptions(),
 
     onSuccess: (data) => {
@@ -35,8 +35,8 @@ export default function ListForm({ boardId }: { boardId: number }) {
   })
 
   const resetForm = useCallback(() => {
-    setIsEditing(false)
     setTitle("")
+    setIsEditing(false)
   }, [])
 
   const enableEditing = useCallback(() => {
@@ -44,7 +44,9 @@ export default function ListForm({ boardId }: { boardId: number }) {
     setTimeout(() => inputRef.current?.focus())
   }, [])
 
-  const disableEditing = useCallback(() => setIsEditing(false), [])
+  const disableEditing = useCallback(() => {
+    resetForm()
+  }, [resetForm])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -55,82 +57,48 @@ export default function ListForm({ boardId }: { boardId: number }) {
     [disableEditing],
   )
 
+  const handleSubmit = useCallback(() => {
+    if (!title.trim()) {
+      toastManager.add({ title: "Error", description: "Title is required" })
+      return
+    }
+    mutate({ title: title.trim(), boardId })
+  }, [title, boardId, mutate])
+
   useEventListener("keydown", () => handleKeyDown)
   useOnClickOutside(formRef as React.RefObject<HTMLElement>, disableEditing)
-
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    mutate({ title, boardId })
-  }
 
   return (
     <ListWrapper>
       {isEditing ? (
         <form
           ref={formRef}
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmit()
+          }}
           className="w-full space-y-4 rounded-md bg-muted p-3"
           aria-label="Add new list"
         >
           <Input
-            id="title"
+            id="list-title"
             ref={inputRef}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="border-transparent px-2 py-1 text-sm font-medium transition hover:border-input focus:border-input"
             placeholder="Enter list title..."
             aria-label="List title"
             aria-required="true"
-            aria-invalid={
-              !!(
-                error?.data &&
-                "zodError" in error.data &&
-                error.data.zodError &&
-                typeof error.data.zodError === "object" &&
-                "fieldErrors" in error.data.zodError &&
-                error.data.zodError.fieldErrors &&
-                typeof error.data.zodError.fieldErrors === "object" &&
-                "title" in error.data.zodError.fieldErrors
-              )
-            }
-            aria-describedby={
-              error?.data &&
-              "zodError" in error.data &&
-              error.data.zodError &&
-              typeof error.data.zodError === "object" &&
-              "fieldErrors" in error.data.zodError &&
-              error.data.zodError.fieldErrors &&
-              typeof error.data.zodError.fieldErrors === "object" &&
-              "title" in error.data.zodError.fieldErrors
-                ? "list-title-error"
-                : "list-title-help"
-            }
           />
           <div id="list-title-help" className="sr-only">
             Press Enter to create list, Escape to cancel
           </div>
-          {error?.data &&
-            "zodError" in error.data &&
-            error.data.zodError &&
-            typeof error.data.zodError === "object" &&
-            "fieldErrors" in error.data.zodError &&
-            error.data.zodError.fieldErrors &&
-            typeof error.data.zodError.fieldErrors === "object" &&
-            "title" in error.data.zodError.fieldErrors && (
-              <span
-                id="list-title-error"
-                className="mb-8 text-xs text-red-500"
-                role="alert"
-                aria-live="polite"
-              >
-                {String(error.data.zodError.fieldErrors.title)}
-              </span>
-            )}
           <div className="flex items-center gap-x-1">
             <Button
               size="sm"
               type="submit"
-              disabled={isPending}
+              disabled={isPending || !title.trim()}
               aria-label={isPending ? "Adding list, please wait" : "Add list to board"}
             >
               {isPending ? "Add list..." : "Add list"}

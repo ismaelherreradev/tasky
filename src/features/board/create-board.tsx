@@ -1,7 +1,7 @@
 import { PlusIcon } from "@phosphor-icons/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
-import { TRPCClientError } from "@trpc/client"
+import { useForm } from "@tanstack/react-form"
 import { useState } from "react"
 
 import { Button } from "#/components/ui/button"
@@ -15,8 +15,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "#/components/ui/dialog"
+import { Field, FieldLabel } from "#/components/ui/field"
 import { Input } from "#/components/ui/input"
-import { Label } from "#/components/ui/label"
 import { toastManager } from "#/components/ui/toast"
 import { useTRPC } from "#/integrations/trpc/react"
 import type { BoardSelect } from "#/server/db/schema"
@@ -46,26 +46,39 @@ export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.Reac
       navigate({ to: "/board/$boardId", params: { boardId: String(data.id) } })
     },
     onError: (error) => {
-      const message =
-        error instanceof TRPCClientError
-          ? (error.data?.zodError?.fieldErrors?.boardId?.[0] ?? error.message)
-          : "Failed to create board"
-      toastManager.add({ title: "Error", description: message })
+      toastManager.add({ title: "Error", description: error.message })
     },
   })
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!title.trim()) {
-      toastManager.add({ title: "Error", description: "Title required" })
-      return
-    }
-    mutate({ title: title.trim(), orgId })
-  }
+  const form = useForm({
+    defaultValues: {
+      title: "",
+      orgId: String(orgId),
+    },
+    onSubmit: ({ value }) => {
+      if (!value.title.trim()) {
+        toastManager.add({ title: "Error", description: "Title is required" })
+        return
+      }
+      mutate(value)
+    },
+  })
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen)
-    if (!newOpen) setTitle("")
+    if (!newOpen) {
+      setTitle("")
+      form.reset()
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!title.trim()) {
+      toastManager.add({ title: "Error", description: "Title is required" })
+      return
+    }
+    mutate({ title: title.trim(), orgId: String(orgId) })
   }
 
   return (
@@ -84,8 +97,8 @@ export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.Reac
         </DialogHeader>
         <form onSubmit={handleSubmit} className="contents">
           <DialogPanel className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="board-title">Title</Label>
+            <Field>
+              <FieldLabel htmlFor="board-title">Title</FieldLabel>
               <Input
                 id="board-title"
                 name="title"
@@ -93,23 +106,21 @@ export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.Reac
                 placeholder="e.g. My Project Board"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                aria-required="true"
                 autoFocus
               />
-            </div>
+            </Field>
           </DialogPanel>
           <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-3">
             <DialogClose render={<Button variant="ghost" />} disabled={isPending}>
               Cancel
             </DialogClose>
-            <Button type="submit" disabled={isPending || !title.trim()} className="gap-2">
-              {isPending ? (
-                <>
-                  <Spinner />
-                </>
-              ) : (
-                <>Create</>
-              )}
+            <Button
+              type="submit"
+              disabled={isPending || !title.trim()}
+              className="gap-2"
+            >
+              {isPending ? <Spinner /> : null}
+              {isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </form>
