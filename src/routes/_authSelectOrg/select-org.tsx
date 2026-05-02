@@ -1,7 +1,7 @@
 import { OrganizationList } from "@clerk/tanstack-react-start"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_auth/select-org")({
+export const Route = createFileRoute("/_authSelectOrg/select-org")({
   component: OrganizationListPage,
 })
 

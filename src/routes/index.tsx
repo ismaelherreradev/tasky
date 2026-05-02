@@ -1,9 +1,32 @@
+import { auth } from "@clerk/tanstack-react-start/server"
+import { redirect } from "@tanstack/react-router"
 import { createFileRoute } from "@tanstack/react-router"
 
 import { AuthModal } from "#/components/auth-modal"
 import siteConfig from "#/config/site"
 
-export const Route = createFileRoute("/")({ component: MainApp })
+export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    try {
+      const { isAuthenticated, orgId } = await auth()
+      if (isAuthenticated) {
+        if (orgId) {
+          throw redirect({
+            to: "/organization/$orgId",
+            params: { orgId },
+          })
+        } else {
+          throw redirect({
+            to: "/select-org",
+          })
+        }
+      }
+    } catch {
+      // Not authenticated or error - show landing page
+    }
+  },
+  component: MainApp,
+})
 
 function MainApp() {
   return (

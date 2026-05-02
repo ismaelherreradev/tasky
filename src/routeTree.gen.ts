@@ -10,9 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SsoCallbackRouteImport } from './routes/sso-callback'
+import { Route as AuthSelectOrgRouteImport } from './routes/_authSelectOrg'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthSelectOrgRouteImport } from './routes/_auth/select-org'
+import { Route as AuthSelectOrgSelectOrgRouteImport } from './routes/_authSelectOrg/select-org'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc/$'
 import { Route as AuthorganizationOrganizationOrgIdRouteImport } from './routes/_auth/(organization)/organization.$orgId'
 import { Route as AuthboardBoardBoardIdRouteImport } from './routes/_auth/(board)/board.$boardId'
@@ -24,6 +25,10 @@ const SsoCallbackRoute = SsoCallbackRouteImport.update({
   path: '/sso-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSelectOrgRoute = AuthSelectOrgRouteImport.update({
+  id: '/_authSelectOrg',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
@@ -33,10 +38,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSelectOrgRoute = AuthSelectOrgRouteImport.update({
+const AuthSelectOrgSelectOrgRoute = AuthSelectOrgSelectOrgRouteImport.update({
   id: '/select-org',
   path: '/select-org',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => AuthSelectOrgRoute,
 } as any)
 const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
   id: '/api/trpc/$',
@@ -70,7 +75,7 @@ const AuthorganizationOrganizationOrgIdActivityRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/select-org': typeof AuthSelectOrgRoute
+  '/select-org': typeof AuthSelectOrgSelectOrgRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/board/$boardId': typeof AuthboardBoardBoardIdRoute
   '/organization/$orgId': typeof AuthorganizationOrganizationOrgIdRoute
@@ -80,7 +85,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/select-org': typeof AuthSelectOrgRoute
+  '/select-org': typeof AuthSelectOrgSelectOrgRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/board/$boardId': typeof AuthboardBoardBoardIdRoute
   '/organization/$orgId': typeof AuthorganizationOrganizationOrgIdRoute
@@ -91,8 +96,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/_authSelectOrg': typeof AuthSelectOrgRouteWithChildren
   '/sso-callback': typeof SsoCallbackRoute
-  '/_auth/select-org': typeof AuthSelectOrgRoute
+  '/_authSelectOrg/select-org': typeof AuthSelectOrgSelectOrgRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/_auth/(board)/board/$boardId': typeof AuthboardBoardBoardIdRoute
   '/_auth/(organization)/organization/$orgId': typeof AuthorganizationOrganizationOrgIdRoute
@@ -124,8 +130,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
+    | '/_authSelectOrg'
     | '/sso-callback'
-    | '/_auth/select-org'
+    | '/_authSelectOrg/select-org'
     | '/api/trpc/$'
     | '/_auth/(board)/board/$boardId'
     | '/_auth/(organization)/organization/$orgId'
@@ -136,6 +143,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  AuthSelectOrgRoute: typeof AuthSelectOrgRouteWithChildren
   SsoCallbackRoute: typeof SsoCallbackRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
@@ -147,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/sso-callback'
       fullPath: '/sso-callback'
       preLoaderRoute: typeof SsoCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authSelectOrg': {
+      id: '/_authSelectOrg'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthSelectOrgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -163,12 +178,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/select-org': {
-      id: '/_auth/select-org'
+    '/_authSelectOrg/select-org': {
+      id: '/_authSelectOrg/select-org'
       path: '/select-org'
       fullPath: '/select-org'
-      preLoaderRoute: typeof AuthSelectOrgRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof AuthSelectOrgSelectOrgRouteImport
+      parentRoute: typeof AuthSelectOrgRoute
     }
     '/api/trpc/$': {
       id: '/api/trpc/$'
@@ -209,7 +224,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
-  AuthSelectOrgRoute: typeof AuthSelectOrgRoute
   AuthboardBoardBoardIdRoute: typeof AuthboardBoardBoardIdRoute
   AuthorganizationOrganizationOrgIdRoute: typeof AuthorganizationOrganizationOrgIdRoute
   AuthorganizationOrganizationOrgIdActivityRoute: typeof AuthorganizationOrganizationOrgIdActivityRoute
@@ -217,7 +231,6 @@ interface AuthRouteChildren {
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthSelectOrgRoute: AuthSelectOrgRoute,
   AuthboardBoardBoardIdRoute: AuthboardBoardBoardIdRoute,
   AuthorganizationOrganizationOrgIdRoute:
     AuthorganizationOrganizationOrgIdRoute,
@@ -229,9 +242,22 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface AuthSelectOrgRouteChildren {
+  AuthSelectOrgSelectOrgRoute: typeof AuthSelectOrgSelectOrgRoute
+}
+
+const AuthSelectOrgRouteChildren: AuthSelectOrgRouteChildren = {
+  AuthSelectOrgSelectOrgRoute: AuthSelectOrgSelectOrgRoute,
+}
+
+const AuthSelectOrgRouteWithChildren = AuthSelectOrgRoute._addFileChildren(
+  AuthSelectOrgRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  AuthSelectOrgRoute: AuthSelectOrgRouteWithChildren,
   SsoCallbackRoute: SsoCallbackRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
