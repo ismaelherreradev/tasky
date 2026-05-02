@@ -3,106 +3,92 @@ import {
   ClerkLoading,
   OrganizationSwitcher,
   UserButton,
-} from "@clerk/tanstack-react-start";
-import { TagChevronIcon, GearIcon, ActivityIcon, LayoutIcon } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+} from "@clerk/tanstack-react-start"
+import { GearIcon, ActivityIcon, LayoutIcon } from "@phosphor-icons/react"
+import { useQuery } from "@tanstack/react-query"
+import { Link, useNavigate } from "@tanstack/react-router"
+import { useMemo } from "react"
 
-import { Button } from "#/components/ui/button";
+import { Button } from "#/components/ui/button"
+import { ScrollArea } from "#/components/ui/scroll-area"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "#/components/ui/dropdown-menu";
-import { ScrollArea } from "#/components/ui/scroll-area";
-import { Skeleton } from "#/components/ui/skeleton";
-import type { BoardSelect } from "#/server/db/schema";
-import { useTRPC } from "#/integrations/trpc/react";
+  Select,
+  SelectItem,
+  SelectLabel,
+  SelectPopup,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "#/components/ui/select"
+import { Skeleton } from "#/components/ui/skeleton"
+import { useTRPC } from "#/integrations/trpc/react"
+import type { BoardSelect } from "#/server/db/schema"
 
 type ItemProps = {
-  orgId: string;
-};
-
-function BoardDropdownItem({ board }: { board: BoardSelect }) {
-  return (
-    <DropdownMenuItem asChild>
-      <Link
-        to="/board/$boardId"
-        params={{ boardId: String(board.id) }}
-        className="w-full cursor-pointer"
-      >
-        <div className="flex w-full items-center gap-2">
-          <LayoutIcon size={14} className="text-muted-foreground" />
-          <span>{board.title}</span>
-        </div>
-      </Link>
-    </DropdownMenuItem>
-  );
+  orgId: string
 }
 
 export function SelectBoardButton({ orgId }: ItemProps) {
-  const trpc = useTRPC();
+  const trpc = useTRPC()
+  const navigate = useNavigate()
 
   const { data: boards, isPending } = useQuery({
     ...trpc.board.getBoards.queryOptions({ orgId }),
-  });
+  })
 
-  const memoizedBoards = useMemo(() => boards as BoardSelect[] | undefined, [boards]);
+  const memoizedBoards = useMemo(() => boards as BoardSelect[] | undefined, [boards])
+
+  const items = useMemo(
+    () =>
+      memoizedBoards?.map((board) => ({
+        label: board.title,
+        value: String(board.id),
+      })) ?? [],
+    [memoizedBoards],
+  )
+
+  const handleValueChange = (value: string | null) => {
+    if (value) {
+      navigate({ to: "/board/$boardId", params: { boardId: value } })
+    }
+  }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="default"
-          size="sm"
-          className="h-8 gap-2 px-3 font-medium transition-all hover:scale-105"
-        >
+    <div className="flex items-center gap-1">
+      <Select items={items} onValueChange={handleValueChange} value="">
+        <SelectTrigger className="h-8 gap-2 px-3 font-medium transition-all hover:scale-105">
           <LayoutIcon size={16} />
-          <span className="hidden sm:inline">Boards</span>
-          <TagChevronIcon size={14} className="opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="start">
-        <DropdownMenuLabel className="font-semibold">Your Boards</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
+          <SelectValue placeholder="Boards" />
+        </SelectTrigger>
+        <SelectPopup className="w-64" align="start">
+          <SelectLabel className="font-semibold">Your Boards</SelectLabel>
+          <SelectSeparator />
           {isPending ? (
             <div className="space-y-2 p-2">
               <Skeleton className="h-8 w-full rounded-md" />
               <Skeleton className="h-8 w-full rounded-md" />
               <Skeleton className="h-8 w-full rounded-md" />
             </div>
-          ) : memoizedBoards && memoizedBoards.length > 0 ? (
+          ) : items.length > 0 ? (
             <ScrollArea className="max-h-64">
               <div className="p-1">
-                {memoizedBoards.map((board) => (
-                  <BoardDropdownItem key={board.id} board={board} />
+                {memoizedBoards?.map((board) => (
+                  <SelectItem key={board.id} value={String(board.id)}>
+                    <div className="flex w-full items-center gap-2">
+                      <LayoutIcon size={14} className="text-muted-foreground" />
+                      <span>{board.title}</span>
+                    </div>
+                  </SelectItem>
                 ))}
               </div>
             </ScrollArea>
           ) : (
             <div className="p-4 text-center text-sm text-muted-foreground">No boards found</div>
           )}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link
-            to="/organization/$orgId"
-            params={{ orgId }}
-            className="w-full cursor-pointer font-medium text-primary"
-          >
-            <LayoutIcon size={14} className="mr-2" />
-            View all boards
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+        </SelectPopup>
+      </Select>
+    </div>
+  )
 }
 
 export function SettingsButton({ orgId }: ItemProps) {
@@ -117,7 +103,7 @@ export function SettingsButton({ orgId }: ItemProps) {
         </Link>
       }
     />
-  );
+  )
 }
 
 export function ActivityButton({ orgId }: ItemProps) {
@@ -133,7 +119,7 @@ export function ActivityButton({ orgId }: ItemProps) {
         </Link>
       }
     />
-  );
+  )
 }
 
 export function OrganizationSwitcherButton() {
@@ -151,7 +137,7 @@ export function OrganizationSwitcherButton() {
         />
       </ClerkLoaded>
     </div>
-  );
+  )
 }
 
 export function UserClerkButton() {
@@ -164,5 +150,5 @@ export function UserClerkButton() {
         <UserButton />
       </ClerkLoaded>
     </div>
-  );
+  )
 }
