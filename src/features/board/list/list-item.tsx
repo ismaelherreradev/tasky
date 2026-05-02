@@ -1,5 +1,11 @@
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { useEffect, useRef, useState, type ComponentRef } from "react"
+import {
+  attachClosestEdge,
+  extractClosestEdge,
+  type Edge,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { GripVertical } from "lucide-react"
+import React, { useEffect, useRef, useState, type ComponentRef } from "react"
 
 import type { ListWithCards } from "#/hooks/use-optimistic-board"
 import { cn } from "#/lib/utils"
@@ -13,27 +19,74 @@ type ListItemProps = {
   data: ListWithCards
 }
 
-export default function ListItem({ data }: ListItemProps) {
+type ListDragState =
+  | { type: "idle" }
+  | { type: "is-dragging" }
+  | { type: "is-over"; closestEdge: Edge | null }
+
+const idleState = { type: "idle" } as const
+
+const ListItemComponent = function ListItem({ data }: ListItemProps) {
   const textareaRef = useRef<ComponentRef<"textarea">>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const ref = useRef<HTMLDivElement | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
+  const outerRef = useRef<HTMLDivElement | null>(null)
+  const headerRef = useRef<HTMLDivElement | null>(null)
+  const dragHandleRef = useRef<HTMLDivElement | null>(null)
+  const [dragState, setDragState] = useState<ListDragState>(idleState)
 
   useEffect(() => {
-    if (!ref.current) return
-    const el = ref.current
-    const cleanupDrag = draggable({
-      element: el,
+    const outer = outerRef.current
+    const dragHandle = dragHandleRef.current
+    if (!outer || !dragHandle) return
+
+    const cleanup = draggable({
+      element: dragHandle,
       getInitialData: () => ({ type: "list", id: data.id }),
-      onDragStart: () => setIsDragging(true),
-      onDrop: () => setIsDragging(false),
+      onDragStart: () => setDragState({ type: "is-dragging" }),
+      onDrop: () => setDragState(idleState),
     })
+
     const cleanupDrop = dropTargetForElements({
-      element: el,
-      getData: () => ({ type: "list-item", id: data.id }),
+      element: outer,
+      getData: ({ input, element }) => {
+        return attachClosestEdge(
+          { type: "list-item", id: data.id },
+          { input, element, allowedEdges: ["left", "right"] }
+        )
+      },
+      canDrop: ({ source }) => {
+        return source.data?.type === "list" || source.data?.type === "card"
+      },
+      onDragEnter: ({ source, self }) => {
+        if (source.data?.type !== "list") return
+        if (source.data.id === data.id) return
+
+        const closestEdge = extractClosestEdge(self.data)
+        setDragState({ type: "is-over", closestEdge })
+      },
+      onDrag: ({ source, self }) => {
+        if (source.data?.type !== "list") return
+        if (source.data.id === data.id) return
+
+        const closestEdge = extractClosestEdge(self.data)
+
+        setDragState((current) => {
+          if (current.type === "is-over" && current.closestEdge === closestEdge) {
+            return current
+          }
+          return { type: "is-over", closestEdge }
+        })
+      },
+      onDragLeave: ({ source }) => {
+        if (source.data?.type === "list") {
+          setDragState(idleState)
+        }
+      },
+      onDrop: () => setDragState(idleState),
     })
+
     return () => {
-      cleanupDrag()
+      cleanup()
       cleanupDrop()
     }
   }, [data.id])
@@ -49,33 +102,68 @@ export default function ListItem({ data }: ListItemProps) {
     })
   }
 
+  const isDragging = dragState.type === "is-dragging"
+  const isOver = dragState.type === "is-over"
+  const showIndicatorLeft = isOver && dragState.closestEdge === "left"
+  const showIndicatorRight = isOver && dragState.closestEdge === "right"
+
   return (
-    <div ref={ref} className={cn("h-full w-68 shrink-0 select-none", isDragging && "opacity-50")}>
-      <div className="w-full rounded-md bg-muted pb-2 shadow-md">
-        <div>
-          <ListHeader onAddCard={enableEditing} data={data} />
-        </div>
+    <div
+      ref={outerRef}
+      className={cn(
+        "group relative w-68 shrink-0 transition-all duration-200 select-none",
+        isDragging && "opacity-40",
+      )}
+    >
+      {showIndicatorLeft && (
+        <div className="pointer-events-none absolute top-4 bottom-4 -left-[9px] z-20 w-[2px] rounded-full bg-primary shadow-sm" />
+      )}
+      {showIndicatorRight && (
+        <div className="pointer-events-none absolute top-4 -right-[9px] bottom-4 z-20 w-[2px] rounded-full bg-primary shadow-sm" />
+      )}
 
-        <DroppableArea
-          id={`list-${data.id}`}
-          className={cn("mx-1 px-1 py-0.5", data.cards && data.cards.length > 0 ? "mt-2" : "mt-0")}
+      <div className="flex gap-1">
+        <div
+          ref={dragHandleRef}
+          className={cn(
+            "flex w-6 shrink-0 cursor-grab items-start justify-center pt-3",
+            isDragging && "cursor-grabbing",
+          )}
+          aria-label="Drag list"
         >
-          <div className="flex min-h-5 flex-col gap-y-2">
-            {data.cards?.map((card) => (
-              <CardItem key={card.id} data={card} />
-            ))}
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <div ref={headerRef} className="w-full rounded-md bg-muted pb-2 shadow-md">
+          <div>
+            <ListHeader onAddCard={enableEditing} data={data} />
           </div>
-        </DroppableArea>
 
-        <CardForm
-          listId={data.id}
-          boardId={data.boardId}
-          ref={textareaRef}
-          isEditing={isEditing}
-          enableEditing={enableEditing}
-          disableEditing={disableEditing}
-        />
+          <DroppableArea
+            id={`list-${data.id}`}
+            className={cn(
+              "mx-1 px-1 py-0.5",
+              data.cards && data.cards.length > 0 ? "mt-2" : "mt-0",
+            )}
+          >
+            <div className="flex min-h-5 flex-col gap-y-2">
+              {data.cards?.map((card) => (
+                <CardItem key={card.id} data={card} />
+              ))}
+            </div>
+          </DroppableArea>
+
+          <CardForm
+            listId={data.id}
+            boardId={data.boardId}
+            ref={textareaRef}
+            isEditing={isEditing}
+            enableEditing={enableEditing}
+            disableEditing={disableEditing}
+          />
+        </div>
       </div>
     </div>
   )
 }
+
+export default React.memo(ListItemComponent)

@@ -2,9 +2,12 @@ import {
   dropTargetForElements,
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { useEffect, useRef, useState } from "react"
 
-import { useOptimisticBoard } from "#/hooks/use-optimistic-board"
+import { ScrollArea } from "#/components/ui/scroll-area"
+import { useOptimisticBoard, type ListWithCards } from "#/hooks/use-optimistic-board"
+import { cn } from "#/lib/utils"
 import type { CardSelect } from "#/server/db/schema"
 
 import ListForm from "./list-form"
@@ -36,27 +39,56 @@ type ListContainerProps = {
   boardId: number
 }
 
+function findCardByIdFromLists(
+  lists: ListWithCards[],
+  id: number,
+): (CardSelect & { listId: number }) | null {
+  if (!lists || !Array.isArray(lists)) return null
+  for (const list of lists) {
+    const cards = list.cards
+    const card = cards?.find((c) => c.id === id)
+    if (card) {
+      return { ...card, listId: list.id } as CardSelect & { listId: number }
+    }
+  }
+  return null
+}
+
+function getReorderDestinationIndex(
+  sourceIndex: number,
+  targetIndex: number,
+  closestEdge: string | null,
+  axis: "horizontal" | "vertical"
+) {
+  if (sourceIndex === targetIndex) return sourceIndex
+  if (axis === "horizontal") {
+    if (sourceIndex < targetIndex) {
+      return closestEdge === "right" ? targetIndex : targetIndex - 1
+    } else {
+      return closestEdge === "right" ? targetIndex + 1 : targetIndex
+    }
+  } else {
+    if (sourceIndex < targetIndex) {
+      return closestEdge === "bottom" ? targetIndex : targetIndex - 1
+    } else {
+      return closestEdge === "bottom" ? targetIndex + 1 : targetIndex
+    }
+  }
+}
+
 export function ListContainer({ boardId: _boardId }: ListContainerProps) {
   const { lists, isLoading, isError, moveCard, moveList } = useOptimisticBoard()
 
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const [isOverContainer, setIsOverContainer] = useState(false)
 
-  const findCardById = useCallback(
-    (id: number): (CardSelect & { listId: number }) | null => {
-      if (!lists?.length) return null
-      for (const list of lists) {
-        const card = list.cards?.find((card) => card.id === id)
-        if (card) {
-          return { ...card, listId: list.id } as CardSelect & {
-            listId: number
-          }
-        }
-      }
-      return null
-    },
-    [lists],
-  )
+  const listsRef = useRef(lists)
+  const moveCardRef = useRef(moveCard)
+  const moveListRef = useRef(moveList)
+
+  listsRef.current = lists
+  moveCardRef.current = moveCard
+  moveListRef.current = moveList
 
   useEffect(() => {
     const cleanupMonitor = monitorForElements({
@@ -99,31 +131,38 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
         }
         if (!activeType || activeId == null || !overData) return
 
+        const currentLists = listsRef.current
+
         if (activeType === "list" && overData.type === "list-item") {
-          const fromIndex = lists.findIndex((l) => l.id === activeId)
-          const toIndex = lists.findIndex((l) => l.id === overData.id)
-          if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-            moveList(activeId, fromIndex, toIndex)
+          const fromIndex = currentLists.findIndex((l) => l.id === activeId)
+          const overIndex = currentLists.findIndex((l) => l.id === overData.id)
+          const closestEdge = extractClosestEdge(overData)
+          
+          if (fromIndex !== -1 && overIndex !== -1) {
+            const toIndex = getReorderDestinationIndex(fromIndex, overIndex, closestEdge, "horizontal")
+            if (fromIndex !== toIndex) {
+              moveListRef.current(activeId, fromIndex, toIndex)
+            }
           }
           return
         }
 
         if (activeType === "card") {
           if (overData.type === "list") {
-            const activeCard = findCardById(activeId)
+            const activeCard = findCardByIdFromLists(currentLists, activeId)
             const overListId = Number(
               typeof overData.id === "string"
                 ? String(overData.id).replace("list-", "")
                 : overData.id,
             )
             if (!activeCard || activeCard.listId === overListId) return
-            const activeListIndex = lists.findIndex((l) => l.id === activeCard.listId)
-            const overList = lists.find((l) => l.id === overListId)
+            const activeListIndex = currentLists.findIndex((l) => l.id === activeCard.listId)
+            const overList = currentLists.find((l) => l.id === overListId)
             if (activeListIndex === -1 || !overList) return
             const activeCardIndex =
-              lists[activeListIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
+              currentLists[activeListIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
             if (activeCardIndex === -1) return
-            moveCard(
+            moveCardRef.current(
               activeId,
               activeCard.listId,
               overListId,
@@ -134,28 +173,45 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
           }
 
           if (overData.type === "card") {
-            const activeCard = findCardById(activeId)
-            const overCard = findCardById(overData.id)
+            const activeCard = findCardByIdFromLists(currentLists, activeId)
+            const overCard = findCardByIdFromLists(currentLists, overData.id)
             if (!activeCard || !overCard) return
 
+            const closestEdge = extractClosestEdge(overData)
+
             if (activeCard.listId === overCard.listId) {
-              const listIndex = lists.findIndex((l) => l.id === activeCard.listId)
+              const listIndex = currentLists.findIndex((l) => l.id === activeCard.listId)
               if (listIndex === -1) return
-              const fromIndex = lists[listIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
-              const toIndex = lists[listIndex]?.cards?.findIndex((c) => c.id === overCard.id) ?? -1
-              if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-                moveCard(activeId, activeCard.listId, activeCard.listId, fromIndex, toIndex)
+              const fromIndex =
+                currentLists[listIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
+              const overIndex =
+                currentLists[listIndex]?.cards?.findIndex((c) => c.id === overCard.id) ?? -1
+              
+              if (fromIndex !== -1 && overIndex !== -1) {
+                const toIndex = getReorderDestinationIndex(fromIndex, overIndex, closestEdge, "vertical")
+                if (fromIndex !== toIndex) {
+                  moveCardRef.current(
+                    activeId,
+                    activeCard.listId,
+                    activeCard.listId,
+                    fromIndex,
+                    toIndex,
+                  )
+                }
               }
             } else {
-              const fromListIndex = lists.findIndex((l) => l.id === activeCard.listId)
-              const toListIndex = lists.findIndex((l) => l.id === overCard.listId)
+              const fromListIndex = currentLists.findIndex((l) => l.id === activeCard.listId)
+              const toListIndex = currentLists.findIndex((l) => l.id === overCard.listId)
               if (fromListIndex === -1 || toListIndex === -1) return
               const fromIndex =
-                lists[fromListIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
-              const toIndex =
-                lists[toListIndex]?.cards?.findIndex((c) => c.id === overCard.id) ?? -1
-              if (fromIndex === -1 || toIndex === -1) return
-              moveCard(activeId, activeCard.listId, overCard.listId, fromIndex, toIndex)
+                currentLists[fromListIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
+              const overIndex =
+                currentLists[toListIndex]?.cards?.findIndex((c) => c.id === overCard.id) ?? -1
+              if (fromIndex === -1 || overIndex === -1) return
+              
+              const toIndex = closestEdge === "bottom" ? overIndex + 1 : overIndex
+              
+              moveCardRef.current(activeId, activeCard.listId, overCard.listId, fromIndex, toIndex)
             }
           }
         }
@@ -167,88 +223,54 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
         element: scrollerRef.current,
         getData: () => ({ type: "list-container" }),
         onDragEnter: () => setIsOverContainer(true),
-        onDragLeave: () => setIsOverContainer(false),
-        onDrop: () => setIsOverContainer(false),
+        onDragLeave: () => {
+          setIsOverContainer(false)
+        },
+        onDrop: () => {
+          setIsOverContainer(false)
+        },
       })
     }
     return () => {
       cleanupMonitor()
       cleanupDrop?.()
     }
-  }, [lists, moveCard, moveList, findCardById])
+  }, [])
 
   if (isLoading) return <div className="p-4">Loading...</div>
   if (isError) return <div className="p-4 text-red-500">Error loading board</div>
 
   if (!lists?.length) {
     return (
-      <div className="relative h-full w-full">
-        <div
-          className="flex h-full gap-x-4 overflow-x-auto overflow-y-hidden px-1 pb-6"
-          style={{
-            scrollbarWidth: "thin",
-            scrollbarColor: "hsl(var(--border)) transparent",
-          }}
-        >
-          <style jsx>{`
-            div::-webkit-scrollbar {
-              height: 8px;
-            }
-            div::-webkit-scrollbar-track {
-              background: hsl(var(--muted) / 0.3);
-              border-radius: 4px;
-            }
-            div::-webkit-scrollbar-thumb {
-              background: hsl(var(--border));
-              border-radius: 4px;
-              transition: background-color 0.2s ease;
-            }
-            div::-webkit-scrollbar-thumb:hover {
-              background: hsl(var(--muted-foreground) / 0.6);
-            }
-          `}</style>
-
-          <ListForm boardId={_boardId} />
-          <div className="w-4 shrink-0" />
-        </div>
+      <div className="relative min-h-0 w-full flex-1">
+        <ScrollArea className="h-full w-full">
+          <div className="flex h-full gap-x-4 px-1 pb-6">
+            <ListForm boardId={_boardId} />
+            <div className="w-4 shrink-0" />
+          </div>
+        </ScrollArea>
       </div>
     )
   }
 
   return (
-    <div className="relative h-full w-full">
-      <div
-        ref={scrollerRef}
-        className={`flex h-full gap-x-4 overflow-x-auto overflow-y-hidden px-3 pb-7 ${isOverContainer ? "ring-2 ring-primary/40 ring-offset-2" : ""} board-scroll`}
-        style={{
-          scrollbarWidth: "thin",
-          scrollbarColor: "hsl(var(--border)) transparent",
-        }}
-      >
-        <style jsx>{`
-          .board-scroll::-webkit-scrollbar {
-            height: 8px;
-          }
-          .board-scroll::-webkit-scrollbar-track {
-            background: hsl(var(--muted) / 0.3);
-            border-radius: 4px;
-          }
-          .board-scroll::-webkit-scrollbar-thumb {
-            background: hsl(var(--border));
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-          }
-          .board-scroll::-webkit-scrollbar-thumb:hover {
-            background: hsl(var(--muted-foreground) / 0.6);
-          }
-        `}</style>
-        {lists.map((list) => (
-          <ListItem key={list.id} data={list} />
-        ))}
+    <div className="relative min-h-0 w-full flex-1">
+      <ScrollArea className="h-full w-full">
+        <div
+          ref={scrollerRef}
+          className={cn(
+            "flex h-full gap-x-4 px-3 pb-7",
+            isOverContainer && "ring-2 ring-primary/40 ring-offset-2",
+          )}
+        >
+          {lists.map((list) => (
+            <ListItem key={list.id} data={list} />
+          ))}
 
-        <ListForm boardId={_boardId} />
-        <div className="w-6 shrink-0" />
-      </div>
+          <ListForm boardId={_boardId} />
+          <div className="w-6 shrink-0" />
+        </div>
+      </ScrollArea>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-linear-to-r from-background/80 to-transparent"
