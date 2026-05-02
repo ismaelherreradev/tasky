@@ -23,6 +23,9 @@ export function useUpdateCard({
           void queryClient.invalidateQueries({
             queryKey: trpc.card.getCardById.queryKey({ id: data.id }),
           })
+          void queryClient.invalidateQueries({
+            queryKey: trpc.logs.getAuditLogs.queryKey({ id: data.id }),
+          })
         }
         toastSuccess(`Card "${data.title}" updated`)
         onSuccess?.(data)

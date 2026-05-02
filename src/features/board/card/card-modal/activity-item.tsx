@@ -15,7 +15,7 @@ export function ActivityItem({ data }: ActivityItemProps) {
     .slice(0, 2);
 
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-border/50 bg-card/50 p-3 transition-colors hover:bg-card/80">
+    <div className="flex items-start gap-3 rounded-md px-1 py-2 transition-colors hover:bg-muted/20">
       <Avatar className="h-8 w-8 shrink-0 border border-border/50">
         <AvatarImage src={data.userImage} alt={data.userName} />
         <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">

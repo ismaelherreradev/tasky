@@ -20,58 +20,35 @@ export function BoardNavbar({ boardId, orgId }: BoardNavbarProps) {
   const { data: board } = useQuery(trpc.board.getBoardById.queryOptions({ boardId, orgId }))
   return (
     <nav
-      className="sticky top-0 z-40 w-full overflow-hidden border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60"
+      className="flex h-14 w-full shrink-0 items-center justify-between border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60"
       aria-label="Board navigation"
     >
-      <div className="mx-auto flex h-16 max-w-screen-2xl items-center px-4 sm:px-6 lg:px-8">
-        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            render={
-              <Link to="/organization/$orgId" params={{ orgId }}>
-                <ArrowLeft size={16} />
-                <span className="hidden lg:inline">Back to Boards</span>
-              </Link>
-            }
-          />
-
-          <Separator orientation="vertical" className="hidden h-6 lg:block" />
-
-          <div className="hidden min-w-0 items-center gap-2 text-sm lg:flex">
-            <Link
-              to="/organization/$orgId"
-              params={{ orgId }}
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Boards
+      <div className="flex min-w-0 items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          render={
+            <Link to="/organization/$orgId" params={{ orgId }} title="Back to Boards">
+              <ArrowLeft size={18} />
+              <span className="sr-only">Back to Boards</span>
             </Link>
-            <span className="shrink-0 text-muted-foreground">/</span>
-          </div>
+          }
+        />
+        
+        <Separator orientation="vertical" className="h-4" />
+        
+        <div className="flex min-w-0 items-center pl-1">
+          <BoardTitleForm orgId={orgId} boardId={boardId} board={board ?? undefined} />
         </div>
+      </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-center px-2">
-          <div className="flex w-full max-w-sm items-center gap-2">
-            <div className="hidden shrink-0 items-center gap-2 text-muted-foreground xl:flex">
-              <Users size={16} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <BoardTitleForm orgId={orgId} boardId={boardId} board={board ?? undefined} />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center gap-3">
+        <div className="hidden md:block">
           <BoardStats boardId={boardId} variant="compact" />
-
-          <div className="hidden items-center gap-2 text-sm text-muted-foreground 2xl:flex">
-            <Calendar size={14} />
-          </div>
-
-          <Separator orientation="vertical" className="hidden h-6 xl:block" />
-
-          <BoardOptions boardId={boardId} orgId={orgId} board={board ?? undefined} />
         </div>
+
+        <BoardOptions boardId={boardId} orgId={orgId} board={board ?? undefined} />
       </div>
     </nav>
   )

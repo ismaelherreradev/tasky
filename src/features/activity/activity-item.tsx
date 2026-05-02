@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage } from "#/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import type { AuditLogsSelect } from "#/server/db/schema";
 import { formatDateToLocal, generateLogMessage } from "#/lib/utils";
 
@@ -7,19 +7,33 @@ type ActivityItemProps = {
 };
 
 export default function ActivityItem({ data }: ActivityItemProps) {
+  const initials = data.userName
+    .split(" ")
+    .map((name) => name.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
-    <li className="flex items-center gap-x-2">
-      <Avatar className="h-8 w-8">
+    <li className="flex items-start gap-3 rounded-md px-1 py-2 transition-colors hover:bg-muted/20">
+      <Avatar className="h-8 w-8 shrink-0">
         <AvatarImage src={data.userImage} />
+        <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
+          {initials}
+        </AvatarFallback>
       </Avatar>
-      <div className="flex flex-col space-y-0.5">
-        <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-neutral-700 lowercase">{data.userName}</span>{" "}
-          {generateLogMessage(data)}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {formatDateToLocal(data.createdAt.toString())}
-        </p>
+
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="text-sm text-foreground">
+          <span className="font-medium">{data.userName}</span>
+          <span className="ml-1 text-muted-foreground">{generateLogMessage(data)}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <time dateTime={data.createdAt.toString()}>
+            {formatDateToLocal(data.createdAt.toString())}
+          </time>
+        </div>
       </div>
     </li>
   );

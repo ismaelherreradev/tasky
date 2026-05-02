@@ -1,4 +1,6 @@
 import { AlignLeftIcon, PencilIcon } from "@phosphor-icons/react"
+import { useQueryClient } from "@tanstack/react-query"
+import { useParams } from "@tanstack/react-router"
 import { type ComponentRef, useRef, useState } from "react"
 import { useEventListener, useOnClickOutside } from "usehooks-ts"
 
@@ -6,6 +8,7 @@ import { Button } from "#/components/ui/button"
 import { Skeleton } from "#/components/ui/skeleton"
 import { Textarea } from "#/components/ui/textarea"
 import { useUpdateCard } from "#/hooks/mutations/use-update-card"
+import { useTRPC } from "#/integrations/trpc/react"
 import { cn } from "#/lib/utils"
 
 import type { CardWithList } from "."
@@ -15,6 +18,10 @@ type DescriptionProps = {
 }
 
 export default function Description({ data }: DescriptionProps) {
+  const params = useParams({ from: "/_auth/board/$boardId" })
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+
   const [isEditing, setIsEditing] = useState(false)
 
   const formRef = useRef<ComponentRef<"form">>(null)
@@ -22,7 +29,12 @@ export default function Description({ data }: DescriptionProps) {
 
   const updateCard = useUpdateCard({
     invalidateCardQuery: true,
-    onSuccess: () => disableEditing(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId: Number(params.boardId) }),
+      })
+      disableEditing()
+    },
   })
 
   const enableEditing = () => {
@@ -46,10 +58,8 @@ export default function Description({ data }: DescriptionProps) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-x-3">
-        <div className="shrink-0 rounded-lg bg-secondary/50 p-2 text-secondary-foreground">
-          <AlignLeftIcon className="h-4 w-4" />
-        </div>
+      <div className="flex items-center gap-x-3 text-muted-foreground">
+        <AlignLeftIcon className="h-5 w-5" />
         <h3 className="font-semibold text-foreground">Description</h3>
       </div>
 
@@ -79,14 +89,14 @@ export default function Description({ data }: DescriptionProps) {
           </div>
         </form>
       ) : (
-        <div className="ml-11">
+        <div className="ml-8">
           <button
             type="button"
             onClick={enableEditing}
             className={cn(
-              "group relative w-full cursor-pointer rounded-lg border-2 border-dashed border-border/60 bg-muted/30 text-left transition-colors hover:bg-muted/50",
-              "min-h-20 p-4 text-sm",
-              data.description && "border-solid border-border bg-background hover:bg-muted/20",
+              "group relative w-full cursor-pointer rounded-md border border-transparent bg-muted/30 text-left transition-colors hover:bg-muted/50",
+              "min-h-16 p-3 text-sm",
+              data.description && "bg-transparent hover:bg-muted/30",
             )}
           >
             {data.description ? (
@@ -119,13 +129,13 @@ Description.Skeleton = function DescriptionSkeleton() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-x-3">
-        <div className="shrink-0 rounded-lg bg-muted p-2">
-          <Skeleton className="h-4 w-4" />
+        <div className="shrink-0 text-muted-foreground">
+          <Skeleton className="h-5 w-5 rounded-full" />
         </div>
         <Skeleton className="h-5 w-24" />
       </div>
-      <div className="ml-11">
-        <Skeleton className="h-20 w-full rounded-lg" />
+      <div className="ml-8">
+        <Skeleton className="h-20 w-full rounded-md" />
       </div>
     </div>
   )

@@ -20,5 +20,9 @@ function OrganizationIdPage() {
   const { orgId } = Route.useParams()
   const { data: boards } = useQuery(trpc.board.getBoards.queryOptions({ orgId }))
 
-  return <BoardsContainer boards={boards as BoardSelect[]} orgId={orgId} />
+  return (
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <BoardsContainer boards={boards as BoardSelect[]} orgId={orgId} />
+    </main>
+  )
 }

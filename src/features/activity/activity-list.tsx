@@ -36,11 +36,11 @@ export default function ActivityList() {
   }
 
   return (
-    <ol className="mt-4 space-y-4">
+    <ol className="space-y-1">
       {auditLogs?.length === 0 ? (
-        <p className="text-center text-xs text-muted-foreground">
+        <li className="py-8 text-center text-sm text-muted-foreground">
           No activity found inside this organization
-        </p>
+        </li>
       ) : (
         auditLogs?.map((log) => <ActivityItem key={log.id} data={log} />)
       )}
@@ -52,10 +52,16 @@ const SKELETON_IDS = ["skeleton-1", "skeleton-2", "skeleton-3", "skeleton-4", "s
 
 export function ActivityListSkeleton() {
   return (
-    <ol className="mt-4 space-y-4">
+    <div className="space-y-3">
       {SKELETON_IDS.map((id) => (
-        <Skeleton key={id} className="h-14 w-full" />
+        <div key={id} className="flex items-center gap-3 py-2">
+          <Skeleton className="h-8 w-8 shrink-0 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-64" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+        </div>
       ))}
-    </ol>
+    </div>
   )
 }

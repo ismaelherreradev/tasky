@@ -31,6 +31,10 @@ function applyThemeMode(mode: ThemeMode) {
   document.documentElement.style.colorScheme = resolved
 }
 
+import { DesktopIcon, MoonIcon, SunIcon } from "@phosphor-icons/react"
+
+import { Button } from "#/components/ui/button"
+
 export default function ThemeToggle() {
   const [mode, setMode] = useState<ThemeMode>("auto")
 
@@ -67,14 +71,22 @@ export default function ThemeToggle() {
       : `Theme mode: ${mode}. Click to switch mode.`
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon"
       onClick={toggleMode}
       aria-label={label}
       title={label}
-      className="rounded-full border border-(--chip-line) bg-(--chip-bg) px-3 py-1.5 text-sm font-semibold text-(--sea-ink) shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5"
+      className="h-8 w-8 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
     >
-      {mode === "auto" ? "Auto" : mode === "dark" ? "Dark" : "Light"}
-    </button>
+      {mode === "auto" ? (
+        <DesktopIcon className="h-4 w-4" />
+      ) : mode === "dark" ? (
+        <MoonIcon className="h-4 w-4" />
+      ) : (
+        <SunIcon className="h-4 w-4" />
+      )}
+      <span className="sr-only">{label}</span>
+    </Button>
   )
 }

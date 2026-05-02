@@ -51,8 +51,8 @@ export default function Header({ data }: HeaderProps) {
   }
 
   return (
-    <div className="flex w-full items-start gap-x-3">
-      <div className="mt-0.5 shrink-0 rounded-lg bg-primary/10 p-2 text-primary">
+    <div className="flex w-full items-start gap-x-3 pr-8">
+      <div className="mt-0.5 shrink-0 text-muted-foreground">
         <CreditCardIcon className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
@@ -64,15 +64,15 @@ export default function Header({ data }: HeaderProps) {
             name="title"
             defaultValue={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="resize-none border-none bg-transparent px-0 text-xl font-bold text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="h-7 resize-none border-none bg-transparent px-0 text-xl font-bold text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="Card title"
           />
         </form>
         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
           <span>in list</span>
-          <Badge variant="secondary" size="sm">
+          <span className="font-medium underline decoration-muted-foreground/30 underline-offset-4">
             {data.list.title}
-          </Badge>
+          </span>
         </div>
       </div>
     </div>
@@ -81,9 +81,9 @@ export default function Header({ data }: HeaderProps) {
 
 Header.Skeleton = function HeaderSkeleton() {
   return (
-    <div className="flex items-start gap-x-3">
-      <div className="shrink-0 rounded-lg bg-muted p-2">
-        <Skeleton className="h-5 w-5" />
+    <div className="flex items-start gap-x-3 pr-8">
+      <div className="mt-0.5 shrink-0 text-muted-foreground">
+        <Skeleton className="h-5 w-5 rounded-full" />
       </div>
       <div className="flex-1 space-y-2">
         <Skeleton className="h-7 w-3/4" />

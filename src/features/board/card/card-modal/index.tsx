@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import type { InferSelectModel } from "drizzle-orm"
 import { useState } from "react"
 
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "#/components/ui/dialog"
-import { ScrollArea } from "#/components/ui/scroll-area"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogPanel, DialogTitle } from "#/components/ui/dialog"
 import { toastManager } from "#/components/ui/toast"
 import { useCardModalStore } from "#/hooks/use-card-modal"
 import { useTRPC } from "#/integrations/trpc/react"
@@ -124,7 +123,7 @@ export function CardModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-h-[90vh] max-w-5xl gap-0 overflow-hidden p-0">
+      <DialogContent className="max-w-4xl p-0 gap-0">
         <span className="sr-only">
           <DialogTitle>{cardData?.title ?? "Card Details"}</DialogTitle>
           <DialogDescription>
@@ -132,36 +131,26 @@ export function CardModal() {
           </DialogDescription>
         </span>
 
-        <div className="flex h-full max-h-[90vh] flex-col">
-          <div className="border-b bg-card px-6 py-5">
-            {isCardLoading || !cardData ? <Header.Skeleton /> : <Header data={cardData} />}
-          </div>
+        <DialogHeader>
+          {isCardLoading || !cardData ? <Header.Skeleton /> : <Header data={cardData} />}
+        </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <div className="grid h-full grid-cols-1 lg:grid-cols-4">
-              <div className="flex flex-col overflow-hidden lg:col-span-3">
-                <ScrollArea className="flex-1 px-6 py-6">
-                  <div className="max-w-3xl space-y-8">
-                    {cardData ? <Description data={cardData} /> : <Description.Skeleton />}
-                    {isLogsLoading ? (
-                      <Activity.Skeleton />
-                    ) : (
-                      <Activity items={auditLogsData ?? []} />
-                    )}
-                  </div>
-                </ScrollArea>
-              </div>
+        <DialogPanel>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+            <div className="flex flex-col space-y-8 lg:col-span-3">
+              {cardData ? <Description data={cardData} /> : <Description.Skeleton />}
+              {isLogsLoading ? (
+                <Activity.Skeleton />
+              ) : (
+                <Activity items={auditLogsData ?? []} />
+              )}
+            </div>
 
-              <div className="border-l bg-muted/20 lg:col-span-1">
-                <ScrollArea className="h-full">
-                  <div className="p-6">
-                    {cardData ? <Actions data={cardData} /> : <Actions.Skeleton />}
-                  </div>
-                </ScrollArea>
-              </div>
+            <div className="lg:col-span-1">
+              {cardData ? <Actions data={cardData} /> : <Actions.Skeleton />}
             </div>
           </div>
-        </div>
+        </DialogPanel>
       </DialogContent>
     </Dialog>
   )

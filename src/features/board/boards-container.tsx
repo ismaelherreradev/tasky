@@ -18,13 +18,13 @@ export function BoardsContainer({ boards, orgId }: BoardsClientProps) {
   } = useDeleteBoard({ orgId })
 
   return (
-    <section className="mt-10 space-y-8 pb-16">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h2 className="bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-bold">
+    <section className="flex flex-col space-y-8 py-8 md:py-12">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1.5">
+          <h2 className="bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-3xl md:text-4xl font-bold tracking-tight">
             Your Boards
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-base md:text-lg">
             Organize your projects and collaborate with your team
           </p>
         </div>
@@ -34,7 +34,7 @@ export function BoardsContainer({ boards, orgId }: BoardsClientProps) {
       {!boards || boards.length === 0 ? (
         <BoardEmpty orgId={orgId} />
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {boards.map((b) => (
             <BoardCard
               key={b.id}

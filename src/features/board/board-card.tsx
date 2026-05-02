@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { useState } from "react"
 
 import { Button } from "#/components/ui/button"
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "#/components/ui/card"
+import { Card } from "#/components/ui/card"
 import { ConfirmationDialog } from "#/components/ui/confirmation-dialog"
 import type { BoardSelect } from "#/server/db/schema"
 
@@ -22,47 +22,47 @@ export function BoardCard({ board, onDelete, isDeleting }: BoardCardProps) {
 
   return (
     <>
-      <Card className="group relative flex h-36 cursor-pointer flex-col overflow-hidden border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
-        <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+      <Card className="group relative flex h-32 flex-col overflow-hidden transition-colors hover:bg-muted/40">
         <Link
           to="/board/$boardId"
           params={{ boardId: String(board.id) }}
-          className="relative z-10 flex-1"
+          className="relative z-10 flex flex-1 flex-col justify-between p-5"
         >
-          <CardHeader className="shrink-0 pb-3">
-            <CardTitle className="flex items-center gap-3 pr-10 text-lg font-bold transition-colors group-hover:text-primary">
-              <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
-                <LayoutIcon size={18} className="text-primary" />
-              </div>
-              <span className="truncate">{board.title}</span>
-            </CardTitle>
-            <CardDescription className="text-sm opacity-70 transition-opacity group-hover:opacity-90">
-              Created{" "}
-              {board.createdAt
-                ? board.createdAt.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })
-                : "Unknown date"}
-            </CardDescription>
-          </CardHeader>
+          <div className="flex w-full items-start justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <LayoutIcon className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+              <h3 className="truncate font-semibold tracking-tight text-foreground">
+                {board.title}
+              </h3>
+            </div>
+          </div>
+          
+          <div className="text-xs text-muted-foreground">
+            {board.createdAt
+              ? `Created ${board.createdAt.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}`
+              : "Unknown date"}
+          </div>
         </Link>
 
-        <CardAction className="absolute top-4 right-4 z-20">
+        <div className="absolute right-3 top-3 z-20">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
               setShowDeleteDialog(true)
             }}
-            className="h-8 w-8 p-0 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+            className="h-8 w-8 text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
           >
-            <TrashIcon size={14} />
+            <TrashIcon className="h-4 w-4" />
+            <span className="sr-only">Delete board</span>
           </Button>
-        </CardAction>
+        </div>
       </Card>
 
       <ConfirmationDialog

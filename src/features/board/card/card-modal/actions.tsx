@@ -60,33 +60,32 @@ export default function Actions({ data }: ActionsProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-x-2 text-sm font-semibold text-foreground">
-        <DotsThreeCircleIcon className="h-4 w-4" />
+    <div className="space-y-3">
+      <div className="flex items-center gap-x-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Actions
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1">
         <Button
           onClick={handleCopy}
           disabled={isCopying}
-          variant="secondary"
-          className="h-9 w-full justify-start px-3"
+          variant="ghost"
+          className="h-8 w-full justify-start px-2 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
           size="sm"
         >
-          <CopyIcon className="mr-3 h-4 w-4" />
-          <span className="text-sm">{isCopying ? "Copying..." : "Copy"}</span>
+          <CopyIcon className="mr-2 h-4 w-4" />
+          <span>{isCopying ? "Copying..." : "Copy"}</span>
         </Button>
 
         <Button
           onClick={handleDelete}
           disabled={isDeleting}
-          variant="destructive"
-          className="h-9 w-full justify-start px-3"
+          variant="ghost"
+          className="h-8 w-full justify-start px-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
           size="sm"
         >
-          <TrashIcon className="mr-3 h-4 w-4" />
-          <span className="text-sm">{isDeleting ? "Deleting..." : "Delete"}</span>
+          <TrashIcon className="mr-2 h-4 w-4" />
+          <span>{isDeleting ? "Deleting..." : "Delete"}</span>
         </Button>
       </div>
     </div>

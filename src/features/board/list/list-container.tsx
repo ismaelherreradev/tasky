@@ -5,7 +5,6 @@ import {
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { useEffect, useRef, useState } from "react"
 
-import { ScrollArea } from "#/components/ui/scroll-area"
 import { useOptimisticBoard, type ListWithCards } from "#/hooks/use-optimistic-board"
 import { cn } from "#/lib/utils"
 import type { CardSelect } from "#/server/db/schema"
@@ -242,43 +241,31 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
 
   if (!lists?.length) {
     return (
-      <div className="relative min-h-0 w-full flex-1">
-        <ScrollArea className="h-full w-full">
-          <div className="flex h-full gap-x-4 px-1 pb-6">
-            <ListForm boardId={_boardId} />
-            <div className="w-4 shrink-0" />
-          </div>
-        </ScrollArea>
+      <div className="h-full w-full overflow-x-auto overflow-y-hidden">
+        <div className="flex h-full items-start gap-x-4 px-4 pb-4 pt-2">
+          <ListForm boardId={_boardId} />
+          <div className="w-4 shrink-0" />
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-0 w-full flex-1">
-      <ScrollArea className="h-full w-full">
-        <div
-          ref={scrollerRef}
-          className={cn(
-            "flex h-full gap-x-4 px-3 pb-7",
-            isOverContainer && "ring-2 ring-primary/40 ring-offset-2",
-          )}
-        >
-          {lists.map((list) => (
-            <ListItem key={list.id} data={list} />
-          ))}
+    <div className="h-full w-full overflow-x-auto overflow-y-hidden">
+      <div
+        ref={scrollerRef}
+        className={cn(
+          "flex h-full items-start gap-x-4 px-4 pb-4 pt-2",
+          isOverContainer && "ring-2 ring-primary/40 ring-offset-2",
+        )}
+      >
+        {lists.map((list) => (
+          <ListItem key={list.id} data={list} />
+        ))}
 
-          <ListForm boardId={_boardId} />
-          <div className="w-6 shrink-0" />
-        </div>
-      </ScrollArea>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-linear-to-r from-background/80 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-background/80 to-transparent"
-      />
+        <ListForm boardId={_boardId} />
+        <div className="w-6 shrink-0" />
+      </div>
     </div>
   )
 }

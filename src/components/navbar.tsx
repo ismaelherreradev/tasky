@@ -1,3 +1,4 @@
+import { CheckSquare } from "@phosphor-icons/react"
 import { Link } from "@tanstack/react-router"
 
 import ThemeToggle from "#/components/theme-toggle"
@@ -17,18 +18,18 @@ type NavbarProps = {
 
 export function Navbar({ orgId }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 shadow-sm backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 flex h-14 w-full shrink-0 items-center justify-between border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60 sm:px-6 lg:px-8">
+      <div className="flex w-full max-w-screen-2xl items-center justify-between">
         <div className="flex items-center gap-6">
           <Link
             to="/organization/$orgId"
             params={{ orgId }}
-            className="group flex items-center space-x-2 transition-all hover:opacity-80"
+            className="flex items-center gap-2 text-foreground transition-opacity hover:opacity-80"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-primary to-primary/80 text-sm font-bold text-primary-foreground transition-transform group-hover:scale-105">
-              T
+            <div className="flex items-center text-primary">
+              <CheckSquare weight="fill" className="h-6 w-6" />
             </div>
-            <span className="hidden bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-xl font-bold tracking-tight text-transparent sm:block">
+            <span className="hidden text-lg font-semibold tracking-tight sm:block">
               {siteConfig.name}
             </span>
           </Link>

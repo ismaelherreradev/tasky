@@ -13,14 +13,12 @@ type ActivityProps = {
 export default function Activity({ items }: ActivityProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-x-3">
-        <div className="shrink-0 rounded-lg bg-blue-50 p-2 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400">
-          <ArrowsClockwiseIcon weight="bold" className="h-4 w-4" />
-        </div>
+      <div className="flex items-center gap-x-3 text-muted-foreground">
+        <ArrowsClockwiseIcon className="h-5 w-5" />
         <h3 className="font-semibold text-foreground">Activity</h3>
       </div>
 
-      <div className="ml-11">
+      <div className="ml-8">
         {items.length > 0 ? (
           <div className="space-y-3">
             {items.map((item) => (
@@ -43,13 +41,11 @@ export default function Activity({ items }: ActivityProps) {
 Activity.Skeleton = function ActivitySkeleton() {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-x-3">
-        <div className="shrink-0 rounded-lg bg-muted p-2">
-          <Skeleton className="h-4 w-4" />
-        </div>
+      <div className="flex items-center gap-x-3 text-muted-foreground">
+        <Skeleton className="h-5 w-5 rounded-full" />
         <Skeleton className="h-5 w-20" />
       </div>
-      <div className="ml-11 space-y-3">
+      <div className="ml-8 space-y-3">
         <Skeleton className="h-12 w-full rounded-md" />
         <Skeleton className="h-12 w-full rounded-md" />
         <Skeleton className="h-12 w-full rounded-md" />
