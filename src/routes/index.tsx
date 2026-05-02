@@ -1,6 +1,5 @@
 import { auth } from "@clerk/tanstack-react-start/server"
-import { redirect } from "@tanstack/react-router"
-import { createFileRoute } from "@tanstack/react-router"
+import { redirect, isRedirect, createFileRoute } from "@tanstack/react-router"
 
 import { AuthModal } from "#/components/auth-modal"
 import siteConfig from "#/config/site"
@@ -8,9 +7,9 @@ import siteConfig from "#/config/site"
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     try {
-      const { isAuthenticated, orgId } = await auth()
+      const { userId, orgId } = await auth()
 
-      if (isAuthenticated) {
+      if (userId) {
         if (orgId) {
           throw redirect({
             to: "/organization/$orgId",
@@ -22,7 +21,8 @@ export const Route = createFileRoute("/")({
           })
         }
       }
-    } catch {
+    } catch (error) {
+      if (isRedirect(error)) throw error
       // redirect to home
     }
   },

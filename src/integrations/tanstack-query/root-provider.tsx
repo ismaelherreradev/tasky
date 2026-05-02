@@ -1,6 +1,7 @@
 import { QueryClient } from "@tanstack/react-query"
 import { createTRPCClient, httpBatchStreamLink } from "@trpc/client"
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query"
+import { createIsomorphicFn } from "@tanstack/react-start"
 import type { ReactNode } from "react"
 import superjson from "superjson"
 
@@ -15,23 +16,26 @@ function getUrl() {
   return `${base}/api/trpc`
 }
 
+const getHeaders = createIsomorphicFn()
+  .server(async () => {
+    try {
+      const { getRequest } = await import("@tanstack/react-start/server")
+      const cookie = getRequest().headers.get("cookie")
+      return cookie ? { cookie } : {}
+    } catch {
+      return {}
+    }
+  })
+  .client(() => {
+    return {}
+  })
+
 export const trpcClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchStreamLink({
       transformer: superjson,
       url: getUrl(),
-      headers: async () => {
-        if (typeof window !== "undefined") {
-          return {}
-        }
-        try {
-          const { getRequest } = await import("@tanstack/react-start/server")
-          const cookie = getRequest().headers.get("cookie")
-          return cookie ? { cookie } : {}
-        } catch {
-          return {}
-        }
-      },
+      headers: () => getHeaders(),
     }),
   ],
 })
