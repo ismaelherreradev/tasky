@@ -3,8 +3,8 @@ import { TRPCClientError } from "@trpc/client"
 import { createContext, useCallback, useContext, useMemo } from "react"
 
 import { toastManager } from "#/components/ui/toast"
-import type { CardSelect, ListSelect } from "#/db/schema"
 import { useTRPC } from "#/integrations/trpc/react"
+import type { CardSelect, ListSelect } from "#/server/db/schema"
 
 export type ListWithCards = ListSelect & { cards: CardSelect[] }
 
@@ -134,27 +134,30 @@ export function OptimisticBoardProvider({ children, boardId }: OptimisticBoardPr
         destCards.splice(destIndex, 0, movedCard)
 
         if (sourceListIndex === destListIndex) {
-          destCards.forEach((card, index) => {
-            card.order = index
-          })
+          const updatedDestCards = destCards.map((card, index) => ({
+            ...card,
+            order: index,
+          }))
           newLists[sourceListIndex] = {
             ...sourceList,
-            cards: destCards,
+            cards: updatedDestCards,
           } as ListWithCards
         } else {
-          sourceCards.forEach((card, index) => {
-            card.order = index
-          })
-          destCards.forEach((card, index) => {
-            card.order = index
-          })
+          const updatedSourceCards = sourceCards.map((card, index) => ({
+            ...card,
+            order: index,
+          }))
+          const updatedDestCards = destCards.map((card, index) => ({
+            ...card,
+            order: index,
+          }))
           newLists[sourceListIndex] = {
             ...sourceList,
-            cards: sourceCards,
+            cards: updatedSourceCards,
           } as ListWithCards
           newLists[destListIndex] = {
             ...destList,
-            cards: destCards,
+            cards: updatedDestCards,
           } as ListWithCards
         }
 
