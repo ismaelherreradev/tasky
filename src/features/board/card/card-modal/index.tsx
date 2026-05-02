@@ -1,4 +1,4 @@
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+
 import { useQuery } from "@tanstack/react-query"
 import type { InferSelectModel } from "drizzle-orm"
 import { useAtom } from "jotai"
@@ -74,10 +74,10 @@ export function CardModal() {
     return (
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-md">
-          <VisuallyHidden>
+          <span className="sr-only">
             <DialogTitle>Error</DialogTitle>
             <DialogDescription>Error loading card data</DialogDescription>
-          </VisuallyHidden>
+          </span>
           <div className="p-6 text-center">
             <div className="mb-6">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
@@ -125,12 +125,12 @@ export function CardModal() {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] max-w-5xl gap-0 overflow-hidden p-0">
-        <VisuallyHidden>
+        <span className="sr-only">
           <DialogTitle>{cardData?.title ?? "Card Details"}</DialogTitle>
           <DialogDescription>
             {cardData?.description ?? "Card information and activity"}
           </DialogDescription>
-        </VisuallyHidden>
+        </span>
 
         <div className="flex h-full max-h-[90vh] flex-col">
           <div className="border-b bg-card px-6 py-5">

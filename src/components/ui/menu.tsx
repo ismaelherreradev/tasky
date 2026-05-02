@@ -84,10 +84,13 @@ export function MenuItem({
   className,
   inset,
   variant = "default",
+  closeOnClick,
+  onClick,
   ...props
 }: MenuPrimitive.Item.Props & {
   inset?: boolean;
   variant?: "default" | "destructive";
+  closeOnClick?: boolean;
 }): React.ReactElement {
   return (
     <MenuPrimitive.Item
@@ -98,6 +101,8 @@ export function MenuItem({
       data-inset={inset}
       data-slot="menu-item"
       data-variant={variant}
+      closeOnClick={closeOnClick}
+      onClick={onClick}
       {...props}
     />
   );

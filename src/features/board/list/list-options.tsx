@@ -1,122 +1,150 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, X } from "lucide-react";
-import { type ComponentRef, useRef } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { MoreHorizontal } from "lucide-react"
 
-import { Button } from "#/components/ui/button";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "#/components/ui/popover";
-import { Separator } from "#/components/ui/separator";
-import { toastManager } from "#/components/ui/toast";
-import type { ListSelect } from "#/server/db/schema";
-import { useTRPC } from "#/integrations/trpc/react";
+import { Spinner } from "#/components/ui/spinner"
+import { Button } from "#/components/ui/button"
+import {
+  Menu,
+  MenuGroup,
+  MenuItem,
+  MenuPopup,
+  MenuGroupLabel,
+  MenuSeparator,
+  MenuTrigger,
+} from "#/components/ui/menu"
+import { toastManager } from "#/components/ui/toast"
+import { useTRPC } from "#/integrations/trpc/react"
+import type { ListSelect } from "#/server/db/schema"
 
 type ListOptionsProps = {
-  data: ListSelect;
-  onAddCard: () => void;
-};
+  data: ListSelect
+  onAddCard: () => void
+}
 
 export default function ListOptions({ data, onAddCard }: ListOptionsProps) {
-  const closeRef = useRef<ComponentRef<"button">>(null);
-
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+  const [open, setOpen] = useState(false)
 
   const deleteList = useMutation({
     ...trpc.list.deleteList.mutationOptions(),
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() });
+      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() })
+      setOpen(false)
 
       toastManager.add({
         title: "Success",
         id: data.title,
         description: `List "${data.title}" deleted!`,
-      });
-
-      closeRef.current?.click();
+      })
     },
-  });
+    onError: () => {
+      setOpen(false)
+    },
+  })
 
   const copyList = useMutation({
     ...trpc.list.copyList.mutationOptions(),
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() });
+      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() })
+      setOpen(false)
 
       toastManager.add({
         title: "Success",
         id: data.title,
         description: `List "${data.title}" copied!`,
-      });
-
-      closeRef.current?.click();
+      })
     },
-  });
+    onError: () => {
+      setOpen(false)
+    },
+  })
 
   function onDelete(formData: FormData) {
-    const id = formData.get("id") as string;
-    const boardId = formData.get("boardId") as string;
+    const id = formData.get("id") as string
+    const boardId = formData.get("boardId") as string
 
-    deleteList.mutate({ listId: Number(id), boardId: Number(boardId) });
+    deleteList.mutate({ listId: Number(id), boardId: Number(boardId) })
   }
 
   function onCopy(formData: FormData) {
-    const id = formData.get("id") as string;
-    const boardId = formData.get("boardId") as string;
+    const id = formData.get("id") as string
+    const boardId = formData.get("boardId") as string
 
-    copyList.mutate({ listId: Number(id), boardId: Number(boardId) });
+    copyList.mutate({ listId: Number(id), boardId: Number(boardId) })
   }
 
   return (
-    <Popover>
-      <PopoverTrigger render={<Button className="h-auto w-auto p-2" variant="ghost" />}>
+    <Menu open={open} onOpenChange={setOpen}>
+      <MenuTrigger render={<Button variant="ghost" size="sm" className="h-auto w-auto p-1" />}>
         <MoreHorizontal className="h-4 w-4" />
-      </PopoverTrigger>
-      <PopoverContent className="px-0 py-3" side="bottom" align="start">
-        <div className="pb-4 text-center text-sm font-medium text-neutral-600">List actions</div>
-        <PopoverClose
-          ref={closeRef}
-          render={
-            <Button
-              className="absolute top-2 right-2 h-auto w-auto p-2 text-neutral-600"
-              variant="ghost"
-            />
-          }
+      </MenuTrigger>
+      <MenuPopup>
+        <MenuGroup>
+          <MenuGroupLabel className="px-3 py-2 text-center text-sm font-medium">
+            List actions
+          </MenuGroupLabel>
+        </MenuGroup>
+        <MenuSeparator />
+        <MenuItem
+          className="px-3"
+          closeOnClick
+          onClick={(e) => {
+            e.preventDefault()
+            onAddCard()
+          }}
         >
-          <X className="h-4 w-4" />
-        </PopoverClose>
-        <Button
-          onClick={onAddCard}
-          className="h-auto w-full justify-start rounded-none p-2 px-5 text-sm font-normal"
-          variant="ghost"
-        >
-          Add card...
-        </Button>
+          Add card
+        </MenuItem>
         <form action={onCopy}>
           <input hidden name="id" id="id" defaultValue={data.id} />
           <input hidden name="boardId" id="boardId" defaultValue={data.boardId} />
-          <Button
-            size="sm"
-            type="submit"
+          <MenuItem
+            className="px-3"
             disabled={copyList.isPending}
-            variant="ghost"
-            className="h-auto w-full justify-start rounded-none p-2 px-5 text-sm font-normal"
+            closeOnClick={false}
+            onClick={(e) => {
+              e.preventDefault()
+              const form = e.currentTarget.closest("form")
+              if (form) form.requestSubmit()
+            }}
           >
-            Copy list...
-          </Button>
+            {copyList.isPending ? (
+              <>
+                <Spinner className="h-4 w-4 animate-spin" />
+                Copying...
+              </>
+            ) : (
+              "Copy list"
+            )}
+          </MenuItem>
         </form>
-        <Separator />
+        <MenuSeparator />
         <form action={onDelete}>
           <input hidden name="id" id="id" defaultValue={data.id} />
           <input hidden name="boardId" id="boardId" defaultValue={data.boardId} />
-          <Button
-            size="sm"
-            type="submit"
+          <MenuItem
+            className="px-3 text-destructive hover:bg-destructive/10"
             disabled={deleteList.isPending}
-            variant="ghost"
-            className="h-auto w-full justify-start rounded-none p-2 px-5 text-sm font-normal"
+            closeOnClick={false}
+            onClick={(e) => {
+              e.preventDefault()
+              const form = e.currentTarget.closest("form")
+              if (form) form.requestSubmit()
+            }}
           >
-            Delete this list
-          </Button>
+            {deleteList.isPending ? (
+              <>
+                <Spinner className="h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete this list"
+            )}
+          </MenuItem>
         </form>
-      </PopoverContent>
-    </Popover>
-  );
+      </MenuPopup>
+    </Menu>
+  )
 }
