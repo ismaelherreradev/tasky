@@ -1,68 +1,58 @@
-import { useMutation } from "@tanstack/react-query";
-import { type ComponentRef, useRef, useState } from "react";
-import { useEventListener } from "usehooks-ts";
+import { type ComponentRef, useRef, useState } from "react"
+import { useEventListener } from "usehooks-ts"
 
-import { Input } from "#/components/ui/input";
-import { toastManager } from "#/components/ui/toast";
-import type { ListSelect } from "#/server/db/schema";
-import { useTRPC } from "#/integrations/trpc/react";
+import { Input } from "#/components/ui/input"
+import { useUpdateList } from "#/hooks/mutations/use-update-list"
+import type { ListSelect } from "#/server/db/schema"
 
-import ListOptions from "./list-options";
+import ListOptions from "./list-options"
 
 type ListHeaderProps = {
-  data: ListSelect;
-  onAddCard: () => void;
-};
+  data: ListSelect
+  onAddCard: () => void
+}
 
 export default function ListHeader({ data, onAddCard }: ListHeaderProps) {
-  const trpc = useTRPC();
+  const [title, setTitle] = useState(data.title)
+  const [isEditing, setIsEditing] = useState(false)
 
-  const { mutate: updateList } = useMutation({
-    ...trpc.list.updateList.mutationOptions(),
-    onSuccess: (data) => {
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `Renamed to "${data.title}"`,
-      });
-      setTitle((data?.title as string) ?? "");
-      disableEditing();
-    },
-  });
-
-  const [title, setTitle] = useState(data.title);
-  const [isEditing, setIsEditing] = useState(false);
-
-  const formRef = useRef<ComponentRef<"form">>(null);
-  const inputRef = useRef<ComponentRef<"input">>(null);
+  const formRef = useRef<ComponentRef<"form">>(null)
+  const inputRef = useRef<ComponentRef<"input">>(null)
 
   const enableEditing = () => {
-    setIsEditing(true);
+    setIsEditing(true)
     setTimeout(() => {
-      inputRef.current?.focus();
-      inputRef.current?.select();
-    });
-  };
+      inputRef.current?.focus()
+      inputRef.current?.select()
+    })
+  }
 
-  const disableEditing = () => setIsEditing(false);
+  const disableEditing = () => setIsEditing(false)
+
+  const { mutate: updateList } = useUpdateList({
+    onSuccess: (updatedList) => {
+      setTitle(updatedList.title)
+      disableEditing()
+    },
+  })
 
   const handleSubmit = (formData: FormData) => {
-    const title = formData.get("title") as string;
-    const id = formData.get("id") as string;
-    const boardId = formData.get("boardId") as string;
+    const title = formData.get("title") as string
+    const id = formData.get("id") as string
+    const boardId = formData.get("boardId") as string
 
-    if (title === data.title) return disableEditing();
+    if (title === data.title) return disableEditing()
 
-    updateList({ title, listId: Number(id), boardId: Number(boardId) });
-  };
+    updateList({ title, listId: Number(id), boardId: Number(boardId) })
+  }
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
-      formRef.current?.requestSubmit();
+      formRef.current?.requestSubmit()
     }
-  };
+  }
 
-  useEventListener("keydown", handleKeyDown);
+  useEventListener("keydown", handleKeyDown)
 
   return (
     <div className="flex items-start justify-between gap-x-2 px-2 pt-2 text-sm font-semibold">
@@ -76,7 +66,7 @@ export default function ListHeader({ data, onAddCard }: ListHeaderProps) {
             ref={inputRef}
             value={title}
             onBlur={() => formRef.current?.requestSubmit()}
-            onChange={(e: { target: { value: any } }) => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
             className="border-transparent px-2 py-1 text-sm font-medium transition hover:border-input focus:border-input"
             placeholder="Enter list title..."
           />
@@ -93,5 +83,5 @@ export default function ListHeader({ data, onAddCard }: ListHeaderProps) {
       )}
       <ListOptions onAddCard={onAddCard} data={data} />
     </div>
-  );
+  )
 }

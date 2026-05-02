@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { MoreHorizontal } from "lucide-react"
 
@@ -13,8 +12,8 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "#/components/ui/menu"
-import { toastManager } from "#/components/ui/toast"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useCopyList } from "#/hooks/mutations/use-copy-list"
+import { useDeleteList } from "#/hooks/mutations/use-delete-list"
 import type { ListSelect } from "#/server/db/schema"
 
 type ListOptionsProps = {
@@ -23,42 +22,16 @@ type ListOptionsProps = {
 }
 
 export default function ListOptions({ data, onAddCard }: ListOptionsProps) {
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
 
-  const deleteList = useMutation({
-    ...trpc.list.deleteList.mutationOptions(),
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() })
-      setOpen(false)
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `List "${data.title}" deleted!`,
-      })
-    },
-    onError: () => {
-      setOpen(false)
-    },
+  const deleteList = useDeleteList({
+    boardId: data.boardId,
+    onSuccess: () => setOpen(false),
   })
 
-  const copyList = useMutation({
-    ...trpc.list.copyList.mutationOptions(),
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() })
-      setOpen(false)
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `List "${data.title}" copied!`,
-      })
-    },
-    onError: () => {
-      setOpen(false)
-    },
+  const copyList = useCopyList({
+    boardId: data.boardId,
+    onSuccess: () => setOpen(false),
   })
 
   function onDelete(formData: FormData) {

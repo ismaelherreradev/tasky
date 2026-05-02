@@ -1,13 +1,12 @@
 import { CreditCardIcon } from "@phosphor-icons/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { useParams } from "@tanstack/react-router"
 import { type ComponentRef, useRef, useState } from "react"
 
 import { Badge } from "#/components/ui/badge"
 import { Input } from "#/components/ui/input"
 import { Skeleton } from "#/components/ui/skeleton"
-import { toastManager } from "#/components/ui/toast"
-import { extractZodError } from "#/hooks/utils"
+import { useUpdateCard } from "#/hooks/mutations/use-update-card"
 import { useTRPC } from "#/integrations/trpc/react"
 
 import type { CardWithList } from "."
@@ -23,29 +22,12 @@ export default function Header({ data }: HeaderProps) {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
-  const updateCard = useMutation({
-    ...trpc.card.updateCard.mutationOptions(),
-    onSuccess: (data) => {
+  const updateCard = useUpdateCard({
+    onSuccess: (updated) => {
       void queryClient.invalidateQueries({
         queryKey: trpc.list.getlistsWithCards.queryKey({ boardId: Number(params.boardId) }),
       })
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `Reanamed to "${data.title}"!`,
-      })
-
-      setTitle((data.title as string) ?? "")
-    },
-    onError: (error) => {
-      const errorMessage = extractZodError(error, "title", "Failed to update card title")
-
-      toastManager.add({
-        title: "Error",
-        id: data.title,
-        description: errorMessage,
-      })
+      setTitle(updated.title ?? "")
     },
   })
 

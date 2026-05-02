@@ -1,12 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
 import { type KeyboardEvent, useCallback, useRef, useState } from "react"
 import { useEventListener, useOnClickOutside } from "usehooks-ts"
 
 import { Button } from "#/components/ui/button"
 import { Input } from "#/components/ui/input"
-import { toastManager } from "#/components/ui/toast"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useCreateList } from "#/hooks/mutations/use-create-list"
+import { toastError } from "#/hooks/utils"
 
 import ListWrapper from "./list-wrapper"
 
@@ -16,28 +15,15 @@ export default function ListForm({ boardId }: { boardId: number }) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState("")
 
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
-
-  const { mutate, isPending } = useMutation({
-    ...trpc.list.createList.mutationOptions(),
-
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: trpc.list.getlistsWithCards.queryKey() })
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `List "${data.title}" created!`,
-      })
-      resetForm()
-    },
-  })
-
   const resetForm = useCallback(() => {
     setTitle("")
     setIsEditing(false)
   }, [])
+
+  const { mutate, isPending } = useCreateList({
+    boardId,
+    onSuccess: () => resetForm(),
+  })
 
   const enableEditing = useCallback(() => {
     setIsEditing(true)
@@ -59,7 +45,7 @@ export default function ListForm({ boardId }: { boardId: number }) {
 
   const handleSubmit = useCallback(() => {
     if (!title.trim()) {
-      toastManager.add({ title: "Error", description: "Title is required" })
+      toastError("Title is required")
       return
     }
     mutate({ title: title.trim(), boardId })

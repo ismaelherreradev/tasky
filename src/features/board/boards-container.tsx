@@ -1,8 +1,4 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query"
-import { TRPCClientError } from "@trpc/client"
-
-import { toastManager } from "#/components/ui/toast"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useDeleteBoard } from "#/hooks/mutations/use-delete-board"
 import type { BoardSelect } from "#/server/db/schema"
 
 import { BoardCard } from "./board-card"
@@ -15,29 +11,11 @@ interface BoardsClientProps {
 }
 
 export function BoardsContainer({ boards, orgId }: BoardsClientProps) {
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
-
   const {
     mutate: deleteBoard,
     isPending,
     variables,
-  } = useMutation({
-    ...trpc.board.deleteBoard.mutationOptions(),
-    onSuccess: (_, { boardId }) => {
-      queryClient.setQueryData(trpc.board.getBoards.queryOptions({ orgId }).queryKey, (old) =>
-        old?.filter((b) => b.id !== boardId),
-      )
-    },
-    onError: (error) => {
-      const message =
-        error instanceof TRPCClientError
-          ? (error.data?.zodError?.fieldErrors?.boardId?.[0] ?? error.message)
-          : "Failed to delete board. Please try again."
-
-      toastManager.add({ title: "Error", description: message })
-    },
-  })
+  } = useDeleteBoard({ orgId })
 
   return (
     <section className="mt-10 space-y-8 pb-16">

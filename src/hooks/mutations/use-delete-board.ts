@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { toastManager } from "#/components/ui/toast"
+import { extractZodError, toastError, toastSuccess } from "#/hooks/utils"
 import { useTRPC } from "#/integrations/trpc/react"
+import type { BoardSelect } from "#/server/db/schema"
 
 interface UseDeleteBoardOptions {
   orgId: string
@@ -18,13 +19,17 @@ export function useDeleteBoard({ orgId, onMutate, onSuccess }: UseDeleteBoardOpt
       onMutate: () => {
         onMutate?.()
       },
-      onSuccess: () => {
-        toastManager.add({ title: "Success", description: "Board deleted" })
-        void queryClient.invalidateQueries({ queryKey: trpc.board.getBoards.queryKey({ orgId }) })
+      onSuccess: (_, { boardId }) => {
+        queryClient.setQueryData<BoardSelect[]>(
+          trpc.board.getBoards.queryOptions({ orgId }).queryKey,
+          (old) => old?.filter((b) => b.id !== boardId),
+        )
+        toastSuccess("Board deleted")
         onSuccess?.()
       },
       onError: (error) => {
-        toastManager.add({ title: "Error", description: error.message })
+        const message = extractZodError(error, "boardId", "Failed to delete board")
+        toastError(message)
       },
     }),
   })

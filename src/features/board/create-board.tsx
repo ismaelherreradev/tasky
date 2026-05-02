@@ -1,7 +1,5 @@
 import { PlusIcon } from "@phosphor-icons/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
-import { useForm } from "@tanstack/react-form"
 import { useState } from "react"
 
 import { Button } from "#/components/ui/button"
@@ -17,10 +15,9 @@ import {
 } from "#/components/ui/dialog"
 import { Field, FieldLabel } from "#/components/ui/field"
 import { Input } from "#/components/ui/input"
-import { toastManager } from "#/components/ui/toast"
-import { useTRPC } from "#/integrations/trpc/react"
-import type { BoardSelect } from "#/server/db/schema"
 import { Spinner } from "@/components/ui/spinner"
+import { useCreateBoard } from "#/hooks/mutations/use-create-board"
+import { toastError } from "#/hooks/utils"
 
 type CreateBoardDialogProps = {
   orgId: number | string
@@ -29,38 +26,14 @@ type CreateBoardDialogProps = {
 export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.ReactElement {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState("")
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
   const navigate = useNavigate()
 
-  const { mutate, isPending } = useMutation({
-    ...trpc.board.create.mutationOptions(),
-    onSuccess: (data) => {
-      const board = data as BoardSelect
-      queryClient.setQueryData<BoardSelect[]>(
-        trpc.board.getBoards.queryOptions({ orgId }).queryKey,
-        (old) => (old ? [...old, board] : [board]),
-      )
+  const { mutate, isPending } = useCreateBoard({
+    orgId,
+    onSuccess: (board) => {
       setOpen(false)
       setTitle("")
-      navigate({ to: "/board/$boardId", params: { boardId: String(data.id) } })
-    },
-    onError: (error) => {
-      toastManager.add({ title: "Error", description: error.message })
-    },
-  })
-
-  const form = useForm({
-    defaultValues: {
-      title: "",
-      orgId: String(orgId),
-    },
-    onSubmit: ({ value }) => {
-      if (!value.title.trim()) {
-        toastManager.add({ title: "Error", description: "Title is required" })
-        return
-      }
-      mutate(value)
+      navigate({ to: "/board/$boardId", params: { boardId: String(board.id) } })
     },
   })
 
@@ -68,14 +41,13 @@ export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.Reac
     setOpen(newOpen)
     if (!newOpen) {
       setTitle("")
-      form.reset()
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) {
-      toastManager.add({ title: "Error", description: "Title is required" })
+      toastError("Title is required")
       return
     }
     mutate({ title: title.trim(), orgId: String(orgId) })

@@ -1,14 +1,11 @@
 import { AlignLeftIcon, PencilIcon } from "@phosphor-icons/react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { type ComponentRef, useRef, useState } from "react"
 import { useEventListener, useOnClickOutside } from "usehooks-ts"
 
 import { Button } from "#/components/ui/button"
 import { Skeleton } from "#/components/ui/skeleton"
 import { Textarea } from "#/components/ui/textarea"
-import { toastManager } from "#/components/ui/toast"
-import { extractZodError } from "#/hooks/utils"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useUpdateCard } from "#/hooks/mutations/use-update-card"
 import { cn } from "#/lib/utils"
 
 import type { CardWithList } from "."
@@ -23,33 +20,9 @@ export default function Description({ data }: DescriptionProps) {
   const formRef = useRef<ComponentRef<"form">>(null)
   const textareaRef = useRef<ComponentRef<"textarea">>(null)
 
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
-
-  const updateCard = useMutation({
-    ...trpc.card.updateCard.mutationOptions(),
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({
-        queryKey: trpc.card.getCardById.queryKey({ id: data.id }),
-      })
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `Card "${data.title}" updated`,
-      })
-
-      disableEditing()
-    },
-    onError: (error) => {
-      const errorMessage = extractZodError(error, "description", "Failed to update description")
-
-      toastManager.add({
-        title: "Error",
-        id: data.title,
-        description: errorMessage,
-      })
-    },
+  const updateCard = useUpdateCard({
+    invalidateCardQuery: true,
+    onSuccess: () => disableEditing(),
   })
 
   const enableEditing = () => {

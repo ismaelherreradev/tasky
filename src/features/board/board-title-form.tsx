@@ -1,9 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 
 import { Input } from "#/components/ui/input"
-import { toastManager } from "#/components/ui/toast"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useUpdateBoard } from "#/hooks/mutations/use-update-board"
+import { toastError } from "#/hooks/utils"
 import type { BoardSelect } from "#/server/db/schema"
 
 interface BoardTitleFormProps {
@@ -12,32 +11,16 @@ interface BoardTitleFormProps {
   board: BoardSelect | undefined
 }
 export function BoardTitleForm({ boardId, orgId, board }: BoardTitleFormProps) {
-  const trpc = useTRPC()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState("")
 
-  const queryClient = useQueryClient()
-
-  const { mutate, isPending } = useMutation({
-    ...trpc.board.updateBoard.mutationOptions(),
-
-    onSuccess: (data) => {
-      const updatedBoard = data as BoardSelect
-
-      queryClient.setQueryData<BoardSelect>(
-        trpc.board.getBoardById.queryOptions({ boardId, orgId }).queryKey,
-        (old) => {
-          if (!old) return updatedBoard
-          return { ...old, ...updatedBoard }
-        },
-      )
-
-      toastManager.add({ title: "Success", id: updatedBoard.title, description: "Board title updated" })
+  const { mutate, isPending } = useUpdateBoard({
+    boardId,
+    orgId,
+    onSuccess: (updatedBoard) => {
+      setTitle(updatedBoard.title)
       setIsEditing(false)
-    },
-    onError: (error) => {
-      toastManager.add({ title: "Error", description: error.message })
     },
   })
 
@@ -67,7 +50,7 @@ export function BoardTitleForm({ boardId, orgId, board }: BoardTitleFormProps) {
     const trimmedTitle = title.trim()
 
     if (!trimmedTitle) {
-      toastManager.add({ title: "Error", description: "Title cannot be empty" })
+      toastError("Title cannot be empty")
       return
     }
 

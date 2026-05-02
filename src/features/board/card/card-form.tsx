@@ -1,12 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
 import { forwardRef, useRef, useState } from "react"
 import { useEventListener, useOnClickOutside } from "usehooks-ts"
 
 import { Button } from "#/components/ui/button"
 import { Textarea } from "#/components/ui/textarea"
-import { toastManager } from "#/components/ui/toast"
-import { useTRPC } from "#/integrations/trpc/react"
+import { useCreateCard } from "#/hooks/mutations/use-create-card"
+import { toastError } from "#/hooks/utils"
 import { cn } from "#/lib/utils"
 
 type CardFormProps = {
@@ -21,37 +20,20 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
   { listId, boardId, enableEditing, disableEditing, isEditing },
   ref,
 ) {
-  const trpc = useTRPC()
-  const queryClient = useQueryClient()
   const [title, setTitle] = useState("")
 
   const formRef = useRef<HTMLFormElement>(null)
-
-  const { mutate, isPending } = useMutation({
-    ...trpc.card.createCard.mutationOptions(),
-    onSuccess: async (data) => {
-      await queryClient.invalidateQueries({
-        queryKey: trpc.card.getCardsByListId.queryKey({ listId }),
-      })
-
-      await queryClient.invalidateQueries({
-        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
-      })
-
-      toastManager.add({
-        title: "Success",
-        id: data.title,
-        description: `Card "${data.title}" created!`,
-      })
-      resetForm()
-    },
-})
-
 
   function resetForm() {
     disableEditing()
     setTitle("")
   }
+
+  const { mutate, isPending } = useCreateCard({
+    listId,
+    boardId,
+    onSuccess: () => resetForm(),
+  })
 
   function handleEscapeKey(e: KeyboardEvent) {
     if (e.key === "Escape") {
@@ -72,7 +54,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
 
   function handleSubmit() {
     if (!title.trim()) {
-      toastManager.add({ title: "Error", description: "Title is required" })
+      toastError("Title is required")
       return
     }
     mutate({ title: title.trim(), listId })
