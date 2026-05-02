@@ -1,8 +1,7 @@
 import { TRPCError } from "@trpc/server"
 
-import { type Action, auditLogs, type EntityType } from "#/db/schema"
-
-import type { OrgTRPCContext, ProtectedTRPCContext } from "./init"
+import { type Action, auditLogs, type EntityType } from "#/server/db/schema"
+import type { OrgTRPCContext, ProtectedTRPCContext } from "#/server/trpc/init"
 
 export function validateOrgId(ctx: ProtectedTRPCContext): string {
   const { orgId } = ctx.auth

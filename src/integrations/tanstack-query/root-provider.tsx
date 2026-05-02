@@ -5,7 +5,7 @@ import type { ReactNode } from "react"
 import superjson from "superjson"
 
 import { TRPCProvider } from "#/integrations/trpc/react"
-import type { AppRouter } from "#/integrations/trpc/router"
+import type { AppRouter } from "#/server/trpc/router"
 
 function getUrl() {
   const base = (() => {
