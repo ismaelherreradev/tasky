@@ -7,6 +7,8 @@ export const boardRouter = createTRPCRouter({
 
   getBoards: protectedProcedure.input(schema.ZGetBoards).query(handler.getBoards),
 
+  getBoardsWithStats: protectedProcedure.input(schema.ZGetBoardsWithStats).query(handler.getBoardsWithStats),
+
   getBoardById: protectedProcedure.input(schema.ZGetBoardById).query(handler.getBoardById),
 
   deleteBoard: orgProcedure.input(schema.ZDeleteBoard).mutation(handler.deleteBoard),

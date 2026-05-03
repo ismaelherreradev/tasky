@@ -1,4 +1,4 @@
-import { LayoutIcon, TrashIcon } from "@phosphor-icons/react"
+import { FileTextIcon, LayoutIcon, TrashIcon } from "@phosphor-icons/react"
 import { Link } from "@tanstack/react-router"
 import { useState } from "react"
 
@@ -9,11 +9,13 @@ import type { BoardSelect } from "#/server/db/schema"
 
 interface BoardCardProps {
   board: BoardSelect
+  listCount?: number
+  cardCount?: number
   onDelete: (boardId: number) => void
   isDeleting: boolean
 }
 
-export function BoardCard({ board, onDelete, isDeleting }: BoardCardProps) {
+export function BoardCard({ board, listCount = 0, cardCount = 0, onDelete, isDeleting }: BoardCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleDeleteConfirm = () => {
@@ -45,6 +47,16 @@ export function BoardCard({ board, onDelete, isDeleting }: BoardCardProps) {
                   year: "numeric",
                 })}`
               : "Unknown date"}
+            <div className="mt-2 flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <LayoutIcon size={12} />
+                <span>{listCount}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <FileTextIcon size={12} />
+                <span>{cardCount}</span>
+              </div>
+            </div>
           </div>
         </Link>
 

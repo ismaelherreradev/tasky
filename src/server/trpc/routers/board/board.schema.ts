@@ -15,6 +15,12 @@ export const ZGetBoards = z.object({
 
 export type TGetBoards = z.infer<typeof ZGetBoards>
 
+export const ZGetBoardsWithStats = z.object({
+  orgId: orgIdSchema,
+})
+
+export type TGetBoardsWithStats = z.infer<typeof ZGetBoardsWithStats>
+
 export const ZGetBoardById = z.object({
   orgId: orgIdSchema,
   boardId: idSchema,

@@ -5,8 +5,10 @@ import { BoardCard } from "./board-card"
 import { BoardEmpty } from "./board-empty"
 import { CreateBoardDialog } from "./create-board"
 
+type BoardWithStats = BoardSelect & { listCount: number; cardCount: number }
+
 interface BoardsClientProps {
-  boards: BoardSelect[] | null
+  boards: BoardWithStats[] | null | undefined
   orgId: string
 }
 
@@ -39,6 +41,8 @@ export function BoardsContainer({ boards, orgId }: BoardsClientProps) {
             <BoardCard
               key={b.id}
               board={b}
+              listCount={b.listCount}
+              cardCount={b.cardCount}
               onDelete={(boardId) => deleteBoard({ boardId })}
               isDeleting={isPending && variables?.boardId === b.id}
             />

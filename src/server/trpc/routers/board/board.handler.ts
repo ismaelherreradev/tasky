@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { and, desc, eq, inArray } from "drizzle-orm"
 
-import { boards, cards, type EntityType, lists } from "#/server/db/schema"
+import { boards, cards, lists, type EntityType } from "#/server/db/schema"
 import type { BoardSelect } from "#/server/db/schema"
 import type { ProtectedTRPCContext } from "#/server/trpc/init"
 
@@ -51,6 +51,44 @@ export async function getBoards({ ctx, input }: Board<Schema.TGetBoards>) {
     .where(eq(boards.orgId, input.orgId))
     .orderBy(desc(boards.createdAt))
   return boardResults as BoardSelect[]
+}
+
+export async function getBoardsWithStats({ ctx, input }: Board<Schema.TGetBoardsWithStats>) {
+  validateOrgAccess(ctx, input.orgId)
+
+  const boardResults = await ctx.db
+    .select()
+    .from(boards)
+    .where(eq(boards.orgId, input.orgId))
+    .orderBy(desc(boards.createdAt))
+
+  const boardsWithStats = await Promise.all(
+    boardResults.map(async (board) => {
+      const boardLists = await ctx.db
+        .select({ id: lists.id })
+        .from(lists)
+        .where(eq(lists.boardId, board.id))
+
+      const listIds = boardLists.map((l) => l.id)
+
+      let cardCount = 0
+      if (listIds.length > 0) {
+        const cardsResult = await ctx.db
+          .select({ id: cards.id })
+          .from(cards)
+          .where(inArray(cards.listId, listIds))
+        cardCount = cardsResult.length
+      }
+
+      return {
+        ...board,
+        listCount: boardLists.length,
+        cardCount,
+      }
+    }),
+  )
+
+  return boardsWithStats as (BoardSelect & { listCount: number; cardCount: number })[]
 }
 
 export async function getBoardById({ ctx, input }: Board<Schema.TGetBoardById>) {
