@@ -38,7 +38,9 @@ export default function ActivityList() {
 
   useEffect(() => {
     if (data?.totalCount && page < Math.ceil(data.totalCount / limit)) {
-      queryClient.prefetchQuery(trpc.logs.getAllAuditLogs.queryOptions({ page: page + 1, limit }))
+      void queryClient.prefetchQuery(
+        trpc.logs.getAllAuditLogs.queryOptions({ page: page + 1, limit }),
+      )
     }
   }, [data?.totalCount, page, limit, queryClient, trpc.logs.getAllAuditLogs])
 
