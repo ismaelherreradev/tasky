@@ -24,7 +24,7 @@ function SSOCallbackPage() {
         if (url.startsWith("http")) {
           window.location.href = url
         } else {
-          router.navigate({ to: url })
+          void router.navigate({ to: url })
         }
       },
     })
@@ -39,14 +39,14 @@ function SSOCallbackPage() {
         if (url.startsWith("http")) {
           window.location.href = url
         } else {
-          router.navigate({ to: url })
+          void router.navigate({ to: url })
         }
       },
     })
   }
 
   useEffect(() => {
-    ;(async () => {
+    void (async () => {
       if (!clerk.loaded || hasRun.current) return
       hasRun.current = true
 
@@ -92,7 +92,7 @@ function SSOCallbackPage() {
             if (url.startsWith("http")) {
               window.location.href = url
             } else {
-              router.navigate({ to: url })
+              void router.navigate({ to: url })
             }
           },
         })
