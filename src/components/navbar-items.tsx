@@ -34,7 +34,7 @@ export function SelectBoardButton({ orgId }: ItemProps) {
 
   const { data: boards, isPending } = useQuery(trpc.board.getBoards.queryOptions({ orgId }))
 
-  const memoizedBoards = useMemo(() => boards as BoardSelect[] | undefined, [boards])
+  const memoizedBoards = useMemo(() => boards, [boards])
 
   const items = useMemo(
     () =>

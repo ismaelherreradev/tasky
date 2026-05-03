@@ -1,8 +1,8 @@
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import {
   dropTargetForElements,
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { useEffect, useRef, useState } from "react"
 
 import { useOptimisticBoard, type ListWithCards } from "#/hooks/use-optimistic-board"
@@ -57,7 +57,7 @@ function getReorderDestinationIndex(
   sourceIndex: number,
   targetIndex: number,
   closestEdge: string | null,
-  axis: "horizontal" | "vertical"
+  axis: "horizontal" | "vertical",
 ) {
   if (sourceIndex === targetIndex) return sourceIndex
   if (axis === "horizontal") {
@@ -136,9 +136,14 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
           const fromIndex = currentLists.findIndex((l) => l.id === activeId)
           const overIndex = currentLists.findIndex((l) => l.id === overData.id)
           const closestEdge = extractClosestEdge(overData)
-          
+
           if (fromIndex !== -1 && overIndex !== -1) {
-            const toIndex = getReorderDestinationIndex(fromIndex, overIndex, closestEdge, "horizontal")
+            const toIndex = getReorderDestinationIndex(
+              fromIndex,
+              overIndex,
+              closestEdge,
+              "horizontal",
+            )
             if (fromIndex !== toIndex) {
               moveListRef.current(activeId, fromIndex, toIndex)
             }
@@ -185,9 +190,14 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
                 currentLists[listIndex]?.cards?.findIndex((c) => c.id === activeId) ?? -1
               const overIndex =
                 currentLists[listIndex]?.cards?.findIndex((c) => c.id === overCard.id) ?? -1
-              
+
               if (fromIndex !== -1 && overIndex !== -1) {
-                const toIndex = getReorderDestinationIndex(fromIndex, overIndex, closestEdge, "vertical")
+                const toIndex = getReorderDestinationIndex(
+                  fromIndex,
+                  overIndex,
+                  closestEdge,
+                  "vertical",
+                )
                 if (fromIndex !== toIndex) {
                   moveCardRef.current(
                     activeId,
@@ -207,9 +217,9 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
               const overIndex =
                 currentLists[toListIndex]?.cards?.findIndex((c) => c.id === overCard.id) ?? -1
               if (fromIndex === -1 || overIndex === -1) return
-              
+
               const toIndex = closestEdge === "bottom" ? overIndex + 1 : overIndex
-              
+
               moveCardRef.current(activeId, activeCard.listId, overCard.listId, fromIndex, toIndex)
             }
           }
@@ -242,7 +252,7 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
   if (!lists?.length) {
     return (
       <div className="h-full w-full overflow-x-auto overflow-y-hidden">
-        <div className="flex h-full items-start gap-x-4 px-4 pb-4 pt-2">
+        <div className="flex h-full items-start gap-x-4 px-4 pt-2 pb-4">
           <ListForm boardId={_boardId} />
           <div className="w-4 shrink-0" />
         </div>
@@ -255,7 +265,7 @@ export function ListContainer({ boardId: _boardId }: ListContainerProps) {
       <div
         ref={scrollerRef}
         className={cn(
-          "flex h-full items-start gap-x-4 px-4 pb-4 pt-2",
+          "flex h-full items-start gap-x-4 px-4 pt-2 pb-4",
           isOverContainer && "ring-2 ring-primary/40 ring-offset-2",
         )}
       >

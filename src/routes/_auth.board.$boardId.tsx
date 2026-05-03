@@ -45,11 +45,15 @@ function BoardIdPage() {
         <CardModal />
 
         <BoardNavbar boardId={boardId} orgId={orgId} />
-        
-        <section className="min-h-0 flex-1" aria-label="Board lists and cards" aria-describedby="board-instructions">
+
+        <section
+          className="min-h-0 flex-1"
+          aria-label="Board lists and cards"
+          aria-describedby="board-instructions"
+        >
           <div id="board-instructions" className="sr-only">
-            Navigate between lists and cards using Tab and arrow keys. Press Enter to open cards
-            or edit items. Drag and drop is supported for reordering.
+            Navigate between lists and cards using Tab and arrow keys. Press Enter to open cards or
+            edit items. Drag and drop is supported for reordering.
           </div>
 
           <div role="application" className="h-full" aria-label="Kanban board">

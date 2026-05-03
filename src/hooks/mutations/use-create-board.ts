@@ -19,7 +19,7 @@ export function useCreateBoard({ orgId, onSuccess }: UseCreateBoardOptions = { o
         return { orgId: String(orgId) }
       },
       onSuccess: (data) => {
-        const board = data as BoardSelect
+        const board = data
         queryClient.setQueryData<BoardSelect[]>(
           trpc.board.getBoards.queryOptions({ orgId: String(orgId) }).queryKey,
           (old) => (old ? [...old, board] : [board]),

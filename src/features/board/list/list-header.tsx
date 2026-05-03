@@ -17,9 +17,7 @@ export default function ListHeader({ data, boardId }: ListHeaderProps) {
           aria-hidden="true"
         />
       )}
-      <span className="h-7 w-full px-2.5 py-1 text-left text-sm font-medium">
-        {data.title}
-      </span>
+      <span className="h-7 w-full px-2.5 py-1 text-left text-sm font-medium">{data.title}</span>
       <ListOptions data={data} boardId={boardId} />
     </div>
   )

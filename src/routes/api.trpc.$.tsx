@@ -1,6 +1,6 @@
+import { auth } from "@clerk/tanstack-react-start/server"
 import { createFileRoute } from "@tanstack/react-router"
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
-import { auth } from "@clerk/tanstack-react-start/server"
 
 import { createTRPCContext } from "#/server/trpc/init"
 import { appRouter } from "#/server/trpc/router"

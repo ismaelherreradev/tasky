@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
-import type { AuditLogsSelect } from "#/server/db/schema";
-import { formatDateToLocal, generateLogMessage } from "#/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar"
+import { formatDateToLocal, generateLogMessage } from "#/lib/utils"
+import type { AuditLogsSelect } from "#/server/db/schema"
 
 type ActivityItemProps = {
-  data: AuditLogsSelect;
-};
+  data: AuditLogsSelect
+}
 
 export function ActivityItem({ data }: ActivityItemProps) {
   const initials = data.userName
@@ -12,7 +12,7 @@ export function ActivityItem({ data }: ActivityItemProps) {
     .map((name) => name.charAt(0))
     .join("")
     .toUpperCase()
-    .slice(0, 2);
+    .slice(0, 2)
 
   return (
     <div className="flex items-start gap-3 rounded-md px-1 py-2 transition-colors hover:bg-muted/20">
@@ -36,5 +36,5 @@ export function ActivityItem({ data }: ActivityItemProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

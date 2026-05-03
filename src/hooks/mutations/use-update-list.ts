@@ -16,9 +16,8 @@ export function useUpdateList({ boardId, onSuccess }: UseUpdateListOptions) {
   const mutation = useMutation({
     ...trpc.list.updateList.mutationOptions({
       onSuccess: (data) => {
-        queryClient.setQueryData(
-          trpc.list.getlistsWithCards.queryKey({ boardId }),
-          (old) => old?.map((list) => (list.id === data.id ? { ...list, ...data } : list)),
+        queryClient.setQueryData(trpc.list.getlistsWithCards.queryKey({ boardId }), (old) =>
+          old?.map((list) => (list.id === data.id ? { ...list, ...data } : list)),
         )
         toastSuccess(`Updated "${data.title}"`)
         onSuccess?.(data)

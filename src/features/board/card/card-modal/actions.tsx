@@ -61,7 +61,7 @@ export default function Actions({ data }: ActionsProps) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-x-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="flex items-center gap-x-2 text-xs font-medium tracking-wider text-muted-foreground uppercase">
         Actions
       </div>
 

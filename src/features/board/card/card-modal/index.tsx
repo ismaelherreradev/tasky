@@ -2,7 +2,14 @@ import { useQuery } from "@tanstack/react-query"
 import type { InferSelectModel } from "drizzle-orm"
 import { useState } from "react"
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogPanel, DialogTitle } from "#/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from "#/components/ui/dialog"
 import { toastManager } from "#/components/ui/toast"
 import { useCardModalStore } from "#/hooks/use-card-modal"
 import { useTRPC } from "#/integrations/trpc/react"
@@ -123,7 +130,7 @@ export function CardModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl p-0 gap-0">
+      <DialogContent className="max-w-4xl gap-0 p-0">
         <span className="sr-only">
           <DialogTitle>{cardData?.title ?? "Card Details"}</DialogTitle>
           <DialogDescription>
@@ -139,11 +146,7 @@ export function CardModal() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
             <div className="flex flex-col space-y-8 lg:col-span-3">
               {cardData ? <Description data={cardData} /> : <Description.Skeleton />}
-              {isLogsLoading ? (
-                <Activity.Skeleton />
-              ) : (
-                <Activity items={auditLogsData ?? []} />
-              )}
+              {isLogsLoading ? <Activity.Skeleton /> : <Activity items={auditLogsData ?? []} />}
             </div>
 
             <div className="lg:col-span-1">

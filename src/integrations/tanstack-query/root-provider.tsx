@@ -1,7 +1,7 @@
 import { QueryClient } from "@tanstack/react-query"
+import { createIsomorphicFn } from "@tanstack/react-start"
 import { createTRPCClient, httpBatchStreamLink } from "@trpc/client"
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query"
-import { createIsomorphicFn } from "@tanstack/react-start"
 import type { ReactNode } from "react"
 import superjson from "superjson"
 

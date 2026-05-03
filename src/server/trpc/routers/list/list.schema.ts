@@ -2,7 +2,10 @@ import { z } from "zod"
 
 import { idSchema, orderSchema, titleSchema } from "../../shared/schema-utils"
 
-const colorSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/, { message: "Invalid color format" }).optional()
+const colorSchema = z
+  .string()
+  .regex(/^#[0-9A-Fa-f]{6}$/, { message: "Invalid color format" })
+  .optional()
 
 const listItemSchema = {
   id: idSchema,

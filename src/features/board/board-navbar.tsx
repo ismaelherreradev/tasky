@@ -1,6 +1,6 @@
+import { ArrowLeft } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { ArrowLeft } from "@phosphor-icons/react"
 
 import { Button } from "#/components/ui/button"
 import { Separator } from "#/components/ui/separator"
@@ -38,9 +38,7 @@ export function BoardNavbar({ boardId, orgId }: BoardNavbarProps) {
         <Separator orientation="vertical" className="h-4" />
 
         <div className="flex min-w-0 items-center pl-1">
-          <span className="text-lg font-bold">
-            {board?.title ?? "Loading..."}
-          </span>
+          <span className="text-lg font-bold">{board?.title ?? "Loading..."}</span>
         </div>
       </div>
 

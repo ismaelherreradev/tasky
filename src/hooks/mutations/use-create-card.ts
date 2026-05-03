@@ -17,12 +17,10 @@ export function useCreateCard({ listId, boardId, onSuccess }: UseCreateCardOptio
   const mutation = useMutation({
     ...trpc.card.createCard.mutationOptions({
       onSuccess: (data) => {
-        queryClient.setQueryData(
-          trpc.list.getlistsWithCards.queryKey({ boardId }),
-          (old) =>
-            old?.map((list) =>
-              list.id === listId ? { ...list, cards: [...(list.cards || []), data] } : list,
-            ),
+        queryClient.setQueryData(trpc.list.getlistsWithCards.queryKey({ boardId }), (old) =>
+          old?.map((list) =>
+            list.id === listId ? { ...list, cards: [...(list.cards || []), data] } : list,
+          ),
         )
         toastSuccess(`Card "${data.title}" created!`)
         onSuccess?.(data)

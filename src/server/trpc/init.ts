@@ -1,4 +1,4 @@
-import { auth } from "@clerk/tanstack-react-start/server"
+import type { auth } from "@clerk/tanstack-react-start/server"
 import { initTRPC, TRPCError } from "@trpc/server"
 import superjson from "superjson"
 import { z } from "zod"

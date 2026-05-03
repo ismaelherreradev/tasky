@@ -1,6 +1,7 @@
-import { Spinner as PhosphorSpinner } from "@phosphor-icons/react";
-import type React from "react";
-import { cn } from "#/lib/utils";
+import { Spinner as PhosphorSpinner } from "@phosphor-icons/react"
+import type React from "react"
+
+import { cn } from "#/lib/utils"
 
 export function Spinner({
   className,
@@ -14,5 +15,5 @@ export function Spinner({
       weight="duotone"
       {...props}
     />
-  );
+  )
 }

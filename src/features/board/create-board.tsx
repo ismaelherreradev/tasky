@@ -17,8 +17,8 @@ import { Field, FieldLabel } from "#/components/ui/field"
 import { Input } from "#/components/ui/input"
 import { Spinner } from "#/components/ui/spinner"
 import { useCreateBoard } from "#/hooks/mutations/use-create-board"
-import { useTRPC } from "#/integrations/trpc/react"
 import { toastError } from "#/hooks/utils"
+import { useTRPC } from "#/integrations/trpc/react"
 
 type CreateBoardDialogProps = {
   orgId: number | string
@@ -89,11 +89,7 @@ export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.Reac
             <DialogClose render={<Button variant="ghost" />} disabled={isPending}>
               Cancel
             </DialogClose>
-            <Button
-              type="submit"
-              disabled={isPending || !title.trim()}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={isPending || !title.trim()} className="gap-2">
               {isPending ? <Spinner /> : null}
               {isPending ? "Creating..." : "Create"}
             </Button>
