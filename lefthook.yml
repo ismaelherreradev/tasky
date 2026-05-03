@@ -1,15 +1,42 @@
 # EXAMPLE USAGE:
 #
 #   Refer for explanation to following link:
-#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+#   https://lefthook.dev/configuration/
 #
-
-pre-commit:
-  parallel: true
-  commands:
-    check-js:
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,css}"
-      run: "bun biome check --write {staged_files} && git add {staged_files}"
-  scripts:
-    "commitlint.sh":
-      runner: "bash"
+# pre-push:
+#   jobs:
+#     - name: packages audit
+#       tags:
+#         - frontend
+#         - security
+#       run: yarn audit
+#
+#     - name: gems audit
+#       tags:
+#         - backend
+#         - security
+#       run: bundle audit
+#
+# pre-commit:
+#   parallel: true
+#   jobs:
+#     - run: yarn eslint {staged_files}
+#       glob: "*.{js,ts,jsx,tsx}"
+#
+#     - name: rubocop
+#       glob: "*.rb"
+#       exclude:
+#         - config/application.rb
+#         - config/routes.rb
+#       run: bundle exec rubocop --force-exclusion -- {all_files}
+#
+#     - name: govet
+#       files: git ls-files -m
+#       glob: "*.go"
+#       run: go vet -- {files}
+#
+#     - script: "hello.js"
+#       runner: node
+#
+#     - script: "hello.go"
+#       runner: go run

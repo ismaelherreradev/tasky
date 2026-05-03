@@ -1,106 +1,63 @@
-"use client";
+import type React from "react"
 
-import { AlertTriangle, HelpCircle, Info } from "lucide-react";
-
-import { Button } from "~/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from "#/components/ui/alert-dialog"
+import { Button } from "#/components/ui/button"
 
-export type ConfirmationDialogVariant = "destructive" | "default" | "info";
-
-export interface ConfirmationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: ConfirmationDialogVariant;
-  isLoading?: boolean;
-  onConfirm: () => void;
-  onCancel?: () => void;
-}
-
-const variantConfig = {
-  destructive: {
-    icon: AlertTriangle,
-    iconColor: "text-red-500",
-    confirmVariant: "destructive" as const,
-  },
-  default: {
-    icon: HelpCircle,
-    iconColor: "text-blue-500",
-    confirmVariant: "default" as const,
-  },
-  info: {
-    icon: Info,
-    iconColor: "text-blue-500",
-    confirmVariant: "default" as const,
-  },
-};
+type ConfirmationDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  confirmLabel?: string
+  cancelLabel?: string
+  isLoading?: boolean
+  variant?: "default" | "destructive"
+  onConfirm: () => void
+  onCancel?: () => void
+  children?: React.ReactNode
+} & Omit<React.ComponentProps<typeof AlertDialogPopup>, "children">
 
 export function ConfirmationDialog({
   open,
   onOpenChange,
   title,
-  description,
-  children,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
-  variant = "default",
   isLoading = false,
+  variant = "default",
   onConfirm,
   onCancel,
+  children,
+  ...popupProps
 }: ConfirmationDialogProps) {
-  const config = variantConfig[variant];
-  const Icon = config.icon;
-
-  const handleCancel = () => {
-    onCancel?.();
-    onOpenChange(false);
-  };
-
-  const handleConfirm = () => {
-    onConfirm();
-  };
+  const confirmVariant = variant === "destructive" ? "destructive" : "default"
+  const cancelVariant = variant === "destructive" ? "outline" : "outline"
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Icon className={`h-5 w-5 ${config.iconColor}`} />
-            {title}
-          </DialogTitle>
-          {description && (
-            <DialogDescription className="text-left">
-              {description}
-            </DialogDescription>
-          )}
-        </DialogHeader>
-
-        {children && <div className="py-2">{children}</div>}
-
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogPopup {...popupProps}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          {children ? (
+            <AlertDialogDescription render={<div />}>{children}</AlertDialogDescription>
+          ) : null}
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogClose render={<Button variant={cancelVariant} />} onClick={onCancel}>
             {cancelLabel}
+          </AlertDialogClose>
+          <Button variant={confirmVariant} loading={isLoading} onClick={onConfirm}>
+            {confirmLabel}
           </Button>
-          <Button
-            variant={config.confirmVariant}
-            onClick={handleConfirm}
-            disabled={isLoading}
-          >
-            {isLoading ? "Processing..." : confirmLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+        </AlertDialogFooter>
+      </AlertDialogPopup>
+    </AlertDialog>
+  )
 }

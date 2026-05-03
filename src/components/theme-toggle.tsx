@@ -1,83 +1,92 @@
-"use client";
+import { useEffect, useState } from "react"
 
-import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+type ThemeMode = "light" | "dark" | "auto"
 
-import { Button } from "./ui/button";
+function getInitialMode(): ThemeMode {
+  if (typeof window === "undefined") {
+    return "auto"
+  }
 
-export function ThemeToggle() {
-  const { setTheme, resolvedTheme } = useTheme();
-  const [toggled, setToggled] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const stored = window.localStorage.getItem("theme")
+  if (stored === "light" || stored === "dark" || stored === "auto") {
+    return stored
+  }
+
+  return "auto"
+}
+
+function applyThemeMode(mode: ThemeMode) {
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+  const resolved = mode === "auto" ? (prefersDark ? "dark" : "light") : mode
+
+  document.documentElement.classList.remove("light", "dark")
+  document.documentElement.classList.add(resolved)
+
+  if (mode === "auto") {
+    document.documentElement.removeAttribute("data-theme")
+  } else {
+    document.documentElement.setAttribute("data-theme", mode)
+  }
+
+  document.documentElement.style.colorScheme = resolved
+}
+
+import { DesktopIcon, MoonIcon, SunIcon } from "@phosphor-icons/react"
+
+import { Button } from "#/components/ui/button"
+
+export default function ThemeToggle() {
+  const [mode, setMode] = useState<ThemeMode>("auto")
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    const initialMode = getInitialMode()
+    setMode(initialMode)
+    applyThemeMode(initialMode)
+  }, [])
 
   useEffect(() => {
-    let timeoutId: string | number | NodeJS.Timeout | undefined;
-    if (toggled) {
-      timeoutId = setTimeout(() => {
-        setToggled(false);
-      }, 200);
+    if (mode !== "auto") {
+      return
     }
-    return () => clearTimeout(timeoutId);
-  }, [toggled]);
 
-  if (!isMounted) {
-    return (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="relative h-8 w-8 overflow-hidden rounded-full px-0"
-        disabled
-      >
-        <div className="h-4 w-4 animate-pulse rounded bg-muted" />
-      </Button>
-    );
+    const media = window.matchMedia("(prefers-color-scheme: dark)")
+    const onChange = () => applyThemeMode("auto")
+
+    media.addEventListener("change", onChange)
+    return () => {
+      media.removeEventListener("change", onChange)
+    }
+  }, [mode])
+
+  function toggleMode() {
+    const nextMode: ThemeMode = mode === "light" ? "dark" : mode === "dark" ? "auto" : "light"
+    setMode(nextMode)
+    applyThemeMode(nextMode)
+    window.localStorage.setItem("theme", nextMode)
   }
 
-  function toggleTheme() {
-    setToggled(true);
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  }
+  const label =
+    mode === "auto"
+      ? "Theme mode: auto (system). Click to switch to light mode."
+      : `Theme mode: ${mode}. Click to switch mode.`
 
   return (
     <Button
-      onClick={toggleTheme}
       variant="ghost"
-      size="sm"
-      className="relative h-8 w-8 overflow-hidden rounded-md border border-border/40 px-0 transition-all duration-200 hover:scale-105 hover:border-border"
-      aria-label={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} theme`}
+      size="icon"
+      onClick={toggleMode}
+      aria-label={label}
+      title={label}
+      className="h-8 w-8 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
     >
-      <div
-        className={`absolute inset-0 flex transform items-center justify-center transition-all duration-300 ${
-          toggled
-            ? "rotate-90 scale-0 opacity-0"
-            : "rotate-0 scale-100 opacity-100"
-        }`}
-      >
-        {resolvedTheme === "dark" ? (
-          <MoonIcon className="h-4 w-4 text-foreground" />
-        ) : (
-          <SunIcon className="h-4 w-4 text-foreground" />
-        )}
-      </div>
-
-      <div
-        className={`absolute inset-0 flex transform items-center justify-center transition-all duration-300 ${
-          toggled
-            ? "rotate-0 scale-100 opacity-100"
-            : "-rotate-90 scale-0 opacity-0"
-        }`}
-      >
-        {resolvedTheme === "dark" ? (
-          <SunIcon className="h-4 w-4 text-foreground" />
-        ) : (
-          <MoonIcon className="h-4 w-4 text-foreground" />
-        )}
-      </div>
+      {mode === "auto" ? (
+        <DesktopIcon className="h-4 w-4" />
+      ) : mode === "dark" ? (
+        <MoonIcon className="h-4 w-4" />
+      ) : (
+        <SunIcon className="h-4 w-4" />
+      )}
+      <span className="sr-only">{label}</span>
     </Button>
-  );
+  )
 }

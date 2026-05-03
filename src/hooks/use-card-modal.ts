@@ -1,30 +1,29 @@
-import { atom } from "jotai";
+import { create } from "zustand"
 
-const idAtom = atom<number | undefined>(undefined);
-const isOpenAtom = atom(false);
+export type CardModalState = {
+  id: number | null
+  isOpen: boolean
+}
 
-const onOpenAtom = atom(null, (_get, set, id: number) => {
-  set(isOpenAtom, true);
-  set(idAtom, id);
-});
+type CardModalStore = {
+  state: CardModalState
+  open: (id: number) => void
+  close: () => void
+}
 
-const onCloseAtom = atom(null, (_get, set) => {
-  set(isOpenAtom, false);
-  set(idAtom, undefined);
-});
-
-const cardModalAtom = atom(
-  (get) => ({
-    id: get(idAtom),
-    isOpen: get(isOpenAtom),
-  }),
-  (_get, set, action: { type: "open" | "close"; id?: number }) => {
-    if (action.type === "open" && action.id !== undefined) {
-      set(onOpenAtom, action.id);
-    } else if (action.type === "close") {
-      set(onCloseAtom);
-    }
+export const useCardModalStore = create<CardModalStore>((set) => ({
+  state: {
+    id: null,
+    isOpen: false,
   },
-);
+  open: (id) => set({ state: { id, isOpen: true } }),
+  close: () => set({ state: { id: null, isOpen: false } }),
+}))
 
-export { cardModalAtom, onOpenAtom, onCloseAtom };
+export function openCardModal(cardId: number) {
+  useCardModalStore.getState().open(cardId)
+}
+
+export function closeCardModal() {
+  useCardModalStore.getState().close()
+}

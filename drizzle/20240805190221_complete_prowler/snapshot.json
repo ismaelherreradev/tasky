@@ -1,0 +1,526 @@
+{
+  "dialect": "sqlite",
+  "id": "818b36da-37f9-4d3d-9c2f-d143317cd3b7",
+  "prevIds": [
+    "ea350c9b-52c4-4105-945e-7f5953bfc905"
+  ],
+  "version": "7",
+  "ddl": [
+    {
+      "name": "tasky-v2_audit_log",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "'uuid()'",
+      "generated": null,
+      "name": "id",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tasky-v2_audit_log_pk",
+      "table": "tasky-v2_audit_log",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "org_id",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "action",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entity_id",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entity_type",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "entity_title",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_id",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_image",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_name",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "table": "tasky-v2_audit_log",
+      "entityType": "columns"
+    },
+    {
+      "name": "tasky-v2_board",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "'uuid()'",
+      "generated": null,
+      "name": "id",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tasky-v2_board_pk",
+      "table": "tasky-v2_board",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "orgId",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "title",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "imageId",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "image_thumb_url",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "image_full_url",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "image_user_name",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "image_link_html",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "table": "tasky-v2_board",
+      "entityType": "columns"
+    },
+    {
+      "name": "tasky-v2_card",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "'uuid()'",
+      "generated": null,
+      "name": "id",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tasky-v2_card_pk",
+      "table": "tasky-v2_card",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "title",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "order",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "description",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "list_id",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "table": "tasky-v2_card",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        {
+          "value": "list_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "listIdx",
+      "table": "tasky-v2_card",
+      "entityType": "indexes"
+    },
+    {
+      "name": "tasky-v2_list",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "'uuid()'",
+      "generated": null,
+      "name": "id",
+      "table": "tasky-v2_list",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tasky-v2_list_pk",
+      "table": "tasky-v2_list",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "title",
+      "table": "tasky-v2_list",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "order",
+      "table": "tasky-v2_list",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "board_id",
+      "table": "tasky-v2_list",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "tasky-v2_list",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "table": "tasky-v2_list",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        {
+          "value": "board_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "boardIdx",
+      "table": "tasky-v2_list",
+      "entityType": "indexes"
+    },
+    {
+      "name": "tasky-v2_org_limit",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "'uuid()'",
+      "generated": null,
+      "name": "id",
+      "table": "tasky-v2_org_limit",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tasky-v2_org_limit_pk",
+      "table": "tasky-v2_org_limit",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "org_id",
+      "table": "tasky-v2_org_limit",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "0",
+      "generated": null,
+      "name": "count",
+      "table": "tasky-v2_org_limit",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "tasky-v2_org_limit",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "updated_at",
+      "table": "tasky-v2_org_limit",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        {
+          "value": "org_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "tasky-v2_org_limit_org_id_unique",
+      "table": "tasky-v2_org_limit",
+      "entityType": "indexes"
+    }
+  ],
+  "renames": [
+    "\"tasky-v2_AuditLog\"->\"tasky-v2_audit_log\"",
+    "\"tasky-v2_Card\"->\"tasky-v2_card\"",
+    "\"tasky-v2_OrgLimit\"->\"tasky-v2_org_limit\"",
+    "\"tasky-v2_audit_log\".\"orgId\"->\"tasky-v2_audit_log\".\"org_id\"",
+    "\"tasky-v2_audit_log\".\"entityId\"->\"tasky-v2_audit_log\".\"entity_id\"",
+    "\"tasky-v2_audit_log\".\"entityType\"->\"tasky-v2_audit_log\".\"entity_type\"",
+    "\"tasky-v2_audit_log\".\"entityTitle\"->\"tasky-v2_audit_log\".\"entity_title\"",
+    "\"tasky-v2_audit_log\".\"userId\"->\"tasky-v2_audit_log\".\"user_id\"",
+    "\"tasky-v2_audit_log\".\"userImage\"->\"tasky-v2_audit_log\".\"user_image\"",
+    "\"tasky-v2_audit_log\".\"userName\"->\"tasky-v2_audit_log\".\"user_name\"",
+    "\"tasky-v2_board\".\"imageThumbUrl\"->\"tasky-v2_board\".\"image_thumb_url\"",
+    "\"tasky-v2_board\".\"imageFullUrl\"->\"tasky-v2_board\".\"image_full_url\"",
+    "\"tasky-v2_board\".\"imageUserName\"->\"tasky-v2_board\".\"image_user_name\"",
+    "\"tasky-v2_board\".\"imageLinkHTML\"->\"tasky-v2_board\".\"image_link_html\"",
+    "\"tasky-v2_card\".\"listId\"->\"tasky-v2_card\".\"list_id\"",
+    "\"tasky-v2_list\".\"boardId\"->\"tasky-v2_list\".\"board_id\"",
+    "\"tasky-v2_org_limit\".\"orgId\"->\"tasky-v2_org_limit\".\"org_id\""
+  ]
+}

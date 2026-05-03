@@ -1,0 +1,31 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "semi": false,
+  "sortImports": {},
+  "sortTailwindcss": {
+    "stylesheet": "./src/styles.css",
+    "attributes": ["class", "className"],
+    "functions": ["clsx", "cn", "cva", "tw"]
+  },
+  "sortPackageJson": true,
+  "ignorePatterns": [
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock",
+    "bun.lock",
+    "routeTree.gen.ts",
+    ".tanstack-start/",
+    ".tanstack/",
+    "drizzle/",
+    "migrations/",
+    ".drizzle/",
+    ".cache",
+    "worker-configuration.d.ts",
+    ".vercel",
+    ".output",
+    ".wrangler",
+    ".netlify",
+    "dist"
+  ]
+}

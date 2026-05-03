@@ -1,78 +1,85 @@
-"use client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { TRPCClientError } from "@trpc/client"
+import { createContext, useCallback, useContext, useMemo } from "react"
 
-import { createContext, useCallback, useContext, useMemo, useRef } from "react";
-import { toast } from "sonner";
-import type { CardSelect, ListSelect } from "~/server/db/schema";
-import { api } from "~/trpc/react";
+import { toastManager } from "#/components/ui/toast"
+import { useTRPC } from "#/integrations/trpc/react"
+import type { CardSelect, ListSelect } from "#/server/db/schema"
 
-export type ListWithCards = ListSelect & { cards: CardSelect[] };
+export type ListWithCards = ListSelect & { cards: CardSelect[] }
 
 interface OptimisticBoardContextType {
-  lists: ListWithCards[];
-  isLoading: boolean;
-  isError: boolean;
+  lists: ListWithCards[]
+  isLoading: boolean
+  isError: boolean
   moveCard: (
     cardId: number,
     sourceListId: number,
     destListId: number,
     sourceIndex: number,
     destIndex: number,
-  ) => void;
-  moveList: (listId: number, sourceIndex: number, destIndex: number) => void;
-  refetch: () => void;
+  ) => void
+  moveList: (listId: number, sourceIndex: number, destIndex: number) => void
+  refetch: () => void
 }
 
-const OptimisticBoardContext = createContext<
-  OptimisticBoardContextType | undefined
->(undefined);
+const OptimisticBoardContext = createContext<OptimisticBoardContextType | undefined>(undefined)
 
 interface OptimisticBoardProviderProps {
-  children: React.ReactNode;
-  boardId: number;
+  children: React.ReactNode
+  boardId: number
 }
 
-export function OptimisticBoardProvider({
-  children,
-  boardId,
-}: OptimisticBoardProviderProps) {
+export function OptimisticBoardProvider({ children, boardId }: OptimisticBoardProviderProps) {
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+
   const {
     data: lists,
     isLoading,
     isError,
     refetch,
-  } = api.list.getlistsWithCards.useQuery({
-    boardId: boardId,
-  });
+  } = useQuery({
+    ...trpc.list.getlistsWithCards.queryOptions({
+      boardId: boardId,
+    }),
+  })
 
-  const utils = api.useUtils();
-
-  const updateListOrderMutation = api.list.updateListOrder.useMutation({
+  const updateListOrderMutation = useMutation({
+    ...trpc.list.updateListOrder.mutationOptions(),
     onSuccess: () => {
-      toast.success("List reordered");
+      toastManager.add({ type: "success", title: "Success", description: "List reordered" })
     },
-    onError: () => {
-      toast.error("Failed to reorder list");
-      void utils.list.getlistsWithCards.invalidate({ boardId });
-    },
-  });
+    onError: (error) => {
+      const message =
+        error instanceof TRPCClientError
+          ? error.message
+          : "Failed to reorder list. Please try again."
 
-  const updateCardOrderMutation = api.card.updateCardOrder.useMutation({
+      toastManager.add({ title: "Error", description: message })
+      void queryClient.invalidateQueries({
+        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
+      })
+    },
+  })
+
+  const updateCardOrderMutation = useMutation({
+    ...trpc.card.updateCardOrder.mutationOptions(),
     onSuccess: () => {
-      toast.success("Card reordered");
+      toastManager.add({ type: "success", title: "Success", description: "Card reordered" })
     },
-    onError: () => {
-      toast.error("Failed to reorder card");
-      void utils.list.getlistsWithCards.invalidate({ boardId });
+    onError: (error) => {
+      const message =
+        error instanceof TRPCClientError
+          ? error.message
+          : "Failed to reorder card. Please try again."
+
+      toastManager.add({ title: "Error", description: message })
+      void queryClient.invalidateQueries({
+        queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
+      })
     },
-  });
-
-  // Create stable references for mutations
-  const updateCardOrderRef = useRef(updateCardOrderMutation.mutate);
-  const updateListOrderRef = useRef(updateListOrderMutation.mutate);
-
-  // Update refs when mutations change
-  updateCardOrderRef.current = updateCardOrderMutation.mutate;
-  updateListOrderRef.current = updateListOrderMutation.mutate;
+  })
 
   const moveCard = useCallback(
     (
@@ -82,97 +89,94 @@ export function OptimisticBoardProvider({
       sourceIndex: number,
       destIndex: number,
     ) => {
-      if (!lists) return;
+      if (!lists) return
 
-      utils.list.getlistsWithCards.setData({ boardId }, (old) => {
-        if (!old) return old;
+      queryClient.setQueryData(trpc.list.getlistsWithCards.queryKey({ boardId }), (old) => {
+        if (!old) return old
 
-        const newLists = [...old];
+        const newLists = [...old]
 
-        const sourceListIndex = newLists.findIndex(
-          (list) => list.id === sourceListId,
-        );
-        const destListIndex = newLists.findIndex(
-          (list) => list.id === destListId,
-        );
+        const sourceListIndex = newLists.findIndex((list) => list.id === sourceListId)
+        const destListIndex = newLists.findIndex((list) => list.id === destListId)
 
-        if (sourceListIndex === -1 || destListIndex === -1) return old;
+        if (sourceListIndex === -1 || destListIndex === -1) return old
 
-        const sourceListItem = newLists[sourceListIndex];
-        const destListItem = newLists[destListIndex];
+        const sourceListItem = newLists[sourceListIndex]
+        const destListItem = newLists[destListIndex]
 
-        if (!sourceListItem || !destListItem) return old;
+        if (!sourceListItem || !destListItem) return old
 
         const sourceList: ListWithCards = {
           ...sourceListItem,
           cards: [...(sourceListItem.cards ?? [])],
-        };
+        }
         const destList: ListWithCards =
           sourceListIndex === destListIndex
             ? sourceList
             : {
                 ...destListItem,
                 cards: [...(destListItem.cards ?? [])],
-              };
+              }
 
-        const sourceCards = sourceList.cards;
-        const destCards = destList.cards;
+        const sourceCards = sourceList.cards
+        const destCards = destList.cards
 
-        const originalCard = sourceCards[sourceIndex];
-        if (!originalCard) return old;
+        const originalCard = sourceCards[sourceIndex]
+        if (!originalCard) return old
 
-        const movedCard = { ...originalCard };
-        sourceCards.splice(sourceIndex, 1);
+        const movedCard = { ...originalCard }
+        sourceCards.splice(sourceIndex, 1)
 
         if (sourceListId !== destListId) {
-          movedCard.listId = destListId;
+          movedCard.listId = destListId
         }
 
-        destCards.splice(destIndex, 0, movedCard);
+        destCards.splice(destIndex, 0, movedCard)
 
         if (sourceListIndex === destListIndex) {
-          destCards.forEach((card, index) => {
-            card.order = index;
-          });
+          const updatedDestCards = destCards.map((card, index) => ({
+            ...card,
+            order: index,
+          }))
           newLists[sourceListIndex] = {
             ...sourceList,
-            cards: destCards,
-          } as ListWithCards;
+            cards: updatedDestCards,
+          } as ListWithCards
         } else {
-          sourceCards.forEach((card, index) => {
-            card.order = index;
-          });
-          destCards.forEach((card, index) => {
-            card.order = index;
-          });
+          const updatedSourceCards = sourceCards.map((card, index) => ({
+            ...card,
+            order: index,
+          }))
+          const updatedDestCards = destCards.map((card, index) => ({
+            ...card,
+            order: index,
+          }))
           newLists[sourceListIndex] = {
             ...sourceList,
-            cards: sourceCards,
-          } as ListWithCards;
+            cards: updatedSourceCards,
+          } as ListWithCards
           newLists[destListIndex] = {
             ...destList,
-            cards: destCards,
-          } as ListWithCards;
+            cards: updatedDestCards,
+          } as ListWithCards
         }
 
-        return newLists;
-      });
+        return newLists
+      })
 
-      const updatedCacheData = utils.list.getlistsWithCards.getData({
-        boardId,
-      });
+      const updatedCacheData = queryClient.getQueryData(
+        trpc.list.getlistsWithCards.queryKey({ boardId }),
+      )
       if (updatedCacheData) {
         const allAffectedCards: Array<{
-          id: number;
-          title: string;
-          order: number;
-          listId: number;
-        }> = [];
+          id: number
+          title: string
+          order: number
+          listId: number
+        }> = []
 
         if (sourceListId === destListId) {
-          const updatedList = updatedCacheData.find(
-            (list) => list.id === destListId,
-          );
+          const updatedList = updatedCacheData.find((list) => list.id === destListId)
           if (updatedList?.cards) {
             allAffectedCards.push(
               ...updatedList.cards.map((card) => ({
@@ -181,15 +185,11 @@ export function OptimisticBoardProvider({
                 order: card.order,
                 listId: card.listId,
               })),
-            );
+            )
           }
         } else {
-          const updatedSourceList = updatedCacheData.find(
-            (list) => list.id === sourceListId,
-          );
-          const updatedDestList = updatedCacheData.find(
-            (list) => list.id === destListId,
-          );
+          const updatedSourceList = updatedCacheData.find((list) => list.id === sourceListId)
+          const updatedDestList = updatedCacheData.find((list) => list.id === destListId)
 
           if (updatedSourceList?.cards) {
             allAffectedCards.push(
@@ -199,7 +199,7 @@ export function OptimisticBoardProvider({
                 order: card.order,
                 listId: card.listId,
               })),
-            );
+            )
           }
 
           if (updatedDestList?.cards) {
@@ -210,53 +210,53 @@ export function OptimisticBoardProvider({
                 order: card.order,
                 listId: card.listId,
               })),
-            );
+            )
           }
         }
 
         if (allAffectedCards.length > 0) {
-          updateCardOrderRef.current({
+          updateCardOrderMutation.mutate({
             items: allAffectedCards as [
               { id: number; title: string; order: number; listId: number },
               ...{ id: number; title: string; order: number; listId: number }[],
             ],
-          });
+          })
         }
       }
     },
-    [lists, boardId, utils],
-  );
+    [lists, boardId, trpc, queryClient, updateCardOrderMutation],
+  )
 
   const moveList = useCallback(
     (_listId: number, sourceIndex: number, destIndex: number) => {
-      if (!lists) return;
+      if (!lists) return
 
-      utils.list.getlistsWithCards.setData({ boardId }, (old) => {
-        if (!old) return old;
+      queryClient.setQueryData(trpc.list.getlistsWithCards.queryKey({ boardId }), (old) => {
+        if (!old) return old
 
-        const newLists = [...old];
-        const [movedList] = newLists.splice(sourceIndex, 1);
-        if (!movedList) return old;
+        const newLists = [...old]
+        const [movedList] = newLists.splice(sourceIndex, 1)
+        if (!movedList) return old
 
-        newLists.splice(destIndex, 0, movedList);
+        newLists.splice(destIndex, 0, movedList)
 
         return newLists.map((list, index) => ({
           ...list,
           order: index,
-        }));
-      });
+        }))
+      })
 
-      const reorderedLists = [...lists];
-      const [movedList] = reorderedLists.splice(sourceIndex, 1);
+      const reorderedLists = [...lists]
+      const [movedList] = reorderedLists.splice(sourceIndex, 1)
       if (movedList) {
-        reorderedLists.splice(destIndex, 0, movedList);
+        reorderedLists.splice(destIndex, 0, movedList)
         const updatedLists = reorderedLists.map((list, index) => ({
           ...list,
           order: index,
-        }));
+        }))
 
         if (updatedLists.length > 0) {
-          updateListOrderRef.current({
+          updateListOrderMutation.mutate({
             items: updatedLists.map((list) => ({
               id: list.id,
               title: list.title,
@@ -265,12 +265,12 @@ export function OptimisticBoardProvider({
               { id: number; title: string; order: number },
               ...{ id: number; title: string; order: number }[],
             ],
-          });
+          })
         }
       }
     },
-    [lists, boardId, utils],
-  );
+    [lists, boardId, trpc, queryClient, updateListOrderMutation],
+  )
 
   const value = useMemo(
     () => ({
@@ -282,21 +282,15 @@ export function OptimisticBoardProvider({
       refetch,
     }),
     [lists, isLoading, isError, moveCard, moveList, refetch],
-  );
+  )
 
-  return (
-    <OptimisticBoardContext.Provider value={value}>
-      {children}
-    </OptimisticBoardContext.Provider>
-  );
+  return <OptimisticBoardContext.Provider value={value}>{children}</OptimisticBoardContext.Provider>
 }
 
 export function useOptimisticBoard() {
-  const context = useContext(OptimisticBoardContext);
+  const context = useContext(OptimisticBoardContext)
   if (context === undefined) {
-    throw new Error(
-      "useOptimisticBoard must be used within an OptimisticBoardProvider",
-    );
+    throw new Error("useOptimisticBoard must be used within an OptimisticBoardProvider")
   }
-  return context;
+  return context
 }
