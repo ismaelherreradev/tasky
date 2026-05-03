@@ -1,9 +1,9 @@
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import {
   attachClosestEdge,
   extractClosestEdge,
   type Edge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { Calendar, MessageSquare } from "lucide-react"
 import React, { useEffect, useRef, useState } from "react"
 
@@ -43,7 +43,7 @@ const CardItemComponent = function CardItem({ data, isDragOverlay = false }: Car
       getData: ({ input, element }) => {
         return attachClosestEdge(
           { type: "card", id: data.id },
-          { input, element, allowedEdges: ["top", "bottom"] }
+          { input, element, allowedEdges: ["top", "bottom"] },
         )
       },
       canDrop: ({ source }) => {
@@ -97,7 +97,7 @@ const CardItemComponent = function CardItem({ data, isDragOverlay = false }: Car
   return (
     <div className="relative">
       {showIndicatorTop && (
-        <div className="pointer-events-none absolute -top-[1px] left-0 right-0 z-20 h-[2px] bg-primary">
+        <div className="pointer-events-none absolute -top-px right-0 left-0 z-20 h-0.5 bg-primary">
           <div className="absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full bg-primary" />
         </div>
       )}
@@ -155,7 +155,7 @@ const CardItemComponent = function CardItem({ data, isDragOverlay = false }: Car
         </div>
       </button>
       {showIndicatorBottom && (
-        <div className="pointer-events-none absolute -bottom-[1px] left-0 right-0 z-20 h-[2px] bg-primary">
+        <div className="pointer-events-none absolute right-0 -bottom-px left-0 z-20 h-0.5 bg-primary">
           <div className="absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full bg-primary" />
         </div>
       )}

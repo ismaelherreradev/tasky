@@ -48,7 +48,7 @@ export function OptimisticBoardProvider({ children, boardId }: OptimisticBoardPr
   const updateListOrderMutation = useMutation({
     ...trpc.list.updateListOrder.mutationOptions(),
     onSuccess: () => {
-      toastManager.add({ title: "Success", description: "List reordered" })
+      toastManager.add({ type: "success", title: "Success", description: "List reordered" })
     },
     onError: (error) => {
       const message =
@@ -66,7 +66,7 @@ export function OptimisticBoardProvider({ children, boardId }: OptimisticBoardPr
   const updateCardOrderMutation = useMutation({
     ...trpc.card.updateCardOrder.mutationOptions(),
     onSuccess: () => {
-      toastManager.add({ title: "Success", description: "Card reordered" })
+      toastManager.add({ type: "success", title: "Success", description: "Card reordered" })
     },
     onError: (error) => {
       const message =

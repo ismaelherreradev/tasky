@@ -1,9 +1,9 @@
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import {
   attachClosestEdge,
   extractClosestEdge,
   type Edge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { GripVertical } from "lucide-react"
 import React, { useEffect, useRef, useState, type ComponentRef } from "react"
 
@@ -51,7 +51,7 @@ const ListItemComponent = function ListItem({ data }: ListItemProps) {
       getData: ({ input, element }) => {
         return attachClosestEdge(
           { type: "list-item", id: data.id },
-          { input, element, allowedEdges: ["left", "right"] }
+          { input, element, allowedEdges: ["left", "right"] },
         )
       },
       canDrop: ({ source }) => {
@@ -111,15 +111,15 @@ const ListItemComponent = function ListItem({ data }: ListItemProps) {
     <div
       ref={outerRef}
       className={cn(
-        "group relative w-68 shrink-0 transition-all duration-200 select-none",
+        "group relative w-89 shrink-0 transition-all duration-200 select-none",
         isDragging && "opacity-40",
       )}
     >
       {showIndicatorLeft && (
-        <div className="pointer-events-none absolute top-4 bottom-4 -left-[9px] z-20 w-[2px] rounded-full bg-primary shadow-sm" />
+        <div className="pointer-events-none absolute top-4 bottom-4 -left-2.25 z-20 w-0.5 rounded-full bg-primary shadow-sm" />
       )}
       {showIndicatorRight && (
-        <div className="pointer-events-none absolute top-4 -right-[9px] bottom-4 z-20 w-[2px] rounded-full bg-primary shadow-sm" />
+        <div className="pointer-events-none absolute top-4 -right-2.25 bottom-4 z-20 w-0.5 rounded-full bg-primary shadow-sm" />
       )}
 
       <div className="flex gap-1">

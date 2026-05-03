@@ -1,7 +1,8 @@
+import { SignInButton } from "@clerk/tanstack-react-start"
 import { auth } from "@clerk/tanstack-react-start/server"
 import { redirect, isRedirect, createFileRoute } from "@tanstack/react-router"
 
-import { AuthModal } from "#/components/auth-modal"
+import { Button } from "#/components/ui/button"
 import siteConfig from "#/config/site"
 
 export const Route = createFileRoute("/")({
@@ -41,7 +42,9 @@ function MainApp() {
       </p>
 
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <AuthModal />
+        <SignInButton mode="modal">
+          <Button size="lg">Start now</Button>
+        </SignInButton>
       </div>
     </section>
   )

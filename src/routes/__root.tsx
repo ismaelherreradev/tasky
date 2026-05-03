@@ -7,6 +7,7 @@ import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query"
 
 import { NotFound } from "#/components/not-found"
 import { AnchoredToastProvider, ToastProvider } from "#/components/ui/toast"
+import siteConfig from "#/config/site"
 import type { AppRouter } from "#/server/trpc/router"
 
 import ClerkProvider from "../integrations/clerk/provider"
@@ -33,7 +34,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: siteConfig.name,
       },
     ],
     links: [

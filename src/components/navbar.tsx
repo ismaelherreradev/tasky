@@ -1,4 +1,4 @@
-import { CheckSquare } from "@phosphor-icons/react"
+import { CheckSquareIcon } from "@phosphor-icons/react"
 import { Link } from "@tanstack/react-router"
 
 import ThemeToggle from "#/components/theme-toggle"
@@ -27,7 +27,7 @@ export function Navbar({ orgId }: NavbarProps) {
             className="flex items-center gap-2 text-foreground transition-opacity hover:opacity-80"
           >
             <div className="flex items-center text-primary">
-              <CheckSquare weight="fill" className="h-6 w-6" />
+              <CheckSquareIcon weight="fill" className="h-6 w-6" />
             </div>
             <span className="hidden text-lg font-semibold tracking-tight sm:block">
               {siteConfig.name}

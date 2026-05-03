@@ -1,4 +1,4 @@
-import { DotsThreeIcon, TrashIcon } from "@phosphor-icons/react"
+import { GearIcon, TrashIcon } from "@phosphor-icons/react"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 
@@ -40,8 +40,8 @@ export function BoardOptions({ boardId, orgId }: BoardOptionsProps) {
       <Menu open={showMenu} onOpenChange={setShowMenu}>
         <MenuTrigger
           render={
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Board options">
-              <DotsThreeIcon size={16} />
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0" aria-label="Board options">
+              <GearIcon size={16} />
             </Button>
           }
         />
