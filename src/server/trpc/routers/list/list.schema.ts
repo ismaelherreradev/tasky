@@ -2,6 +2,8 @@ import { z } from "zod"
 
 import { idSchema, orderSchema, titleSchema } from "../../shared/schema-utils"
 
+const colorSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/, { message: "Invalid color format" }).optional()
+
 const listItemSchema = {
   id: idSchema,
   title: titleSchema,
@@ -17,6 +19,7 @@ export type TUpdateListOrder = z.infer<typeof ZUpdateListOrder>
 export const ZCreateList = z.object({
   title: titleSchema,
   boardId: idSchema,
+  color: colorSchema,
 })
 
 export type TCreateList = z.infer<typeof ZCreateList>
@@ -44,6 +47,7 @@ export type TDeleteList = z.infer<typeof ZDeleteList>
 export const ZUpdateList = z
   .object({
     title: titleSchema,
+    color: colorSchema,
     listId: idSchema,
     boardId: idSchema,
     order: orderSchema.optional(),

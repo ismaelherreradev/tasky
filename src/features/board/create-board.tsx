@@ -15,8 +15,9 @@ import {
 } from "#/components/ui/dialog"
 import { Field, FieldLabel } from "#/components/ui/field"
 import { Input } from "#/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "#/components/ui/spinner"
 import { useCreateBoard } from "#/hooks/mutations/use-create-board"
+import { useTRPC } from "#/integrations/trpc/react"
 import { toastError } from "#/hooks/utils"
 
 type CreateBoardDialogProps = {
@@ -26,6 +27,8 @@ type CreateBoardDialogProps = {
 export function CreateBoardDialog({ orgId }: CreateBoardDialogProps): React.ReactElement {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState("")
+
+  const trpc = useTRPC()
   const navigate = useNavigate()
 
   const { mutate, isPending } = useCreateBoard({

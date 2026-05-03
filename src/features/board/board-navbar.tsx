@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "@phosphor-icons/react"
 
 import { Button } from "#/components/ui/button"
 import { Separator } from "#/components/ui/separator"

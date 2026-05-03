@@ -18,9 +18,9 @@ export function useUpdateList({ boardId, onSuccess }: UseUpdateListOptions) {
       onSuccess: (data) => {
         queryClient.setQueryData(
           trpc.list.getlistsWithCards.queryKey({ boardId }),
-          (old) => old?.map((list) => (list.id === data.id ? { ...list, title: data.title } : list)),
+          (old) => old?.map((list) => (list.id === data.id ? { ...list, ...data } : list)),
         )
-        toastSuccess(`Renamed to "${data.title}"`)
+        toastSuccess(`Updated "${data.title}"`)
         onSuccess?.(data)
       },
       onError: (error) => {

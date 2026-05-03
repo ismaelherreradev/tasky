@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_auth/organization_/$orgId/settings")({
 
 function OrganizatonSettingsPage() {
   return (
-    <div className="w-full">
+    <div className="flex min-h-screen flex-col items-center justify-center">
       <OrganizationProfile />
     </div>
   )

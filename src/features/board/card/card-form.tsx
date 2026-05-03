@@ -1,4 +1,4 @@
-import { Plus, X } from "lucide-react"
+import { Plus as PhosphorPlus, X } from "@phosphor-icons/react"
 import { forwardRef, useRef, useState } from "react"
 import { useEventListener, useOnClickOutside } from "usehooks-ts"
 
@@ -120,7 +120,7 @@ export default forwardRef<HTMLTextAreaElement, CardFormProps>(function CardForm(
           variant="ghost"
           aria-label="Add a new card to this list"
         >
-          <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+          <PhosphorPlus className="mr-2 h-4 w-4" aria-hidden="true" />
           Add a card
         </Button>
       )}

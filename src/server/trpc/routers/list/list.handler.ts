@@ -97,14 +97,14 @@ export async function updateListOrder({ ctx, input }: List<Schema.TUpdateListOrd
 }
 
 export async function createList({ input, ctx }: List<Schema.TCreateList>) {
-  const { title, boardId } = input
+  const { title, boardId, color } = input
   const orgId = await validateOrgId(ctx)
 
   await validateBoardAccess(ctx, boardId, orgId)
 
   const order = await getLastListOrder(ctx, boardId)
 
-  const result = await ctx.db.insert(lists).values({ title, boardId, order }).returning()
+  const result = await ctx.db.insert(lists).values({ title, boardId, order, color }).returning()
 
   const list = result[0]
   if (!list) {
@@ -234,7 +234,7 @@ export async function deleteList({ ctx, input }: List<Schema.TDeleteList>) {
 }
 
 export async function updateList({ ctx, input }: List<Schema.TUpdateList>) {
-  const { title, listId, boardId } = input
+  const { title, listId, boardId, color } = input
   const orgId = await validateOrgId(ctx)
 
   if (typeof boardId !== "number") {
@@ -248,7 +248,7 @@ export async function updateList({ ctx, input }: List<Schema.TUpdateList>) {
 
   await ensureListOrgAccess(ctx, listId, orgId)
 
-  const result = await ctx.db.update(lists).set({ title }).where(eq(lists.id, listId)).returning()
+  const result = await ctx.db.update(lists).set({ title, color }).where(eq(lists.id, listId)).returning()
   const updated = result[0]
 
   if (!updated) {

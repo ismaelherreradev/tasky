@@ -11,15 +11,22 @@ interface BoardCardProps {
   board: BoardSelect
   listCount?: number
   cardCount?: number
-  onDelete: (boardId: number) => void
-  isDeleting: boolean
+  isDeleting?: boolean
+  onDelete?: () => void
 }
 
-export function BoardCard({ board, listCount = 0, cardCount = 0, onDelete, isDeleting }: BoardCardProps) {
+export function BoardCard({
+  board,
+  listCount = 0,
+  cardCount = 0,
+  isDeleting = false,
+  onDelete,
+}: BoardCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleDeleteConfirm = () => {
-    onDelete(board.id)
+    onDelete?.()
+    setShowDeleteDialog(false)
   }
 
   return (
@@ -38,7 +45,7 @@ export function BoardCard({ board, listCount = 0, cardCount = 0, onDelete, isDel
               </h3>
             </div>
           </div>
-          
+
           <div className="text-xs text-muted-foreground">
             {board.createdAt
               ? `Created ${board.createdAt.toLocaleDateString("en-US", {
@@ -60,7 +67,7 @@ export function BoardCard({ board, listCount = 0, cardCount = 0, onDelete, isDel
           </div>
         </Link>
 
-        <div className="absolute right-3 top-3 z-20">
+        <div className="absolute top-3 right-3 z-20">
           <Button
             variant="ghost"
             size="icon"
@@ -69,7 +76,7 @@ export function BoardCard({ board, listCount = 0, cardCount = 0, onDelete, isDel
               e.stopPropagation()
               setShowDeleteDialog(true)
             }}
-            className="h-8 w-8 text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+            className="h-8 w-8 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive focus-visible:opacity-100"
           >
             <TrashIcon className="h-4 w-4" />
             <span className="sr-only">Delete board</span>

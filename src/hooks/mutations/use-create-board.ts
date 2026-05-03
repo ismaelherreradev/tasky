@@ -15,6 +15,9 @@ export function useCreateBoard({ orgId, onSuccess }: UseCreateBoardOptions = { o
 
   const mutation = useMutation({
     ...trpc.board.create.mutationOptions({
+      onMutate: (variables) => {
+        return { orgId: String(orgId) }
+      },
       onSuccess: (data) => {
         const board = data as BoardSelect
         queryClient.setQueryData<BoardSelect[]>(

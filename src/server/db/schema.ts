@@ -39,6 +39,7 @@ export const lists = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
+    color: text("color"),
     order: integer("order").notNull(),
     boardId: integer("board_id").notNull(),
     createdAt: int("created_at", { mode: "timestamp" })

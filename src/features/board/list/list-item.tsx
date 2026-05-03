@@ -4,7 +4,7 @@ import {
   type Edge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { GripVertical } from "lucide-react"
+import { DotsSixVertical as PhosphorDotsSixVertical } from "@phosphor-icons/react"
 import React, { useEffect, useRef, useState, type ComponentRef } from "react"
 
 import type { ListWithCards } from "#/hooks/use-optimistic-board"
@@ -131,7 +131,7 @@ const ListItemComponent = function ListItem({ data }: ListItemProps) {
           )}
           aria-label="Drag list"
         >
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
+          <PhosphorDotsSixVertical className="h-4 w-4 text-muted-foreground" />
         </div>
         <div ref={headerRef} className="w-full rounded-md bg-muted pb-2 shadow-md">
           <div>

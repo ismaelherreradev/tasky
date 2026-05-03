@@ -21,6 +21,17 @@ import { useUpdateList } from "#/hooks/mutations/use-update-list"
 import { toastError } from "#/hooks/utils"
 import type { ListSelect } from "#/server/db/schema"
 
+const PRESET_COLORS = [
+  "#FFB3BA",
+  "#FFDFBA",
+  "#FFFFBA",
+  "#BAFFC9",
+  "#BAE1FF",
+  "#E1BAFF",
+  "#FFBAE1",
+  "#BAFFEC",
+]
+
 type ListOptionsProps = {
   data: ListSelect
   boardId: number
@@ -32,11 +43,13 @@ export default function ListOptions({ data, boardId, onListDeleted, onListUpdate
   const [open, setOpen] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [title, setTitle] = useState(data.title)
+  const [color, setColor] = useState(data.color ?? null)
 
   const { mutate: updateList, isPending: isUpdating } = useUpdateList({
     boardId,
     onSuccess: (updatedList) => {
       setTitle(updatedList.title)
+      setColor(updatedList.color ?? null)
       setOpen(false)
       onListUpdated?.(updatedList.title)
     },
@@ -67,17 +80,18 @@ export default function ListOptions({ data, boardId, onListDeleted, onListUpdate
       toastError("Title cannot be empty")
       return
     }
-    if (trimmedTitle === data.title) {
+    if (trimmedTitle === data.title && color === data.color) {
       setOpen(false)
       return
     }
-    updateList({ title: trimmedTitle, listId: data.id, boardId })
+    updateList({ title: trimmedTitle, listId: data.id, boardId, color: color ?? undefined })
   }
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen)
     if (newOpen) {
       setTitle(data.title)
+      setColor(data.color ?? null)
     }
   }
 
@@ -111,6 +125,30 @@ export default function ListOptions({ data, boardId, onListDeleted, onListUpdate
                 disabled={isUpdating}
               />
             </Field>
+
+            <div className="space-y-2">
+              <span className="text-sm font-medium">Color</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setColor(null)}
+                  className={`h-6 w-6 rounded-full border-2 border-dashed border-input transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring ${color === null ? "ring-2 ring-ring ring-offset-2" : ""}`}
+                  aria-label="No color"
+                  aria-pressed={color === null}
+                />
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColor(c)}
+                    className={`h-6 w-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring ${color === c ? "ring-2 ring-ring ring-offset-2" : ""}`}
+                    style={{ backgroundColor: c }}
+                    aria-label={`Color ${c}`}
+                    aria-pressed={color === c}
+                  />
+                ))}
+              </div>
+            </div>
 
             <Button
               variant="outline"

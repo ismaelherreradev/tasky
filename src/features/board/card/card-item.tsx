@@ -4,7 +4,7 @@ import {
   type Edge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { Calendar, MessageSquare } from "lucide-react"
+import { CalendarBlank as PhosphorCalendarBlank, Chat as PhosphorChats } from "@phosphor-icons/react"
 import React, { useEffect, useRef, useState } from "react"
 
 import { openCardModal } from "#/hooks/use-card-modal"
@@ -130,14 +130,14 @@ const CardItemComponent = function CardItem({ data, isDragOverlay = false }: Car
             <div className="flex items-center gap-2">
               {data.description && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MessageSquare className="h-3 w-3" />
+                  <PhosphorChats className="h-3 w-3" />
                   <span>1</span>
                 </div>
               )}
 
               {data.createdAt && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Calendar className="h-3 w-3" />
+                  <PhosphorCalendarBlank className="h-3 w-3" />
                   <span>
                     {new Date(data.createdAt).toLocaleDateString("en-US", {
                       month: "short",
