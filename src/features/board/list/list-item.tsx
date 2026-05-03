@@ -135,7 +135,7 @@ const ListItemComponent = function ListItem({ data }: ListItemProps) {
         </div>
         <div ref={headerRef} className="w-full rounded-md bg-muted pb-2 shadow-md">
           <div>
-            <ListHeader onAddCard={enableEditing} data={data} />
+            <ListHeader data={data} boardId={data.boardId} />
           </div>
 
           <DroppableArea

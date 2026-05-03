@@ -16,9 +16,10 @@ export function useCreateList({ boardId, onSuccess }: UseCreateListOptions) {
   const mutation = useMutation({
     ...trpc.list.createList.mutationOptions({
       onSuccess: (data) => {
-        void queryClient.invalidateQueries({
-          queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
-        })
+        queryClient.setQueryData(
+          trpc.list.getlistsWithCards.queryKey({ boardId }),
+          (old) => (old ? [...old, { ...data, cards: [] }] : [{ ...data, cards: [] }]),
+        )
         toastSuccess(`List "${data.title}" created!`)
         onSuccess?.(data)
       },

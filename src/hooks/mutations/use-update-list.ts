@@ -1,19 +1,25 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { extractZodError, toastError, toastSuccess } from "#/hooks/utils"
 import { useTRPC } from "#/integrations/trpc/react"
 import type { ListSelect } from "#/server/db/schema"
 
 interface UseUpdateListOptions {
+  boardId: number
   onSuccess?: (data: ListSelect) => void
 }
 
-export function useUpdateList({ onSuccess }: UseUpdateListOptions = {}) {
+export function useUpdateList({ boardId, onSuccess }: UseUpdateListOptions) {
   const trpc = useTRPC()
+  const queryClient = useQueryClient()
 
   const mutation = useMutation({
     ...trpc.list.updateList.mutationOptions({
       onSuccess: (data) => {
+        queryClient.setQueryData(
+          trpc.list.getlistsWithCards.queryKey({ boardId }),
+          (old) => old?.map((list) => (list.id === data.id ? { ...list, title: data.title } : list)),
+        )
         toastSuccess(`Renamed to "${data.title}"`)
         onSuccess?.(data)
       },

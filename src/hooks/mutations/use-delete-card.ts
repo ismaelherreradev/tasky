@@ -15,9 +15,14 @@ export function useDeleteCard({ boardId, onSuccess }: UseDeleteCardOptions) {
   const mutation = useMutation({
     ...trpc.card.deleteCard.mutationOptions({
       onSuccess: (data) => {
-        void queryClient.invalidateQueries({
-          queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
-        })
+        queryClient.setQueryData(
+          trpc.list.getlistsWithCards.queryKey({ boardId }),
+          (old) =>
+            old?.map((list) => ({
+              ...list,
+              cards: list.cards?.filter((card) => card.id !== data.id) || [],
+            })),
+        )
         toastManager.add({
           title: "Success",
           id: String(data.id),

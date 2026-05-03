@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { ArrowLeft, Calendar, Users } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 import { Button } from "#/components/ui/button"
 import { Separator } from "#/components/ui/separator"
@@ -8,7 +8,6 @@ import { useTRPC } from "#/integrations/trpc/react"
 
 import { BoardOptions } from "./board-options"
 import { BoardStats } from "./board-stats"
-import { BoardTitleForm } from "./board-title-form"
 
 type BoardNavbarProps = {
   boardId: number
@@ -35,11 +34,13 @@ export function BoardNavbar({ boardId, orgId }: BoardNavbarProps) {
             </Link>
           }
         />
-        
+
         <Separator orientation="vertical" className="h-4" />
-        
+
         <div className="flex min-w-0 items-center pl-1">
-          <BoardTitleForm orgId={orgId} boardId={boardId} board={board ?? undefined} />
+          <span className="text-lg font-bold">
+            {board?.title ?? "Loading..."}
+          </span>
         </div>
       </div>
 

@@ -16,13 +16,14 @@ export function useCreateCard({ listId, boardId, onSuccess }: UseCreateCardOptio
 
   const mutation = useMutation({
     ...trpc.card.createCard.mutationOptions({
-      onSuccess: async (data) => {
-        await queryClient.invalidateQueries({
-          queryKey: trpc.card.getCardsByListId.queryKey({ listId }),
-        })
-        await queryClient.invalidateQueries({
-          queryKey: trpc.list.getlistsWithCards.queryKey({ boardId }),
-        })
+      onSuccess: (data) => {
+        queryClient.setQueryData(
+          trpc.list.getlistsWithCards.queryKey({ boardId }),
+          (old) =>
+            old?.map((list) =>
+              list.id === listId ? { ...list, cards: [...(list.cards || []), data] } : list,
+            ),
+        )
         toastSuccess(`Card "${data.title}" created!`)
         onSuccess?.(data)
       },

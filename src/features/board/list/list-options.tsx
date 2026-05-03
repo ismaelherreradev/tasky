@@ -1,123 +1,164 @@
 import { useState } from "react"
-import { MoreHorizontal } from "lucide-react"
+import { CopyIcon, DotsThree, TrashIcon } from "@phosphor-icons/react"
 
-import { Spinner } from "#/components/ui/spinner"
 import { Button } from "#/components/ui/button"
+import { ConfirmationDialog } from "#/components/ui/confirmation-dialog"
 import {
-  Menu,
-  MenuGroup,
-  MenuItem,
-  MenuPopup,
-  MenuGroupLabel,
-  MenuSeparator,
-  MenuTrigger,
-} from "#/components/ui/menu"
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogPopup,
+  DialogTitle,
+  DialogTrigger,
+} from "#/components/ui/dialog"
+import { Field, FieldLabel } from "#/components/ui/field"
+import { Input } from "#/components/ui/input"
+import { Spinner } from "#/components/ui/spinner"
 import { useCopyList } from "#/hooks/mutations/use-copy-list"
 import { useDeleteList } from "#/hooks/mutations/use-delete-list"
+import { useUpdateList } from "#/hooks/mutations/use-update-list"
+import { toastError } from "#/hooks/utils"
 import type { ListSelect } from "#/server/db/schema"
 
 type ListOptionsProps = {
   data: ListSelect
-  onAddCard: () => void
+  boardId: number
+  onListDeleted?: () => void
+  onListUpdated?: (title: string) => void
 }
 
-export default function ListOptions({ data, onAddCard }: ListOptionsProps) {
+export default function ListOptions({ data, boardId, onListDeleted, onListUpdated }: ListOptionsProps) {
   const [open, setOpen] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [title, setTitle] = useState(data.title)
 
-  const deleteList = useDeleteList({
-    boardId: data.boardId,
+  const { mutate: updateList, isPending: isUpdating } = useUpdateList({
+    boardId,
+    onSuccess: (updatedList) => {
+      setTitle(updatedList.title)
+      setOpen(false)
+      onListUpdated?.(updatedList.title)
+    },
+  })
+
+  const { mutate: copyList, isPending: isCopying } = useCopyList({
+    boardId,
     onSuccess: () => setOpen(false),
   })
 
-  const copyList = useCopyList({
-    boardId: data.boardId,
-    onSuccess: () => setOpen(false),
+  const { mutate: deleteList, isPending: isDeleting } = useDeleteList({
+    boardId,
+    onSuccess: () => {
+      setShowDeleteDialog(false)
+      setOpen(false)
+      onListDeleted?.()
+    },
   })
 
-  function onDelete(formData: FormData) {
-    const id = formData.get("id") as string
-    const boardId = formData.get("boardId") as string
-
-    deleteList.mutate({ listId: Number(id), boardId: Number(boardId) })
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
   }
 
-  function onCopy(formData: FormData) {
-    const id = formData.get("id") as string
-    const boardId = formData.get("boardId") as string
+  const handleTitleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmedTitle = title.trim()
+    if (!trimmedTitle) {
+      toastError("Title cannot be empty")
+      return
+    }
+    if (trimmedTitle === data.title) {
+      setOpen(false)
+      return
+    }
+    updateList({ title: trimmedTitle, listId: data.id, boardId })
+  }
 
-    copyList.mutate({ listId: Number(id), boardId: Number(boardId) })
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen)
+    if (newOpen) {
+      setTitle(data.title)
+    }
+  }
+
+  const handleCopy = () => {
+    copyList({ listId: data.id, boardId })
   }
 
   return (
-    <Menu open={open} onOpenChange={setOpen}>
-      <MenuTrigger render={<Button variant="ghost" size="sm" className="h-auto w-auto p-1" />}>
-        <MoreHorizontal className="h-4 w-4" />
-      </MenuTrigger>
-      <MenuPopup>
-        <MenuGroup>
-          <MenuGroupLabel className="px-3 py-2 text-center text-sm font-medium">
-            List actions
-          </MenuGroupLabel>
-        </MenuGroup>
-        <MenuSeparator />
-        <MenuItem
-          className="px-3"
-          closeOnClick
-          onClick={(e) => {
-            e.preventDefault()
-            onAddCard()
-          }}
-        >
-          Add card
-        </MenuItem>
-        <form action={onCopy}>
-          <input hidden name="id" id="id" defaultValue={data.id} />
-          <input hidden name="boardId" id="boardId" defaultValue={data.boardId} />
-          <MenuItem
-            className="px-3"
-            disabled={copyList.isPending}
-            closeOnClick={false}
-            onClick={(e) => {
-              e.preventDefault()
-              const form = e.currentTarget.closest("form")
-              if (form) form.requestSubmit()
-            }}
-          >
-            {copyList.isPending ? (
-              <>
-                <Spinner className="h-4 w-4 animate-spin" />
-                Copying...
-              </>
-            ) : (
-              "Copy list"
-            )}
-          </MenuItem>
-        </form>
-        <MenuSeparator />
-        <form action={onDelete}>
-          <input hidden name="id" id="id" defaultValue={data.id} />
-          <input hidden name="boardId" id="boardId" defaultValue={data.boardId} />
-          <MenuItem
-            className="px-3 text-destructive hover:bg-destructive/10"
-            disabled={deleteList.isPending}
-            closeOnClick={false}
-            onClick={(e) => {
-              e.preventDefault()
-              const form = e.currentTarget.closest("form")
-              if (form) form.requestSubmit()
-            }}
-          >
-            {deleteList.isPending ? (
-              <>
-                <Spinner className="h-4 w-4 animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              "Delete this list"
-            )}
-          </MenuItem>
-        </form>
-      </MenuPopup>
-    </Menu>
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogTrigger
+          render={
+            <Button variant="ghost" size="sm" className="h-auto w-auto p-1">
+              <DotsThree className="h-4 w-4" />
+            </Button>
+          }
+        />
+        <DialogPopup className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>List Settings</DialogTitle>
+          </DialogHeader>
+          <DialogPanel className="space-y-6">
+            <Field>
+              <FieldLabel htmlFor="list-title">Title</FieldLabel>
+              <Input
+                id="list-title"
+                name="title"
+                type="text"
+                value={title}
+                onChange={handleTitleChange}
+                disabled={isUpdating}
+              />
+            </Field>
+
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={handleCopy}
+              disabled={isCopying}
+            >
+              {isCopying ? (
+                <Spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CopyIcon className="mr-2" size={16} />
+              )}
+              {isCopying ? "Copying..." : "Copy list"}
+            </Button>
+          </DialogPanel>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={isDeleting}
+            >
+              <TrashIcon size={16} className="mr-2" />
+              Delete
+            </Button>
+            <Button
+              onClick={handleTitleSubmit}
+              disabled={isUpdating || !title.trim()}
+              className="gap-2"
+            >
+              {isUpdating ? <Spinner /> : null}
+              {isUpdating ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogPopup>
+      </Dialog>
+
+      <ConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Delete List"
+        variant="destructive"
+        confirmLabel={isDeleting ? "Deleting..." : "Delete"}
+        isLoading={isDeleting}
+        onConfirm={() => deleteList({ listId: data.id, boardId })}
+        onCancel={() => setShowDeleteDialog(false)}
+      >
+        <p className="text-sm">Delete this list and all its cards?</p>
+      </ConfirmationDialog>
+    </>
   )
 }

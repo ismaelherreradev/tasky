@@ -10,14 +10,14 @@ export const Route = createFileRoute("/_auth/board/$boardId")({
   loader: async ({ context, params }) => {
     const boardId = Number(params.boardId)
 
-    void context.queryClient.prefetchQuery(
+    await context.queryClient.prefetchQuery(
       context.trpc.board.getBoardById.queryOptions({
         boardId,
         orgId: context.orgId,
       }),
     )
 
-    void context.queryClient.prefetchQuery(
+    await context.queryClient.prefetchQuery(
       context.trpc.list.getlistsWithCards.queryOptions({ boardId }),
     )
 

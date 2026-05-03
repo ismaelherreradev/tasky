@@ -21,9 +21,6 @@ export function useCreateBoard({ orgId, onSuccess }: UseCreateBoardOptions = { o
           trpc.board.getBoards.queryOptions({ orgId: String(orgId) }).queryKey,
           (old) => (old ? [...old, board] : [board]),
         )
-        void queryClient.invalidateQueries({
-          queryKey: trpc.board.getBoards.queryKey({ orgId: String(orgId) }),
-        })
         toastSuccess(`Board "${board.title}" created`)
         onSuccess?.(board)
       },
