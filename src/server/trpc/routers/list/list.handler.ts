@@ -188,7 +188,7 @@ export async function copyList({ ctx, input }: List<Schema.TCopyList>) {
   }
 
   const cardData = listToCopy.cards.map((card) => ({
-    listId: newList.id as number,
+    listId: newList.id,
     title: card.title,
     description: card.description,
     order: card.order,
@@ -248,7 +248,11 @@ export async function updateList({ ctx, input }: List<Schema.TUpdateList>) {
 
   await ensureListOrgAccess(ctx, listId, orgId)
 
-  const result = await ctx.db.update(lists).set({ title, color }).where(eq(lists.id, listId)).returning()
+  const result = await ctx.db
+    .update(lists)
+    .set({ title, color })
+    .where(eq(lists.id, listId))
+    .returning()
   const updated = result[0]
 
   if (!updated) {

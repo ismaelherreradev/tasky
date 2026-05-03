@@ -1,5 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { useClerk, useSignIn, useSignUp } from "@clerk/tanstack-react-start"
+import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { useEffect, useRef } from "react"
 
 export const Route = createFileRoute("/sso-callback")({

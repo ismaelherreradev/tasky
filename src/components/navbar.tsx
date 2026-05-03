@@ -19,7 +19,7 @@ type NavbarProps = {
 export function Navbar({ orgId }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 flex h-14 w-full shrink-0 items-center justify-between border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60 sm:px-6 lg:px-8">
-      <div className="container flex w-full max-w-screen-2xl items-center justify-between mx-auto">
+      <div className="container mx-auto flex w-full max-w-screen-2xl items-center justify-between">
         <div className="flex items-center gap-6">
           <Link
             to="/organization/$orgId"

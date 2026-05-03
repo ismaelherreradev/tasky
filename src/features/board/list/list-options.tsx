@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { CopyIcon, DotsThree, TrashIcon } from "@phosphor-icons/react"
+import { useState } from "react"
 
 import { Button } from "#/components/ui/button"
 import { ConfirmationDialog } from "#/components/ui/confirmation-dialog"
@@ -39,7 +39,12 @@ type ListOptionsProps = {
   onListUpdated?: (title: string) => void
 }
 
-export default function ListOptions({ data, boardId, onListDeleted, onListUpdated }: ListOptionsProps) {
+export default function ListOptions({
+  data,
+  boardId,
+  onListDeleted,
+  onListUpdated,
+}: ListOptionsProps) {
   const [open, setOpen] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [title, setTitle] = useState(data.title)
@@ -132,7 +137,7 @@ export default function ListOptions({ data, boardId, onListDeleted, onListUpdate
                 <button
                   type="button"
                   onClick={() => setColor(null)}
-                  className={`h-6 w-6 rounded-full border-2 border-dashed border-input transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring ${color === null ? "ring-2 ring-ring ring-offset-2" : ""}`}
+                  className={`h-6 w-6 rounded-full border-2 border-dashed border-input transition-transform hover:scale-110 focus:ring-2 focus:ring-ring focus:outline-none ${color === null ? "ring-2 ring-ring ring-offset-2" : ""}`}
                   aria-label="No color"
                   aria-pressed={color === null}
                 />
@@ -141,7 +146,7 @@ export default function ListOptions({ data, boardId, onListDeleted, onListUpdate
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`h-6 w-6 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring ${color === c ? "ring-2 ring-ring ring-offset-2" : ""}`}
+                    className={`h-6 w-6 rounded-full transition-transform hover:scale-110 focus:ring-2 focus:ring-ring focus:outline-none ${color === c ? "ring-2 ring-ring ring-offset-2" : ""}`}
                     style={{ backgroundColor: c }}
                     aria-label={`Color ${c}`}
                     aria-pressed={color === c}

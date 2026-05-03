@@ -4,7 +4,10 @@ import {
   type Edge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { CalendarBlank as PhosphorCalendarBlank, Chat as PhosphorChats } from "@phosphor-icons/react"
+import {
+  CalendarBlank as PhosphorCalendarBlank,
+  Chat as PhosphorChats,
+} from "@phosphor-icons/react"
 import React, { useEffect, useRef, useState } from "react"
 
 import { openCardModal } from "#/hooks/use-card-modal"

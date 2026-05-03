@@ -1,6 +1,7 @@
 import { SmileySadIcon } from "@phosphor-icons/react"
 import { useNavigate } from "@tanstack/react-router"
 
+import { Button } from "@/components/ui/button"
 import {
   Empty,
   EmptyContent,
@@ -9,7 +10,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { Button } from "@/components/ui/button"
 
 export function NotFound() {
   const navigate = useNavigate()
@@ -21,9 +21,7 @@ export function NotFound() {
           <SmileySadIcon className="text-muted-foreground" />
         </EmptyMedia>
         <EmptyTitle>Page not found</EmptyTitle>
-        <EmptyDescription>
-          This page doesn&apos;t exist or has been moved.
-        </EmptyDescription>
+        <EmptyDescription>This page doesn&apos;t exist or has been moved.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={() => navigate({ to: "/" })}>Go Home</Button>

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_auth/select-org")({
 })
 
 function OrganizationListPage() {
-return (
+  return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <OrganizationList
         hidePersonal

@@ -96,7 +96,7 @@ export default function ListForm({ boardId }: { boardId: number }) {
                 key={c}
                 type="button"
                 onClick={() => setColor(color === c ? undefined : c)}
-                className={`h-5 w-5 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring ${color === c ? "ring-2 ring-ring ring-offset-2" : ""}`}
+                className={`h-5 w-5 rounded-full transition-transform hover:scale-110 focus:ring-2 focus:ring-ring focus:outline-none ${color === c ? "ring-2 ring-ring ring-offset-2" : ""}`}
                 style={{ backgroundColor: c }}
                 aria-label={`Select color ${c}`}
                 aria-pressed={color === c}
