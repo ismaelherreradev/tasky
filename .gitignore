@@ -40,3 +40,4 @@ yarn-error.log*
 
 __unconfig*
 todos.json
+worker-configuration.d.ts

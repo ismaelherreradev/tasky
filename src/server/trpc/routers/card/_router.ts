@@ -1,23 +1,23 @@
-import { createTRPCRouter, protectedProcedure } from "../../init"
+import { createTRPCRouter, orgProcedure, protectedProcedure } from "../../init"
 import * as handler from "./card.handler"
 import * as schema from "./card.schema"
 
 export const cardRouter = createTRPCRouter({
-  createCard: protectedProcedure.input(schema.ZCreateCard).mutation(handler.createCard),
+  createCard: orgProcedure.input(schema.ZCreateCard).mutation(handler.createCard),
 
-  updateCardOrder: protectedProcedure
+  updateCardOrder: orgProcedure
     .input(schema.ZUpdateCardOrder)
     .mutation(handler.updateCardOrder),
 
-  getCardById: protectedProcedure.input(schema.ZGetCardById).query(handler.getCardById),
+  getCardById: orgProcedure.input(schema.ZGetCardById).query(handler.getCardById),
 
   getCardsByListId: protectedProcedure
     .input(schema.ZGetCardsByListId)
     .query(handler.getCardsByListId),
 
-  updateCard: protectedProcedure.input(schema.ZUpdateCard).mutation(handler.updateCard),
+  updateCard: orgProcedure.input(schema.ZUpdateCard).mutation(handler.updateCard),
 
-  copyCard: protectedProcedure.input(schema.ZCopyCard).mutation(handler.copyCard),
+  copyCard: orgProcedure.input(schema.ZCopyCard).mutation(handler.copyCard),
 
-  deleteCard: protectedProcedure.input(schema.ZDeleteCard).mutation(handler.deleteCard),
+  deleteCard: orgProcedure.input(schema.ZDeleteCard).mutation(handler.deleteCard),
 })

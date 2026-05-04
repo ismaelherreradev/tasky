@@ -1,15 +1,20 @@
 import type { auth } from "@clerk/tanstack-react-start/server"
+import type { D1Database } from "@cloudflare/workers-types"
 import { initTRPC, TRPCError } from "@trpc/server"
 import superjson from "superjson"
 import { z } from "zod"
 
-import { db } from "#/server/db"
+import { createDb } from "#/server/db"
 
 type AuthObject = Awaited<ReturnType<typeof auth>>
 
-export const createTRPCContext = async (opts: { headers: Headers; auth: AuthObject | null }) => {
+export const createTRPCContext = async (opts: {
+  headers: Headers
+  auth: AuthObject | null
+  env: { DB: D1Database }
+}) => {
   return {
-    db,
+    db: createDb(opts.env),
     auth: opts.auth,
     headers: opts.headers,
   }
@@ -61,7 +66,6 @@ export type ProtectedTRPCContext = TRPCContext & {
   auth: NonNullable<TRPCContext["auth"]> & {
     userId: string
   }
-  db: typeof db
 }
 
 export type OrgTRPCContext = TRPCContext & {
@@ -69,7 +73,6 @@ export type OrgTRPCContext = TRPCContext & {
     userId: string
     orgId: string
   }
-  db: typeof db
 }
 
 export const createTRPCRouter = t.router

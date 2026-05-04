@@ -38,25 +38,12 @@ export const taskyV2Card = sqliteTable("tasky-v2_card", {
 export const taskyV2List = sqliteTable("tasky-v2_list", {
 	id: integer().primaryKey({ autoIncrement: true }),
 	title: text().notNull(),
+	color: text(),
 	order: integer().notNull(),
 	boardId: integer("board_id").notNull(),
 	createdAt: integer("created_at").default(sql`unixepoch()`).notNull(),
 	updatedAt: integer("updated_at"),
-	color: text(),
 },
 (table) => [index("boardIdx").on(table.boardId),
 ]);
-
-export const taskyV2BoardTag = sqliteTable("tasky-v2_board_tag", {
-	boardId: integer("board_id").notNull(),
-	tagId: integer("tag_id").notNull(),
-});
-
-export const taskyV2Tag = sqliteTable("tasky-v2_tag", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text().notNull(),
-	color: text().notNull(),
-	createdAt: integer("created_at").default(sql`unixepoch()`).notNull(),
-	updatedAt: integer("updated_at"),
-});
 

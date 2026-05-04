@@ -2,6 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tasky",
   "compatibility_date": "2025-09-02",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "@tanstack/react-start/server-entry",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tasky",
+      "database_id": "91345991-40cc-42bb-aeef-45893891ca57",
+      "migrations_dir": "drizzle"
+    }
+  ]
 }

@@ -15,7 +15,7 @@ TanStack Start · tRPC + Drizzle ORM · Tailwind CSS 4 · Clerk Auth
 ```bash
 bun install
 bun run db:generate && bun run db:migrate
-# Add CLERK_SECRET_KEY and TURSO_DB_URL to .env
+# Add VITE_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY to .env
 bun run dev
 ```
 

@@ -1,10 +1,6 @@
 import { sql } from "drizzle-orm"
 import { index, int, integer, text, sqliteTable } from "drizzle-orm/sqlite-core"
 
-// Multi-project prefix helper (v2 compatible)
-const prefix = "tasky-v2"
-const table = (name: string) => `${prefix}_${name}`
-
 // Enums
 export const actionEnum = {
   CREATE: "CREATE",
@@ -21,7 +17,7 @@ export const entityTypeEnum = {
 export type EntityType = (typeof entityTypeEnum)[keyof typeof entityTypeEnum]
 
 // Boards
-export const boards = sqliteTable(table("board"), {
+export const boards = sqliteTable("board", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   orgId: text("orgId").notNull(),
   title: text("title").notNull(),
@@ -35,7 +31,7 @@ export type BoardInsert = typeof boards.$inferInsert
 
 // Lists
 export const lists = sqliteTable(
-  table("list"),
+  "list",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
@@ -54,7 +50,7 @@ export type ListInsert = typeof lists.$inferInsert
 
 // Cards
 export const cards = sqliteTable(
-  table("card"),
+  "card",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
@@ -72,7 +68,7 @@ export type CardSelect = typeof cards.$inferSelect
 export type CardInsert = typeof cards.$inferInsert
 
 // Audit Logs
-export const auditLogs = sqliteTable(table("audit_log"), {
+export const auditLogs = sqliteTable("audit_log", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   orgId: text("org_id").notNull(),
   action: text("action").$type<Action>().notNull(),
