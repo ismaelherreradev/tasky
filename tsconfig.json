@@ -21,8 +21,7 @@
       "DOM.Iterable"
     ],
     "types": [
-      "vite/client",
-      "./worker-configuration.d.ts"
+      "vite/client"
     ],
     /* Bundler mode */
     "moduleResolution": "bundler",
