@@ -1,11 +1,8 @@
-import { drizzle } from "drizzle-orm/libsql"
+import type { D1Database } from "@cloudflare/workers-types"
+import { drizzle } from "drizzle-orm/d1"
 
 import { relations } from "./relations"
 
-export const db = drizzle({
-  connection: {
-    url: process.env.TURSO_DATABASE_URL!,
-    authToken: process.env.TURSO_AUTH_TOKEN,
-  },
-  relations,
-})
+export function createDb(env: { DB: D1Database }) {
+  return drizzle(env.DB, { relations })
+}

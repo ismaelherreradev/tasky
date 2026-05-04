@@ -28,7 +28,7 @@ export function useCreateBoard({ orgId, onSuccess }: UseCreateBoardOptions = { o
         onSuccess?.(board)
       },
       onError: (error) => {
-        const message = extractZodError(error, "boardId", "Failed to create board")
+        const message = extractZodError(error, "title", "Failed to create board")
         toastError(message)
       },
     }),
