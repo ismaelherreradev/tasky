@@ -42,7 +42,7 @@ function MainApp() {
       </p>
 
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <SignInButton mode="modal">
+        <SignInButton mode="modal" forceRedirectUrl="/select-org">
           <Button size="lg">Start now</Button>
         </SignInButton>
       </div>

@@ -127,7 +127,7 @@
   --clerk-color-foreground: #fafafa;
   --clerk-color-background: #171717;
   --clerk-color-input: #ffffff;
-  --clerk-color-input-foreground: #fafafa;
+  --clerk-color-input-foreground: #0a0a0a;
   --clerk-color-ring: color-mix(in srgb, #737373 50%, transparent);
   --clerk-color-shimmer: #ffffff;
   --clerk-color-modal-backdrop: #000000;
