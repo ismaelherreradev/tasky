@@ -1,10 +1,17 @@
+import { useAuth } from "@clerk/tanstack-react-start"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 import { Navbar } from "#/components/navbar"
-import { getSession } from "#/lib/auth.functions"
+import { getSession, getSessionAuthOnly } from "#/lib/auth.functions"
 
 export const Route = createFileRoute("/_auth")({
-  beforeLoad: async () => await getSession(),
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === "/select-org") {
+      const session = await getSessionAuthOnly()
+      return { userId: session.userId, orgId: undefined }
+    }
+    return await getSession()
+  },
   loader: async ({ context }) => {
     return { userId: context.userId, orgId: context.orgId }
   },
@@ -13,10 +20,13 @@ export const Route = createFileRoute("/_auth")({
 
 function ProtectedAppLayout() {
   const { orgId } = Route.useLoaderData()
+  const { orgId: clientOrgId } = useAuth()
+
+  const displayOrgId = orgId || clientOrgId
 
   return (
     <>
-      {orgId ? <Navbar orgId={orgId} /> : ""}
+      {displayOrgId ? <Navbar orgId={displayOrgId} /> : null}
       <Outlet />
     </>
   )
