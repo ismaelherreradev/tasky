@@ -16,8 +16,8 @@ import { Route as AuthSelectOrgRouteImport } from './routes/_auth.select-org'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
 import { Route as AuthOrganizationOrgIdRouteImport } from './routes/_auth.organization.$orgId'
 import { Route as AuthBoardBoardIdRouteImport } from './routes/_auth.board.$boardId'
-import { Route as AuthOrganizationOrgIdSettingsRouteImport } from './routes/_auth.organization_.$orgId.settings'
 import { Route as AuthOrganizationOrgIdActivityRouteImport } from './routes/_auth.organization_.$orgId.activity'
+import { Route as AuthOrganizationOrgIdSettingsSplatRouteImport } from './routes/_auth.organization_.$orgId.settings.$'
 
 const SsoCallbackRoute = SsoCallbackRouteImport.update({
   id: '/sso-callback',
@@ -53,16 +53,16 @@ const AuthBoardBoardIdRoute = AuthBoardBoardIdRouteImport.update({
   path: '/board/$boardId',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthOrganizationOrgIdSettingsRoute =
-  AuthOrganizationOrgIdSettingsRouteImport.update({
-    id: '/organization_/$orgId/settings',
-    path: '/organization/$orgId/settings',
-    getParentRoute: () => AuthRoute,
-  } as any)
 const AuthOrganizationOrgIdActivityRoute =
   AuthOrganizationOrgIdActivityRouteImport.update({
     id: '/organization_/$orgId/activity',
     path: '/organization/$orgId/activity',
+    getParentRoute: () => AuthRoute,
+  } as any)
+const AuthOrganizationOrgIdSettingsSplatRoute =
+  AuthOrganizationOrgIdSettingsSplatRouteImport.update({
+    id: '/organization_/$orgId/settings/$',
+    path: '/organization/$orgId/settings/$',
     getParentRoute: () => AuthRoute,
   } as any)
 
@@ -74,7 +74,7 @@ export interface FileRoutesByFullPath {
   '/organization/$orgId': typeof AuthOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/organization/$orgId/activity': typeof AuthOrganizationOrgIdActivityRoute
-  '/organization/$orgId/settings': typeof AuthOrganizationOrgIdSettingsRoute
+  '/organization/$orgId/settings/$': typeof AuthOrganizationOrgIdSettingsSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,7 +84,7 @@ export interface FileRoutesByTo {
   '/organization/$orgId': typeof AuthOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/organization/$orgId/activity': typeof AuthOrganizationOrgIdActivityRoute
-  '/organization/$orgId/settings': typeof AuthOrganizationOrgIdSettingsRoute
+  '/organization/$orgId/settings/$': typeof AuthOrganizationOrgIdSettingsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,7 +96,7 @@ export interface FileRoutesById {
   '/_auth/organization/$orgId': typeof AuthOrganizationOrgIdRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/_auth/organization_/$orgId/activity': typeof AuthOrganizationOrgIdActivityRoute
-  '/_auth/organization_/$orgId/settings': typeof AuthOrganizationOrgIdSettingsRoute
+  '/_auth/organization_/$orgId/settings/$': typeof AuthOrganizationOrgIdSettingsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,7 +108,7 @@ export interface FileRouteTypes {
     | '/organization/$orgId'
     | '/api/trpc/$'
     | '/organization/$orgId/activity'
-    | '/organization/$orgId/settings'
+    | '/organization/$orgId/settings/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,7 +118,7 @@ export interface FileRouteTypes {
     | '/organization/$orgId'
     | '/api/trpc/$'
     | '/organization/$orgId/activity'
-    | '/organization/$orgId/settings'
+    | '/organization/$orgId/settings/$'
   id:
     | '__root__'
     | '/'
@@ -129,7 +129,7 @@ export interface FileRouteTypes {
     | '/_auth/organization/$orgId'
     | '/api/trpc/$'
     | '/_auth/organization_/$orgId/activity'
-    | '/_auth/organization_/$orgId/settings'
+    | '/_auth/organization_/$orgId/settings/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,18 +190,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthBoardBoardIdRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/organization_/$orgId/settings': {
-      id: '/_auth/organization_/$orgId/settings'
-      path: '/organization/$orgId/settings'
-      fullPath: '/organization/$orgId/settings'
-      preLoaderRoute: typeof AuthOrganizationOrgIdSettingsRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/organization_/$orgId/activity': {
       id: '/_auth/organization_/$orgId/activity'
       path: '/organization/$orgId/activity'
       fullPath: '/organization/$orgId/activity'
       preLoaderRoute: typeof AuthOrganizationOrgIdActivityRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/organization_/$orgId/settings/$': {
+      id: '/_auth/organization_/$orgId/settings/$'
+      path: '/organization/$orgId/settings/$'
+      fullPath: '/organization/$orgId/settings/$'
+      preLoaderRoute: typeof AuthOrganizationOrgIdSettingsSplatRouteImport
       parentRoute: typeof AuthRoute
     }
   }
@@ -212,7 +212,7 @@ interface AuthRouteChildren {
   AuthBoardBoardIdRoute: typeof AuthBoardBoardIdRoute
   AuthOrganizationOrgIdRoute: typeof AuthOrganizationOrgIdRoute
   AuthOrganizationOrgIdActivityRoute: typeof AuthOrganizationOrgIdActivityRoute
-  AuthOrganizationOrgIdSettingsRoute: typeof AuthOrganizationOrgIdSettingsRoute
+  AuthOrganizationOrgIdSettingsSplatRoute: typeof AuthOrganizationOrgIdSettingsSplatRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
@@ -220,7 +220,8 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthBoardBoardIdRoute: AuthBoardBoardIdRoute,
   AuthOrganizationOrgIdRoute: AuthOrganizationOrgIdRoute,
   AuthOrganizationOrgIdActivityRoute: AuthOrganizationOrgIdActivityRoute,
-  AuthOrganizationOrgIdSettingsRoute: AuthOrganizationOrgIdSettingsRoute,
+  AuthOrganizationOrgIdSettingsSplatRoute:
+    AuthOrganizationOrgIdSettingsSplatRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
