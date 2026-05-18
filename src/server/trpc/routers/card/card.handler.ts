@@ -82,27 +82,25 @@ export async function updateCardOrder({ input, ctx }: Card<Schema.TUpdateCardOrd
 
   const orgId = await validateOrgId(ctx)
 
-  await ctx.db.transaction(async (tx) => {
-    await Promise.all(
-      items.map(async (card) => {
-        await tx
-          .update(cards)
-          .set({ order: card.order, listId: card.listId })
-          .where(
-            and(
-              eq(cards.id, card.id),
-              exists(
-                ctx.db
-                  .select()
-                  .from(lists)
-                  .innerJoin(boards, eq(lists.boardId, boards.id))
-                  .where(and(eq(boards.orgId, orgId), eq(lists.id, cards.listId))),
-              ),
+  await Promise.all(
+    items.map(async (card) => {
+      await ctx.db
+        .update(cards)
+        .set({ order: card.order, listId: card.listId })
+        .where(
+          and(
+            eq(cards.id, card.id),
+            exists(
+              ctx.db
+                .select()
+                .from(lists)
+                .innerJoin(boards, eq(lists.boardId, boards.id))
+                .where(and(eq(boards.orgId, orgId), eq(lists.id, cards.listId))),
             ),
-          )
-      }),
-    )
-  })
+          ),
+        )
+    }),
+  )
 }
 
 export async function getCardById({ input, ctx }: Card<Schema.TGetCardById>) {

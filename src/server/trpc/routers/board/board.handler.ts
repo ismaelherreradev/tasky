@@ -117,21 +117,18 @@ export async function deleteBoard({ ctx, input }: Board<Schema.TDeleteBoard>) {
     return null
   }
 
-  await ctx.db.transaction(async (tx) => {
-    const boardLists = await tx
-      .select({ id: lists.id })
-      .from(lists)
-      .where(eq(lists.boardId, input.boardId))
+  const boardLists = await ctx.db
+    .select({ id: lists.id })
+    .from(lists)
+    .where(eq(lists.boardId, input.boardId))
 
-    if (boardLists.length > 0) {
-      const listIds = boardLists.map((list) => list.id)
-      await tx.delete(cards).where(inArray(cards.listId, listIds))
-    }
+  if (boardLists.length > 0) {
+    const listIds = boardLists.map((list) => list.id)
+    await ctx.db.delete(cards).where(inArray(cards.listId, listIds))
+  }
 
-    await tx.delete(lists).where(eq(lists.boardId, input.boardId))
-
-    await tx.delete(boards).where(eq(boards.id, input.boardId))
-  })
+  await ctx.db.delete(lists).where(eq(lists.boardId, input.boardId))
+  await ctx.db.delete(boards).where(eq(boards.id, input.boardId))
 
   await createAuditLog(ctx, {
     orgId,

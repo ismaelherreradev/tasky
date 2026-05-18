@@ -74,26 +74,24 @@ export async function updateListOrder({ ctx, input }: List<Schema.TUpdateListOrd
 
   const orgId = await validateOrgId(ctx)
 
-  await ctx.db.transaction(async (tx) => {
-    await Promise.all(
-      items.map(async (list) => {
-        await tx
-          .update(lists)
-          .set({ order: list.order })
-          .where(
-            and(
-              eq(lists.id, list.id),
-              exists(
-                ctx.db
-                  .select()
-                  .from(boards)
-                  .where(and(eq(boards.id, lists.boardId), eq(boards.orgId, orgId))),
-              ),
+  await Promise.all(
+    items.map(async (list) => {
+      await ctx.db
+        .update(lists)
+        .set({ order: list.order })
+        .where(
+          and(
+            eq(lists.id, list.id),
+            exists(
+              ctx.db
+                .select()
+                .from(boards)
+                .where(and(eq(boards.id, lists.boardId), eq(boards.orgId, orgId))),
             ),
-          )
-      }),
-    )
-  })
+          ),
+        )
+    }),
+  )
 }
 
 export async function createList({ input, ctx }: List<Schema.TCreateList>) {

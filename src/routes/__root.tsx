@@ -1,8 +1,6 @@
 import type { AuthObject } from "@clerk/backend"
-import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query"
 
 import { NotFound } from "#/components/not-found"
@@ -11,7 +9,6 @@ import siteConfig from "#/config/site"
 import type { AppRouter } from "#/server/trpc/router"
 
 import ClerkProvider from "../integrations/clerk/provider"
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
 
 import appCss from "../styles.css?url"
 
@@ -62,20 +59,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <div className="relative isolate flex min-h-svh flex-col">{children}</div>
             </AnchoredToastProvider>
           </ToastProvider>
-          {import.meta.env.DEV && (
-            <TanStackDevtools
-              config={{
-                position: "bottom-right",
-              }}
-              plugins={[
-                {
-                  name: "Tanstack Router",
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-                TanStackQueryDevtools,
-              ]}
-            />
-          )}
         </ClerkProvider>
         <Scripts />
       </body>
